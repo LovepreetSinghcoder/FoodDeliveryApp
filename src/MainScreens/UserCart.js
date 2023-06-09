@@ -10,24 +10,31 @@ const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
 const UserCart = ({ navigation }) => {
     const [cartdata, setCartdata] = useState(null);
+    const [cartAllData, setCartAllData] = useState(null);
+
     const [totalCost, setTotalCost] = useState('0');
 
     const getcartdata = async () => {
         // const docRef = firebase.firestore().collection('UserCart').doc(firebase.auth().currentUser.uid);
         const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
 
+        try {
+            await docRef.get().then((doc) => {
+                if (doc.exists) {
+                    // const data = JSON.stringify(doc.data());
+                    // setCartdata(data)
+                    setCartdata(doc.data())
+                    setCartAllData(doc.data().cartItems)
+                    // console.log('ye rha updated data', doc.data().cartItems)
+                } else {
+                    console.log('No such document!');
+                }
+            })
+        } catch (error) {
+            console.log('Error', error);
 
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-                // const data = JSON.stringify(doc.data());
-                // setCartdata(data)
-                setCartdata(doc.data())
+        }
 
-                // console.log('ye rha updated data', doc.data())
-            } else {
-                console.log('No such document!');
-            }
-        })
     }
 
     useEffect(() => {
@@ -87,89 +94,89 @@ const UserCart = ({ navigation }) => {
 
 
     const [allData, setAllData] = useState([]);
-    useEffect(() => {
-        if (cartdata != null) {
+    // useEffect(() => {
+    //     if (cartdata != null) {
 
-            console.log('Dekh bro 2')
+    //         console.log('Dekh bro 2')
 
-            const cart23 = cartdata;
-            const cartArrayNames = Object.keys(cart23);
-
-
-
-            console.log('dekhi bro 3', cartArrayNames.length);
-            let newData = [];
-            console.log('Dekh bro 4')
-
-            for (let i = 0; i < cartArrayNames.length; i++) {
-                console.log('Dekh bro 5')
-
-                const foodData = cart23[cartArrayNames[i]];
-                console.log('Dekh bro 6')
+    //         const cart23 = cartdata;
+    //         const cartArrayNames = Object.keys(cart23);
 
 
-                foodData.forEach((item) => {
 
-                    // newData(push.item)
-                    newData.push(item)
-                });
+    //         console.log('dekhi bro 3', cartArrayNames.length);
+    //         let newData = [];
+    //         console.log('Dekh bro 4')
+
+    //         for (let i = 0; i < cartArrayNames.length; i++) {
+    //             console.log('Dekh bro 5')
+
+    //             const foodData = cart23[cartArrayNames[i]];
+    //             console.log('Dekh bro 6')
 
 
-            }
-            setAllData(newData)
+    //             foodData.forEach((item) => {
 
-        }
-    }, [cartdata]);
+    //                 // newData(push.item)
+    //                 newData.push(item)
+    //             });
 
-    console.log('ho yd', allData)
+
+    //         }
+    //         setAllData(newData)
+
+    //     }
+    // }, [cartdata]);
+
+    // console.log('ho yd', allData)
 
     // const [totalcost, setTotalCost] = useState(null);
 
     //CODE FOR TOTAL FOOD PRICE
-    useEffect(() => {
-        // setIsLoading(true);
-        console.log('Dekh bro 1')
+    // useEffect(() => {
+    //     // setIsLoading(true);
+    //     console.log('Dekh bro 1')
 
-        if (cartdata != null) {
-            // const cart23 = JSON.parse(cartdata);
-            // const cartArrayNames = Object.keys(cart23);
-            console.log('Dekh bro 2')
+    //     if (cartdata != null) {
+    //         // const cart23 = JSON.parse(cartdata);
+    //         // const cartArrayNames = Object.keys(cart23);
+    //         console.log('Dekh bro 2')
 
-            const cart23 = cartdata;
-            const cartArrayNames = Object.keys(cart23);
-
-
-
-            console.log('dekhi bro 3', cartArrayNames.length);
-            let totalfoodprice = 0;
-            console.log('Dekh bro 4')
-
-            for (let i = 0; i < cartArrayNames.length; i++) {
-                console.log('Dekh bro 5')
-
-                const foodprice = cart23[cartArrayNames[i]];
-                console.log('Dekh bro 6')
-
-                //OLD CODE
-
-                // foodprice.forEach((item) => {
-                //     totalfoodprice += (parseInt(item.data.foodPrice) * parseInt(item.Foodquantity)) +
-                //         (parseInt(item.data.foodAddonPrice) * parseInt(item.Addonquantity));
-                // });
-
-                //NEW CODE
-                foodprice.forEach((item) => {
-                    totalfoodprice += (parseInt(item.TotalFoodPrice)) +
-                        (parseInt(item.TotalAddOnPrice));
-                });
+    //         const cart23 = cartdata;
+    //         const cartArrayNames = Object.keys(cart23);
 
 
-            }
 
-            setTotalCost(totalfoodprice.toString());
-            // setIsLoading(false);
-        }
-    }, [cartdata]);
+    //         console.log('dekhi bro 3', cartArrayNames.length);
+    //         let totalfoodprice = 0;
+    //         console.log('Dekh bro 4')
+
+    //         for (let i = 0; i < cartArrayNames.length; i++) {
+    //             console.log('Dekh bro 5')
+
+    //             const foodprice = cart23[cartArrayNames[i]];
+    //             console.log('Dekh bro 6')
+
+    //             //OLD CODE
+
+    //             // foodprice.forEach((item) => {
+    //             //     totalfoodprice += (parseInt(item.data.foodPrice) * parseInt(item.Foodquantity)) +
+    //             //         (parseInt(item.data.foodAddonPrice) * parseInt(item.Addonquantity));
+    //             // });
+
+    //             //NEW CODE
+    //             foodprice.forEach((item) => {
+    //                 totalfoodprice += (parseInt(item.TotalFoodPrice)) +
+    //                     (parseInt(item.TotalAddOnPrice));
+    //             });
+
+
+    //         }
+
+    //         setTotalCost(totalfoodprice.toString());
+    //         // setIsLoading(false);
+    //     }
+    // }, [cartdata]);
 
     // console.log('dekh bro ho gya ', totalCost)
 
@@ -181,18 +188,22 @@ const UserCart = ({ navigation }) => {
 
     useEffect(() => {
         const checkShopOpen = () => {
-            if (cartdata !== null) {
-                //OLD CODE
-                // const cart23 = JSON.parse(cartdata);
-                // const cartArrayNames = Object.keys(cart23);
+            if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
                 //NEW CODE
-                const cartArrayNames = Object.keys(cartdata);
+                let cartArrayNames = [];
+                const checkData = cartdata.cartItems;
+                checkData.forEach((item) => {
 
+                    // const cartArrayNames = item.
+                    cartArrayNames.push(item.shop_id)
+                });
+                // const cartArrayNames = Object.keys(cartdata);
+                // console.log('dekh veere', cartArrayNames)
 
-                console.log('dekhi bro 1', cartArrayNames);
+                // console.log('dekhi bro 1', cartArrayNames);
                 // let checkStockV = false;
-
+                setClosedRestaurants([]); // Clear the array before adding new items
                 for (let i = 0; i < cartArrayNames.length; i++) {
                     console.log('dekhi bro 2');
                     const matchingUserId = userdata.find((user) => user.uid === cartArrayNames[i]);
@@ -208,6 +219,8 @@ const UserCart = ({ navigation }) => {
                             setClosedRestaurants((prevClosedRestaurants) => [...prevClosedRestaurants, matchingUserId.restaurantName]);
                             console.log('Dekhi bro nhi haiga');
                         } else {
+                            setIsRestaurantOpen(true);
+
                             console.log('dekhi bro 8');
                         }
                     }
@@ -221,17 +234,88 @@ const UserCart = ({ navigation }) => {
     }, [cartdata, userdata]);
 
 
+    //Check Stock of Each Item
 
-    // const deleteItem = (item) => {
-    //     const docRef = firebase.firestore().collection('UserCart').doc(firebase.auth().currentUser.uid);
-    //     docRef.update({
-    //         cart: firebase.firestore.FieldValue.arrayRemove(item)
-    //     })
-    //     getcartdata();
+    const [inStock, setInStock] = useState(true);
+    const [outStock, setOutStock] = useState([]);
 
-    // }
+    useEffect(() => {
+        const checkStock = () => {
+            if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
-    const deleteItem = async (item, cart) => {
+                //NEW CODE
+                let itemIDs = [];
+                const checkData = cartdata.cartItems;
+                checkData.forEach((item) => {
+
+                    // const cartArrayNames = item.
+                    itemIDs.push(item.item_id)
+                });
+                // const cartArrayNames = Object.keys(cartdata);
+                console.log('dekh veere', itemIDs)
+
+
+                // let checkStockV = false;
+                setOutStock([]); // Clear the array before adding new items
+                for (let i = 0; i < itemIDs.length; i++) {
+                    console.log('dekhi bro 2');
+                    const matchingItemId = foodDataAll.find((item) => item.id === itemIDs[i]);
+
+                    // console.log('dekhi bro 4', matchingUserId);
+                    console.log('dekhi bro 4');
+
+                    if (matchingItemId) {
+                        console.log('dekhi bro 5');
+                        if (matchingItemId.stock === 'out') {
+                            console.log('dekhi bro 7');
+                            setInStock(false);
+                            setOutStock((prevStock) => [...prevStock, matchingItemId.foodName]);
+                            console.log('Dekhi bro nhi haiga');
+                        } else {
+                            setInStock(true);
+
+                            console.log('dekhi bro 8');
+                        }
+                    }
+                }
+            } else {
+                console.log('Empty array or null cartdata');
+            }
+        };
+
+        checkStock();
+    }, [cartdata, foodDataAll]);
+
+    const GetTotalPrice = () => {
+        // setIsLoading(true);
+
+        // if (Object.keys(cartdata).length !== 0) {
+        // if (cartdata !== null) {
+        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+
+
+            const cart23 = cartdata;
+            let totalfoodprice = 0;
+            const foodprice = cart23.cartItems;
+            foodprice.forEach((item) => {
+                totalfoodprice += (parseInt(item.totalFoodPrice)) +
+                    (parseInt(item.totalAddOnPrice));
+            });
+            setTotalCost(totalfoodprice.toString());
+            // setIsLoading(false);
+        }
+        else {
+            setTotalCost('0');
+        }
+    }
+
+    useEffect(() => {
+        GetTotalPrice();
+    }, [cartdata]);
+
+
+
+    const deleteItem = async (item) => {
         console.log('delete trigerr')
         // setIsLoading(true);
         const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
@@ -239,25 +323,47 @@ const UserCart = ({ navigation }) => {
         const docSnapshot = await docRef.get();
         const cartData = docSnapshot.data();
 
-        if (cartData && cartData[cart] && cartData[cart].length === 1) {
+        if (cartData && cartData.cartItems && cartData.cartItems.length === 1) {
             // Delete the cart property
             await docRef.update({
-                [cart]: firebase.firestore.FieldValue.delete()
+                cartItems: firebase.firestore.FieldValue.delete()
             });
         } else {
             // Remove the item from the cart array
             await docRef.update({
-                [cart]: firebase.firestore.FieldValue.arrayRemove(item)
+                cartItems: firebase.firestore.FieldValue.arrayRemove(item)
             });
         }
         getcartdata();
+        GetTotalPrice();
 
         // setIsLoading(false);
     }
 
     // console.log(typeof (cartdata))
     // console.log(totalCost.type)
-    console.log(typeof totalCost);
+    // console.log(typeof totalCost);
+
+    const GoToPaymentPage = () => {
+        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+            if (isRestaurantOpen === false) {
+                alert(`The following restaurant is closed : ${closedRestaurants}`)
+            }
+            else if (inStock === false) {
+                alert(`The following item is Out of Stock : ${outStock}`)
+
+            }
+            else {
+                navigation.navigate('PaymentNdetail', { cartdata })
+            }
+
+        }
+        else {
+            alert('Cart is Empty!')
+        }
+
+    }
+
     if (totalCost === '0') {
 
         return (
@@ -269,11 +375,6 @@ const UserCart = ({ navigation }) => {
                         <Text style={{ fontSize: 16 }}>Close</Text>
                     </TouchableOpacity>
                 </View>
-                {/* <TouchableOpacity onPress={() => navigation.navigate('home')}>
-                    <View style={styles.navbtn}>
-                        <AntDesign name="back" size={24} color="black" style={styles.navbtnin} />
-                    </View>
-                </TouchableOpacity> */}
                 <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
                     <Ionicons name="fast-food" size={250} color="#dedede" />
                     <Text style={{ color: '#dedede', fontSize: 25, fontWeight: '600' }}>Cart is Empty!</Text>
@@ -289,34 +390,28 @@ const UserCart = ({ navigation }) => {
 
         <View style={styles.containerout}>
 
-            {/* <TouchableOpacity onPress={() => navigation.navigate('home')}>
-                <View style={navbtn}>
-                    <AntDesign name="back" size={24} color="black" style={navbtnin} />
-                </View>
-            </TouchableOpacity> */}
+
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('Home')}>
 
                     <Text style={{ fontSize: 16 }}>Close</Text>
                 </TouchableOpacity>
             </View>
-            {/* <View style={styles.bottomnav}>
-                    <BottomNav navigation={navigation} />
-                </View> */}
+
             <View style={styles.container}>
                 <Text style={styles.head1}>Your Cart</Text>
                 <View style={styles.cartout}>
                     {/* {cartdata == null || JSON.parse(cartdata).cart.length == 0 ? */}
-                    {allData == null ?
+                    {cartAllData == null ?
 
                         <Text style={styles.head2}>Your Cart is Empty</Text>
                         :
                         // <FlatList style={styles.cardlist} data={JSON.parse(cartdata).cart} renderItem={
-                        <FlatList style={styles.cardlist} data={allData} renderItem={
+                        <FlatList style={styles.cardlist} data={cartAllData} renderItem={
 
                             ({ item }) => {
 
-                                const nData = foodDataAll.filter((items) => items.id === item.dataid)
+                                const nData = foodDataAll.filter((items) => items.id === item.item_id)
                                 // console.log('ye hai aa ka result',nData[0].foodImageUrl)
                                 return (
                                     <View style={styles.cartcard}>
@@ -353,7 +448,7 @@ const UserCart = ({ navigation }) => {
                             <Text style={styles.txt6}>₹{totalCost}</Text>
                         </View>
                         <TouchableOpacity style={btn2}>
-                            <Text style={styles.btntxt} onPress={() => navigation.navigate('PaymentNdetail', { cartdata })}>Place Order</Text>
+                            <Text style={styles.btntxt} onPress={() => GoToPaymentPage()}>Place Order</Text>
                         </TouchableOpacity>
                     </View>
                     :

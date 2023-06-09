@@ -27,37 +27,53 @@ const Placeorder = ({ navigation, route }) => {
         // setIsLoading(true);
         // console.log('Dekh bro 1')
 
-        if (cartdata != null) {
-            // const cart23 = JSON.parse(cartdata);
-            // const cartArrayNames = Object.keys(cart23);
-            // console.log('Dekh bro 2')
+        // if (cartdata != null) {
+        //     // const cart23 = JSON.parse(cartdata);
+        //     // const cartArrayNames = Object.keys(cart23);
+        //     // console.log('Dekh bro 2')
+
+        //     const cart23 = cartdata;
+        //     const cartArrayNames = Object.keys(cart23);
+
+
+
+        //     // console.log('dekhi bro 3', cartArrayNames.length);
+        //     let totalfoodprice = 0;
+        //     // console.log('Dekh bro 4')
+
+        //     for (let i = 0; i < cartArrayNames.length; i++) {
+        //         // console.log('Dekh bro 5')
+
+        //         const foodprice = cart23[cartArrayNames[i]];
+        //         // console.log('Dekh bro 6')
+
+
+        //         foodprice.forEach((item) => {
+        //             totalfoodprice += (parseInt(item.TotalFoodPrice)) +
+        //                 (parseInt(item.TotalAddOnPrice));
+        //         });
+
+
+        //     }
+
+        //     setTotalCost(totalfoodprice.toString());
+        //     // setIsLoading(false);
+        // }
+        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+
 
             const cart23 = cartdata;
-            const cartArrayNames = Object.keys(cart23);
-
-
-
-            // console.log('dekhi bro 3', cartArrayNames.length);
             let totalfoodprice = 0;
-            // console.log('Dekh bro 4')
-
-            for (let i = 0; i < cartArrayNames.length; i++) {
-                // console.log('Dekh bro 5')
-
-                const foodprice = cart23[cartArrayNames[i]];
-                // console.log('Dekh bro 6')
-
-
-                foodprice.forEach((item) => {
-                    totalfoodprice += (parseInt(item.TotalFoodPrice)) +
-                        (parseInt(item.TotalAddOnPrice));
-                });
-
-
-            }
-
+            const foodprice = cart23.cartItems;
+            foodprice.forEach((item) => {
+                totalfoodprice += (parseInt(item.totalFoodPrice)) +
+                    (parseInt(item.totalAddOnPrice));
+            });
             setTotalCost(totalfoodprice.toString());
             // setIsLoading(false);
+        }
+        else {
+            setTotalCost('0');
         }
     }, [cartdata]);
 
@@ -273,54 +289,105 @@ const Placeorder = ({ navigation, route }) => {
         return orderdata;
     };
 
+    //OLD Approach
+    // const placenow = () => {
+    //     console.log('triggered 1');
+    //     const updatedOrderdata = addingSomedata(orderdata);
+    //     console.log('triggered 2');
+
+    //     if (updatedOrderdata) {
+    //         const docRef = firebase.firestore().collection('UserOrders').doc(new Date().getTime().toString() + userloggeduid);
+    //         console.log('triggered 3');
+
+    //         docRef
+    //             .set({
+    //                 orderid: docRef.id,
+    //                 //   orderdata: updatedOrderdata,
+    //                 ...updatedOrderdata, // Use spread operator to include all fields from updatedOrderdata
+    //                 orderstatus: 'pending',
+    //                 ordercost: totalCost,
+    //                 //   orderdate: firebase.firestore.FieldValue.serverTimestamp(),
+    //                 orderdate: new Date().getTime().toString(),
+    //                 orderaddress: userdata.address,
+    //                 orderphone: userdata.phone,
+    //                 orderby: userdata.name,
+    //                 orderuseruid: userloggeduid,
+    //                 orderpayment: 'online',
+    //                 paymenttotal: totalCost
+    //             })
+    //             .then(() => {
+    //                 // Perform actions after successful document set
+    //                 return deleteCart(); // Call deleteCart function and return its promise
+    //             })
+    //             .then(() => {
+    //                 return sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + userdata.name);
+    //             })
+    //             .then(() => {
+    //                 // Perform actions after deleteCart completes
+    //                 console.log('triggered 4');
+    //                 navigation.navigate('Home');
+    //                 alert('Order Placed Successfully');
+    //             })
+    //             .catch(error => {
+    //                 // Handle any errors that occurred during the process
+    //                 console.log('Error placing order:', error);
+    //                 alert('Error placing order. Please try again.');
+    //             });
+    //     } else {
+    //         alert('Order data is undefined. Please check your code.');
+    //     }
+    // };
+
+
+    //New Approach
     const placenow = () => {
         console.log('triggered 1');
-        const updatedOrderdata = addingSomedata(orderdata);
+        // const updatedOrderdata = addingSomedata(orderdata);
         console.log('triggered 2');
+        const docid = new Date().getTime().toString() + userloggeduid;
+        const orderdatadoc = firebase.firestore().collection('UserOrders').doc(docid);
+        console.log('triggered 3');
+        const orderitemstabledoc = firebase.firestore().collection('OrderItems').doc(docid);
+        orderitemstabledoc.set({
+            ...cartdata
+        })
+        orderdatadoc
+            .set({
+                // orderid: docRef.id,
+                orderid: docid,
 
-        if (updatedOrderdata) {
-            const docRef = firebase.firestore().collection('UserOrders').doc(new Date().getTime().toString() + userloggeduid);
-            console.log('triggered 3');
+                //   orderdata: updatedOrderdata,
 
-            docRef
-                .set({
-                    orderid: docRef.id,
-                    //   orderdata: updatedOrderdata,
-                    ...updatedOrderdata, // Use spread operator to include all fields from updatedOrderdata
-                    orderstatus: 'pending',
-                    ordercost: totalCost,
-                    //   orderdate: firebase.firestore.FieldValue.serverTimestamp(),
-                    orderdate: new Date().getTime().toString(),
-                    orderaddress: userdata.address,
-                    orderphone: userdata.phone,
-                    orderby: userdata.name,
-                    orderuseruid: userloggeduid,
-                    orderpayment: 'online',
-                    paymenttotal: totalCost
-                })
-                .then(() => {
-                    // Perform actions after successful document set
-                    return deleteCart(); // Call deleteCart function and return its promise
-                })
-                .then(() => {
-                    return sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + userdata.name);
-                })
-                .then(() => {
-                    // Perform actions after deleteCart completes
-                    console.log('triggered 4');
-                    navigation.navigate('Home');
-                    alert('Order Placed Successfully');
-                })
-                .catch(error => {
-                    // Handle any errors that occurred during the process
-                    console.log('Error placing order:', error);
-                    alert('Error placing order. Please try again.');
-                });
-        } else {
-            alert('Order data is undefined. Please check your code.');
-        }
+                orderstatus: 'pending',
+                ordercost: totalCost,
+                //   orderdate: firebase.firestore.FieldValue.serverTimestamp(),
+                orderdate: new Date().getTime().toString(),
+                // orderaddress: userdata.address,
+                // orderphone: userdata.phone,
+                // orderby: userdata.name,
+                userid: userloggeduid,
+                orderpayment: 'online',
+                paymenttotal: totalCost
+            })
+            .then(() => {
+                // Perform actions after successful document set
+                return deleteCart(); // Call deleteCart function and return its promise
+            })
+            .then(() => {
+                return sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + userdata.name);
+            })
+            .then(() => {
+                // Perform actions after deleteCart completes
+                console.log('triggered 4');
+                navigation.navigate('Home');
+                alert('Order Placed Successfully');
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the process
+                console.log('Error placing order:', error);
+                alert('Error placing order. Please try again.');
+            });
     };
-
 
 
 

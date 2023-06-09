@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { btn1, btn2, colors } from '../Global/styles'
 
 import { firebase } from '../Firebase/FirebaseConfig'
+import TrackOrderC from '../Components/TrackOrderC'
 
 
 
@@ -16,7 +17,7 @@ const TrackOrderScreen = ({ navigation }) => {
 
     const getorders = async () => {
         // const ordersRef = firebase.firestore().collection('UserOrders').where('orderuseruid', '==', firebase.auth().currentUser.uid);
-        const ordersRef = firebase.firestore().collection('UserOrders').where('orderuseruid', '==', userloggeduid);
+        const ordersRef = firebase.firestore().collection('UserOrders').where('userid', '==', userloggeduid);
 
         ordersRef.onSnapshot(snapshot => {
             setOrders(snapshot.docs.map(doc => doc.data()))
@@ -27,25 +28,75 @@ const TrackOrderScreen = ({ navigation }) => {
         getorders()
     }, [])
 
-    // console.log('dekh bro',orders)
+    // console.log('dekh bro', orders)
+    const [foodDataAll, setFoodDataAll] = useState([]);
 
-    const convertDate = (date) => {
+    useEffect(() => {
+        // Fetch data from Firebase
+        const fetchData = async () => {
+            const foodRef = firebase.firestore().collection('foodData');
+
+            foodRef.onSnapshot(snapshot => {
+                setFoodDataAll(snapshot.docs.map(doc => doc.data()))
+            }
+            )
+        };
+
+        fetchData();
+    }, []);
+
+    const [foodData, setFoodData] = useState([]);
+
+    useEffect(() => {
+        // Fetch data from Firebase
+        const fetchData = async () => {
+            const foodRef = firebase.firestore().collection('OrderItems');
+
+            foodRef.onSnapshot(snapshot => {
+                setFoodData(snapshot.docs.map(doc => doc.data().cartItems))
+            }
+            )
+        };
+
+        fetchData();
+    }, []);
+
+    const convertDate = (milliseconds) => {
         // // console.log(date.seconds)
         // const newdate = new Date(date.seconds * 1000)
         // // console.log(newdate)
         // return newdate.toDateString()
+        const date = new Date(parseInt(milliseconds));
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        const formattedHours = hours % 12 || 12;
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        const day = date.getDate();
+        const month = date.getMonth() + 1; // Months are zero-based
+        const year = date.getFullYear();
+
+        const formattedDate = `${formattedHours}:${formattedMinutes} ${ampm} ${day}/${month}/${year}`;
+
+        return formattedDate;
     }
+
+    // const nData = foodData.filter((items) => items.id === )
+    // console.log('dejhbsjdkj',foodData)
 
 
     // const cancelOrder = (orderitem) => {
     //     const orderRef = firebase.firestore().collection('UserOrders').doc(orderitem.orderid);
     //     orderRef.update({
-    //         orderstatus: 'cancelled'
+    //         orderstatus: 'canceled'
     //     })
     //     getorders();
     // }
 
-    console.log('dekh ke', Object.values(orders[0][0]))
+    // console.log('dekh ke', Object.values(orders[0][0]))
     return (
         <View style={styles.container}>
             {/* <StatusBar /> */}
@@ -55,14 +106,10 @@ const TrackOrderScreen = ({ navigation }) => {
                     <Text style={{ fontSize: 16 }}>Close</Text>
                 </TouchableOpacity>
             </View>
-            {/* <HomeHeadNav navigation={navigation} /> */}
-            {/* <View style={styles.bottomnav}>
-                <BottomNav navigation={navigation} />
-            </View> */}
 
 
             <ScrollView style={styles.containerin}>
-                <Text style={styles.head1}>Track Orders</Text>
+                <Text style={styles.head1}>Orders</Text>
                 <View>
                     {orders.sort(
                         // (a, b) => b.orderdate.seconds - a.orderdate.seconds
@@ -70,20 +117,22 @@ const TrackOrderScreen = ({ navigation }) => {
                             const dateA = new Date(parseInt(a.orderdate));
                             const dateB = new Date(parseInt(b.orderdate));
                             return dateB - dateA;
-                          }
+                        }
                     ).map((order, index) => {
                         return (
                             <View style={styles.order} key={index}>
-                                {/* <Text style={styles.orderindex}>{index + 1}</Text> */}
-                                <Text style={styles.ordertxt2}>order id : {(order.orderid).substring(0, 14)}</Text>
-                                <Text style={styles.ordertxt2}>order date : {convertDate(order.orderdate)}</Text>
-                                {order.orderstatus == 'ontheway' && <Text style={styles.orderotw}>Your order is on the way </Text>}
+
+                                <Text style={styles.ordertxt2}>Order id : {(order.orderid).substring(0, 14)}</Text>
+                                <Text style={styles.ordertxttime}>Time : {convertDate(order.orderdate)}</Text>
+                                {/* <Text style={styles.ordertxt2}>order date : {order.orderdate}</Text> */}
+
+                                {/* {order.orderstatus == 'ontheway' && <Text style={styles.orderotw}>Your order is on the way </Text>}
                                 {order.orderstatus == 'delivered' && <Text style={styles.orderdelivered}>Your order is delivered </Text>}
                                 {order.orderstatus == 'cancelled' && <Text style={styles.ordercancelled}>Your order is cancelled </Text>}
-                                {order.orderstatus == 'pending' && <Text style={styles.orderpending}>Your order is pending </Text>}
+                                {order.orderstatus == 'pending' && <Text style={styles.orderpending}>Your order is pending </Text>} */}
 
 
-                                <View style={styles.row1}>
+                                {/* <View style={styles.row1}>
                                     <Text style={styles.ordertxt1}>Delivery Agent name & contact</Text>
                                     {
                                         order.deliveryboy_name ? <Text style={styles.ordertxt2}>{order.deliveryboy_name} : {order.deliveryboy_contact}</Text> : <Text style={styles.ordertxt2}>Not Assigned</Text>
@@ -91,47 +140,12 @@ const TrackOrderScreen = ({ navigation }) => {
                                     {
                                         order.deliveryboy_phone ? <Text style={styles.ordertxt2}>{order.deliveryboy_phone}</Text> : null
                                     }
-                                </View>
+                                </View> */}
 
-                                {/* {order
+                                <TrackOrderC foodDataAll={foodDataAll} data={order.orderid} navigation={navigation} />
 
-                                } */}
-                                <FlatList style={styles.c1} 
-                                // Object.keys(orderData).forEach(shopId => {
-                                    // const item = orderData[shopId];}
-                                    data={Object.values(orders[0])}
-                                // data={order}
-                                 renderItem={
-                                    ({ item }) => {
-                                        return (
-                                            <View style={styles.rowout}>
-                                                <View style={styles.row}>
-                                                    <View style={styles.left}>
-                                                        <Text style={styles.qty}>hjgvjh{item.Foodquantity}</Text>
-                                                        {/* <Text style={styles.title}>{item.data.foodName}</Text> */}
-                                                        {/* <Text style={styles.price1}>₹{item.data.foodPrice}</Text> */}
-                                                    </View>
-                                                    {/* <View style={styles.right}>
-                                                        <Text style={styles.totalprice}>₹{parseInt(item.Foodquantity) * parseInt(item.data.foodPrice)}</Text>
-                                                    </View> */}
-                                                </View>
-
-                                                <View style={styles.row}>
-                                                    <View style={styles.left}>
-                                                        <Text style={styles.qty}>{item.Addonquantity}</Text>
-                                                        {/* <Text style={styles.title}>{item.data.foodAddon}</Text>
-                                                        <Text style={styles.price1}>₹{item.data.foodAddonPrice}</Text> */}
-                                                    </View>
-                                                    {/* <View style={styles.right}>
-                                                        <Text style={styles.totalprice}>₹{parseInt(item.Addonquantity) * parseInt(item.data.foodAddonPrice)}</Text>
-                                                    </View> */}
-                                                </View>
-                                            </View>
-                                        )
-                                    }
-                                } />
                                 <Text style={styles.total}>Total: ₹{order.ordercost}</Text>
-                                {
+                                {/* {
                                     order.orderstatus === 'Delivered' ? <Text style={styles.ordertxt3}>Thank you for ordering with us</Text> : null
                                 }
                                 {
@@ -143,7 +157,7 @@ const TrackOrderScreen = ({ navigation }) => {
                                             <Text style={styles.cencelbtnin}>Cancel Order</Text>
                                         </TouchableOpacity>
                                         : null
-                                }
+                                } */}
                             </View>
                         )
                     })}
@@ -174,19 +188,23 @@ const styles = StyleSheet.create({
         zIndex: 20,
     },
     containerin: {
-        marginTop: 10,
+        // marginTop: 10,
         flex: 1,
-        backgroundColor: colors.col1,
+        // backgroundColor: colors.col1,
+        backgroundColor: '#edeef0',
+
         // alignItems: 'center',
         width: '100%',
         height: '100%',
-        marginBottom: 100,
+        // marginBottom: 100,
     },
     head1: {
-        fontSize: 30,
+        fontSize: 25,
         color: colors.text1,
-        textAlign: 'center',
-        marginVertical: 20,
+        // textAlign: 'center',
+        paddingHorizontal: 15,
+        marginVertical: 10,
+        fontWeight: '600'
     },
     row: {
         flexDirection: 'row',
@@ -197,7 +215,7 @@ const styles = StyleSheet.create({
     rowout: {
         flexDirection: 'column',
         margin: 10,
-        elevation: 10,
+        elevation: 2,
         backgroundColor: colors.col1,
         padding: 10,
         borderRadius: 10,
@@ -205,7 +223,7 @@ const styles = StyleSheet.create({
     row1: {
         flexDirection: 'column',
         margin: 10,
-        elevation: 10,
+        elevation: 2,
         backgroundColor: colors.col1,
         padding: 10,
         borderRadius: 10,
@@ -254,8 +272,8 @@ const styles = StyleSheet.create({
         margin: 10,
         elevation: 10,
         backgroundColor: colors.col1,
-        padding: 10,
-        borderRadius: 10,
+        paddingVertical: 10,
+        borderRadius: 25,
 
     },
     ordertxt1: {
@@ -266,11 +284,19 @@ const styles = StyleSheet.create({
 
     },
     ordertxt2: {
-        fontSize: 17,
+        fontSize: 16,
         color: colors.text3,
-        textAlign: 'center',
-        marginVertical: 5,
+        // textAlign: 'center',
+        // marginVertical: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderBottomWidth: 1,
+        borderColor: '#d9d9d9',
         fontWeight: 'bold',
+    },
+    ordertxttime: {
+        paddingHorizontal: 6,
+        paddingVertical: 5
     },
     orderindex: {
         fontSize: 20,
@@ -296,15 +322,16 @@ const styles = StyleSheet.create({
     },
     cancelbtn: {
         backgroundColor: colors.text1,
-        padding: 10,
-        borderRadius: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 6,
+        borderRadius: 25,
         marginVertical: 10,
         alignSelf: 'center',
 
     },
     cencelbtnin: {
-        fontSize: 20,
-        color: colors.col1,
+        fontSize: 16,
+        color: colors.text3,
         textAlign: 'center',
         fontWeight: 'bold',
     },

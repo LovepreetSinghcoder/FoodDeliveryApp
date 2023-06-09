@@ -132,6 +132,8 @@ const addTocart = async () => {
           foodquantity: parseInt(quantity, 10),
           totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
           totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
+          orderStatus: 'Pending',
+          userid: userloggeduid
         };
   
         try {
