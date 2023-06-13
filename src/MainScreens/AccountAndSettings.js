@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { AuthContext } from '../Context/AuthContext';
 
-const AccountSettingsScreen = ({navigation}) => {
+const AccountSettingsScreen = ({ navigation }) => {
+  const { logout } = useContext(AuthContext);
+
   const handleLogout = () => {
     // Logic for handling logout
+    logout();
   };
 
   return (
@@ -15,12 +19,12 @@ const AccountSettingsScreen = ({navigation}) => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Editprofile')}>
         <Text style={styles.buttonText} >Edit Profile</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      {/* <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Change Password</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      </TouchableOpacity> */}
+      {/* <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Notification Settings</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
@@ -44,7 +48,9 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 48,
-    backgroundColor: '#4E4E4E',
+    // backgroundColor: '#4E4E4E',
+    backgroundColor: '#2EEAB1',
+
 
     borderRadius: 25,
     alignItems: 'center',
@@ -52,7 +58,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttonText: {
-    color: '#fff',
+    // color: '#fff',
+    // fontSize: 16,
+    // fontWeight: 'bold',
+    color: '#474747',
+
     fontSize: 16,
     fontWeight: 'bold',
   },

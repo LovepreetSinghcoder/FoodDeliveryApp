@@ -1,14 +1,17 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { btn1, colors, hr80, navbtn, navbtnin } from '../Global/styles';
 import { firebase } from '../Firebase/FirebaseConfig'
 import axios from 'axios';
 
 import { AntDesign } from '@expo/vector-icons';
-const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
+import { AuthContext } from '../Context/AuthContext';
+// const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
 
 const Placeorder = ({ navigation, route }) => {
+  const { userloggeduid, checkIsLogged , loading} = useContext(AuthContext);
+
     const [orderdata, setOrderdata] = useState([]);
     const [totalCost, setTotalCost] = useState('0');
     const { cartdata } = route.params;
@@ -24,41 +27,7 @@ const Placeorder = ({ navigation, route }) => {
     // console.log(cartdata)
 
     useEffect(() => {
-        // setIsLoading(true);
-        // console.log('Dekh bro 1')
-
-        // if (cartdata != null) {
-        //     // const cart23 = JSON.parse(cartdata);
-        //     // const cartArrayNames = Object.keys(cart23);
-        //     // console.log('Dekh bro 2')
-
-        //     const cart23 = cartdata;
-        //     const cartArrayNames = Object.keys(cart23);
-
-
-
-        //     // console.log('dekhi bro 3', cartArrayNames.length);
-        //     let totalfoodprice = 0;
-        //     // console.log('Dekh bro 4')
-
-        //     for (let i = 0; i < cartArrayNames.length; i++) {
-        //         // console.log('Dekh bro 5')
-
-        //         const foodprice = cart23[cartArrayNames[i]];
-        //         // console.log('Dekh bro 6')
-
-
-        //         foodprice.forEach((item) => {
-        //             totalfoodprice += (parseInt(item.TotalFoodPrice)) +
-        //                 (parseInt(item.TotalAddOnPrice));
-        //         });
-
-
-        //     }
-
-        //     setTotalCost(totalfoodprice.toString());
-        //     // setIsLoading(false);
-        // }
+ 
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
 
@@ -78,46 +47,9 @@ const Placeorder = ({ navigation, route }) => {
     }, [cartdata]);
 
 
-    // userdata -------------------------------------------------------
-    // const [userloggeduid, setUserloggeduid] = useState(null);
+  
     const [userdata, setUserdata] = useState(null);
-    // useEffect(() => {
-    //     const checklogin = () => {
-    //         firebase.auth().onAuthStateChanged((user) => {
-    //             // console.log(user);
-    //             if (user) {
-    //                 // navigation.navigate('home');
-    //                 setUserloggeduid(user.uid);
-    //             } else {
-    //                 // No user is signed in.
-    //                 console.log('no user');
-    //             }
-    //         });
-    //     }
-    //     checklogin();
-    // }, [])
 
-    // // console.log(userloggeduid);
-
-    // useEffect(() => {
-    //     const getuserdata = async () => {
-    //         try {
-    //             const docRef = firebase.firestore().collection('UserData').doc(userloggeduid);
-    //             const doc = await docRef.get();
-    //             if (!doc.empty) {
-    //                 doc.forEach((doc) => {
-    //                     setUserdata(doc.data());
-    //                 })
-    //             }
-    //             else {
-    //                 console.log('no user data');
-    //             }
-    //         } catch (error) {
-    //             console.log('let me check', error)
-    //         }
-    //     }
-    //     getuserdata();
-    // }, [userloggeduid]);
 
     useEffect(() => {
         const getuserdata = async () => {
@@ -289,55 +221,8 @@ const Placeorder = ({ navigation, route }) => {
         return orderdata;
     };
 
-    //OLD Approach
-    // const placenow = () => {
-    //     console.log('triggered 1');
-    //     const updatedOrderdata = addingSomedata(orderdata);
-    //     console.log('triggered 2');
-
-    //     if (updatedOrderdata) {
-    //         const docRef = firebase.firestore().collection('UserOrders').doc(new Date().getTime().toString() + userloggeduid);
-    //         console.log('triggered 3');
-
-    //         docRef
-    //             .set({
-    //                 orderid: docRef.id,
-    //                 //   orderdata: updatedOrderdata,
-    //                 ...updatedOrderdata, // Use spread operator to include all fields from updatedOrderdata
-    //                 orderstatus: 'pending',
-    //                 ordercost: totalCost,
-    //                 //   orderdate: firebase.firestore.FieldValue.serverTimestamp(),
-    //                 orderdate: new Date().getTime().toString(),
-    //                 orderaddress: userdata.address,
-    //                 orderphone: userdata.phone,
-    //                 orderby: userdata.name,
-    //                 orderuseruid: userloggeduid,
-    //                 orderpayment: 'online',
-    //                 paymenttotal: totalCost
-    //             })
-    //             .then(() => {
-    //                 // Perform actions after successful document set
-    //                 return deleteCart(); // Call deleteCart function and return its promise
-    //             })
-    //             .then(() => {
-    //                 return sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + userdata.name);
-    //             })
-    //             .then(() => {
-    //                 // Perform actions after deleteCart completes
-    //                 console.log('triggered 4');
-    //                 navigation.navigate('Home');
-    //                 alert('Order Placed Successfully');
-    //             })
-    //             .catch(error => {
-    //                 // Handle any errors that occurred during the process
-    //                 console.log('Error placing order:', error);
-    //                 alert('Error placing order. Please try again.');
-    //             });
-    //     } else {
-    //         alert('Order data is undefined. Please check your code.');
-    //     }
-    // };
-
+    
+ 
 
     //New Approach
     const placenow = () => {
@@ -379,7 +264,7 @@ const Placeorder = ({ navigation, route }) => {
             .then(() => {
                 // Perform actions after deleteCart completes
                 console.log('triggered 4');
-                navigation.navigate('Home');
+                navigation.navigate('HomeScreen');
                 alert('Order Placed Successfully');
             })
             .catch(error => {
@@ -394,7 +279,7 @@ const Placeorder = ({ navigation, route }) => {
     return (
         <>
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                     <Text style={{ fontSize: 16 }}>Close</Text>
                 </TouchableOpacity>

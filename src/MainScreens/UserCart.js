@@ -1,20 +1,28 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
 import { btn2, colors, hr80, navbtn, navbtnin } from '../Global/styles'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
+import { AuthContext } from '../Context/AuthContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 // import BottomNav from '../components/BottomNav';
 
-const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
+// const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
 const UserCart = ({ navigation }) => {
+    const { userloggeduid, checkIsLogged } = useContext(AuthContext);
+
     const [cartdata, setCartdata] = useState(null);
     const [cartAllData, setCartAllData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [process, setProcess] = useState(false);
+
 
     const [totalCost, setTotalCost] = useState('0');
 
     const getcartdata = async () => {
+        setLoading(true);
         // const docRef = firebase.firestore().collection('UserCart').doc(firebase.auth().currentUser.uid);
         const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
 
@@ -34,13 +42,20 @@ const UserCart = ({ navigation }) => {
             console.log('Error', error);
 
         }
-
+        setLoading(false)
     }
 
     useEffect(() => {
 
         getcartdata();
     }, [])
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getcartdata();
+            console.log('triggered cart')
+        }, [])
+    );
 
     // useEffect(() => {
     //     if (cartdata != null) {
@@ -316,6 +331,7 @@ const UserCart = ({ navigation }) => {
 
 
     const deleteItem = async (item) => {
+        setProcess(true)
         console.log('delete trigerr')
         // setIsLoading(true);
         const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
@@ -336,7 +352,7 @@ const UserCart = ({ navigation }) => {
         }
         getcartdata();
         GetTotalPrice();
-
+        setProcess(false)
         // setIsLoading(false);
     }
 
@@ -370,7 +386,7 @@ const UserCart = ({ navigation }) => {
 
             <View style={[styles.containerout,]}>
                 <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                         <Text style={{ fontSize: 16 }}>Close</Text>
                     </TouchableOpacity>
@@ -385,6 +401,27 @@ const UserCart = ({ navigation }) => {
 
 
     }
+
+    if (loading) {
+        return (
+
+            <View style={styles.containerout}>
+
+
+                <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+
+                        <Text style={{ fontSize: 16 }}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ paddingVertical: 20 }}>
+
+                    <ActivityIndicator size="large" color={colors.text1} />
+                </View>
+
+            </View>
+        )
+    }
     // else {
     return (
 
@@ -392,14 +429,14 @@ const UserCart = ({ navigation }) => {
 
 
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                     <Text style={{ fontSize: 16 }}>Close</Text>
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.container}>
-                <Text style={styles.head1}>Your Cart</Text>
+            <ScrollView style={styles.container}>
+                <Text style={styles.head1}>Cart Items</Text>
                 <View style={styles.cartout}>
                     {/* {cartdata == null || JSON.parse(cartdata).cart.length == 0 ? */}
                     {cartAllData == null ?
@@ -418,28 +455,47 @@ const UserCart = ({ navigation }) => {
                                         <Image source={{ uri: nData[0].foodImageUrl }} style={styles.cartimg} />
                                         <View style={styles.cartcardin}>
                                             <View style={styles.c1}>
-                                                <Text style={styles.txt1}>{item.Foodquantity}&nbsp;
+                                                {/* <Text style={styles.txt1}>{item.foodquantity}&nbsp;
                                                     {nData[0].foodName}
                                                 </Text>
-                                                <Text style={styles.txt2}>₹{nData[0].foodPrice}/each</Text>
+                                                <Text style={styles.txt2}>₹{nData[0].foodPrice}/each</Text> */}
+
+
+                                                <Text style={[styles.txt1, { textTransform: 'uppercase' }]}>{nData[0].foodName}</Text>
+
+                                                <Text style={styles.txt2}>{nData[0].foodPrice}₹ for one {nData[0].foodunitType}</Text>
+                                                <Text>Quantity: {item.foodquantity}*{nData[0].foodunitType}</Text>
                                             </View>
-                                            {item.Addonquantity > 0 &&
+                                            {item.addonquantity > 0 &&
                                                 <View style={styles.c2}>
                                                     <Text style={styles.txt3}>{item.Addonquantity}&nbsp;
                                                         {nData[0].foodAddon}
                                                     </Text>
                                                     <Text style={styles.txt3}>₹{nData[0].foodAddonPrice}/each</Text>
-                                                </View>}
-                                            <TouchableOpacity style={styles.c4} onPress={() => deleteItem(item, nData[0].shopId)}>
+                                                </View>
+                                            }
+
+                                           
+
+                                            {process ?
+
+                                                <TouchableOpacity style={styles.c4} >
+                                                    <ActivityIndicator size="small" color="black" />
+                                                </TouchableOpacity>
+                                                :
+                                                <TouchableOpacity style={styles.c4} onPress={() => deleteItem(item, nData[0].shopId)}>
                                                 <Text style={styles.txt1}>Delete</Text>
                                                 <AntDesign name="delete" size={24} color="black" style={styles.del} />
                                             </TouchableOpacity>
+
+                                            }
                                         </View>
 
                                     </View>
                                 )
                             }
-                        } />}
+                        }
+                            scrollEnabled={false} />}
                 </View>
                 {totalCost && totalCost !== '0' ?
                     <View style={styles.btncont}>
@@ -456,7 +512,7 @@ const UserCart = ({ navigation }) => {
 
                 }
 
-            </View>
+            </ScrollView>
         </View>
     )
     // }
@@ -469,7 +525,7 @@ export default UserCart
 const styles = StyleSheet.create({
     containerout: {
         flex: 1,
-        backgroundColor: colors.col1,
+        // backgroundColor: colors.col1,
         // alignItems: 'center',
         width: '100%',
         // height: '100%',
@@ -478,17 +534,21 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.col1,
+        backgroundColor: '#edeef0',
+
         // alignItems: 'center',
         // justifyContent: 'center',
         width: '100%',
         // height: '100%',
     },
     head1: {
-        fontSize: 40,
-        textAlign: 'center',
-        // fontWeight: '200',
-        // marginVertical: 20,
-        color: colors.text1,
+        fontSize: 25,
+        // textAlign: 'center',
+        fontWeight: '600',
+        marginVertical: 10,
+        paddingHorizontal: 10,
+        color: colors.text3,
+
     },
     head2: {
         fontSize: 30,
@@ -507,23 +567,25 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: colors.col1,
         marginVertical: 5,
-        borderRadius: 10,
+        borderRadius: 25,
         width: '95%',
         alignSelf: 'center',
-        elevation: 10,
+        elevation: 2,
         alignItems: 'center',
     },
     cartimg: {
-        width: 150,
-        height: 100,
-        borderRadius: 10,
+        width: 100,
+        height: '100%',
+        // borderRadius: 10,
+        borderBottomLeftRadius: 25,
+        borderTopLeftRadius: 25
     },
     cartcardin: {
         flexDirection: 'column',
         margin: 5,
         width: '58%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'flex-end',
+        // justifyContent: 'center',
         // backgroundColor: colors.text1,
 
     },
@@ -536,23 +598,30 @@ const styles = StyleSheet.create({
     },
     btntxt: {
         backgroundColor: colors.text1,
-        color: colors.col1,
+        // color: colors.col1,
+
+
         paddingHorizontal: 10,
         paddingVertical: 5,
-        fontSize: 20,
+        // fontSize: 20,
         borderRadius: 10,
         width: '90%',
         textAlign: 'center',
+        color: '#474747',
+
+        fontSize: 16,
+        fontWeight: 'bold',
 
     },
     btncont: {
         width: '100%',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 0,
         flexDirection: 'row',
         marginBottom: 80,
         borderTopColor: colors.text3,
+        paddingHorizontal: 10,
         borderTopWidth: 0.2,
     },
     bottomnav: {
@@ -563,23 +632,28 @@ const styles = StyleSheet.create({
         zIndex: 20,
     },
     c1: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
         width: '100%',
         backgroundColor: colors.col1,
         borderRadius: 10,
-        padding: 5,
+        paddingHorizontal: 3,
+        paddingVertical: 2
     },
     txt1: {
         fontSize: 16,
-        color: colors.text1,
-        width: '60%',
+        color: colors.text3,
+        // width: '75%',
         fontWeight: 'bold',
+        marginBottom: 3
+        // paddingTop: 4
     },
     txt2: {
-        fontSize: 16,
+        fontSize: 14,
         color: colors.text3,
-        fontWeight: 'bold',
+        fontWeight: '600',
+        marginBottom: 2
+
     },
     c2: {
         backgroundColor: colors.text1,
@@ -612,15 +686,16 @@ const styles = StyleSheet.create({
     c4: {
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center',
+        // width: '100%',
+        // alignItems: 'flex-end',
         width: 100,
-        borderRadius: 10,
-        borderColor: colors.text1,
+        borderRadius: 20,
+        borderColor: colors.text3,
         borderWidth: 1,
         marginVertical: 10,
         padding: 5,
     },
     del: {
-        color: colors.text1,
+        color: colors.text3,
     }
 })

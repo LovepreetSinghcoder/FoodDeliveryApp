@@ -1,19 +1,22 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
 import HeaderBar from '../Components/HeaderBar'
-// import OrderCart from '../Components/OrderCart';
-// import OrderManagementScreen from '../Components/OrderManagementScreen';
-// import firebase from 'firebase/compat';
 import { AntDesign } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
-
-const userloggedeuid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2';
 import { colors, veg, nonveg } from '../Global/styles'
 import OfferSlider from '../Components/OfferSlider';
 import Cardslider from '../Components/Cardslider';
 import Categories from '../Components/Categories';
+import { AuthContext } from '../Context/AuthContext';
+import * as Location from 'expo-location';
+
+import axios from 'axios';
+
 
 const HomeScreen = ({ navigation }) => {
+  const { userloggeduid, checkIsLogged, SetLocationName, locationName } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
+
   const handleButtonPress = () => {
     // Handle button press logic here
     console.log('Button pressed');
@@ -23,7 +26,7 @@ const HomeScreen = ({ navigation }) => {
   const [animation] = useState(new Animated.Value(0));
 
   const [orderData, setOrderData] = useState([]);
-  const [search, setSearch] = useState('')
+
 
 
   useEffect(() => {
@@ -61,31 +64,114 @@ const HomeScreen = ({ navigation }) => {
 
 
 
+  const requestLocationPermission = async () => {
+    setLoading(true);
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied');
+      setLocation(false);
+      setLoading(false);
 
-  const [location, setLocation] = useState(null)
+      return;
+    }
+    // Permission granted, continue with obtaining the location
+    getLocation();
+    setLoading(false);
 
-  // console.log('ye dekh bhai 23', NonVegData)
+  };
+
+  const getLocation = async () => {
+    try {
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+      console.log('Latitude:', latitude);
+      console.log('Longitude:', longitude);
+      getLocationName(latitude, longitude);
+      // Do something with the latitude and longitude values
+    } catch (error) {
+      console.log('Error getting location:', error);
+    }
+  };
+
+  // Function to perform reverse geocoding
+  // const reverseGeocode = async (latitude, longitude) => {
+  //   const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+
+  //   try {
+  //     const response = await axios.get(url);
+  //     const data = response.data;
+  //     const readableLocation = data.display_name;
+  //     console.log('Readable Location:', data);
+  //     // Do something with the readable location
+  //   } catch (error) {
+  //     console.log('Error reverse geocoding:', error);
+  //   }
+  // };
 
 
+  const getLocationName = async (latitude, longitude) => {
+    try {
+      const geocode = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude
+      });
+
+      if (geocode.length > 0) {
+        const { city, country } = geocode[0];
+        const locationName = `${city}, ${country}`;
+        console.log('dekh veere', city)
+        // setLocationName(city);
+        SetLocationName(city);
+        setLocation(true)
+        return locationName;
+      }
+    } catch (error) {
+      console.log('Error fetching location name:', error);
+    }
+
+    return null;
+  };
 
 
+  useEffect(() => {
+    requestLocationPermission()
+  }, [])
 
+  const handleInstagramLink = () => {
+    Linking.openURL('https://www.instagram.com/shoviiofficial/');
+  };
 
+  // console.log('dekh', locationName)
 
+  const [location, setLocation] = useState(true)
 
-  // SECOND ANIMATION 
-
-
-  if (location === null) {
+  if (loading) {
     return (
       <View style={styles.Maincontainer}>
         <StatusBar
           backgroundColor={colors.text1}
         />
-        <View style={{paddingVertical: 20, paddingHorizontal: 20}}>
+        <View style={{ backgroundColor: colors.text1, height: 50, alignContent: 'center' }}>
+          <Text style={{ paddingVertical: 10, paddingHorizontal: 20, fontSize: 20, }}>...</Text>
+        </View>
+        <Text style={{ width: '10%', alignSelf: 'center', paddingTop: 10 }}>
+          <ActivityIndicator size="large" color={colors.text1} style={{ justifyContent: 'center', }} />;
+        </Text>
+      </View>
+    )
+  }
+
+
+  else if (location === false) {
+    return (
+      <View style={styles.Maincontainer}>
+        <StatusBar
+          backgroundColor={colors.text1}
+        />
+        <View style={{ paddingVertical: 20, paddingHorizontal: 20 }}>
           <TextInput
             style={styles.locationinput}
-            placeholder="Set yous location"
+            placeholder="Set your location"
             value={location}
             onChangeText={setLocation}
             keyboardType="text"
@@ -103,13 +189,61 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
+  const locationArrays = ['desu jodha', 'mangeana']
+
+  if (!locationArrays.includes(locationName)) {
+    return (
+
+      <View style={{
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
+        <StatusBar backgroundColor={colors.text1} />
+        <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
+
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingHorizontal: 20,
+        }}>
+          <Text style={{
+            fontSize: 24,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 20,
+          }}>Food Delivery App is not available in this location.</Text>
+          <Text style={{
+            fontSize: 16,
+            textAlign: 'center',
+            marginBottom: 10,
+          }}>
+            We apologize for the inconvenience. Our services are currently not available in your area.
+          </Text>
+          <Text style={{
+            fontSize: 14,
+            textAlign: 'center',
+          }}>
+            Please check back later or try a different location.
+          </Text>
+          <Text style={{
+            fontSize: 14,
+            color: 'blue',
+            textDecorationLine: 'underline',
+          }} onPress={handleInstagramLink}>
+            Follow us on Instagram for updates: @shoviiofficial
+          </Text>
+        </View>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.Maincontainer}>
       <StatusBar
         backgroundColor={colors.text1}
       />
-      <HeaderBar title="Home" onButtonPress={handleButtonPress} />
+      <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
 
 
 
@@ -118,30 +252,16 @@ const HomeScreen = ({ navigation }) => {
 
 
       <ScrollView>
-        <View style={styles.searchbox}>
+        <TouchableOpacity style={styles.searchbox} onPress={() => { navigation.navigate('Searchpage') }}>
           <AntDesign name="search1" size={24} color="black" style={
             styles.searchicon
           } />
-          <TextInput style={styles.input} placeholder="Search" onChangeText={(e) => {
-            setSearch(e)
-          }} />
+          {/* <TextInput  placeholder="Search"  /> */}
+          <Text style={styles.input}>Search</Text>
 
-        </View>
-        {search != '' && <View style={styles.seacrhresultsouter}>
-          <FlatList style={styles.searchresultsinner} data={foodData} renderItem={
-            ({ item }) => {
-              if (item.foodName.toLowerCase().includes(search.toLowerCase())) {
-                return (
-                  <View style={styles.searchresult}>
-                    <AntDesign name="arrowright" size={24} color="black" />
-                    <Text style={styles.searchresulttext}>{item.foodName}</Text>
-                  </View>
-                )
-              }
-            }
-          } />
-        </View>}
-        <Categories />
+        </TouchableOpacity>
+
+        {/* <Categories /> */}
         <OfferSlider navigation={navigation} />
         {/* <Text>HomeScreen</Text> */}
 
@@ -238,19 +358,20 @@ const styles = StyleSheet.create({
   },
   searchbox: {
     flexDirection: 'row',
-    width: '90%',
+    width: '92%',
     backgroundColor: colors.col1,
     borderRadius: 30,
     alignItems: 'center',
     padding: 10,
-    margin: 20,
-    elevation: 10,
+    marginVertical: 20,
+    alignSelf: 'center',
+    elevation: 2,
   },
   input: {
     marginLeft: 10,
     width: '90%',
-    fontSize: 18,
-    color: colors.text1,
+    fontSize: 16,
+    color: '#c4c4c4',
   },
   searchicon: {
     color: colors.text1,

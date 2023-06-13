@@ -1,18 +1,22 @@
 import { StyleSheet, Text, View, StatusBar, FlatList, ScrollView, TouchableOpacity } from 'react-native'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 // import HomeHeadNav from '../components/HomeHeadNav'
 // import BottomNav from '../components/BottomNav'
 import { btn1, btn2, colors } from '../Global/styles'
 
 import { firebase } from '../Firebase/FirebaseConfig'
 import TrackOrderC from '../Components/TrackOrderC'
+import { AuthContext } from '../Context/AuthContext'
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
-const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
+// const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
 const TrackOrderScreen = ({ navigation }) => {
+  const { userloggeduid, checkIsLogged , loading} = useContext(AuthContext);
+
     const [orders, setOrders] = useState([])
 
     const getorders = async () => {
@@ -28,6 +32,13 @@ const TrackOrderScreen = ({ navigation }) => {
         getorders()
     }, [])
 
+    useFocusEffect(
+        React.useCallback(() => {
+            getorders()
+
+          console.log('triggered trackorder')
+        }, [])
+      );
     // console.log('dekh bro', orders)
     const [foodDataAll, setFoodDataAll] = useState([]);
 
@@ -101,7 +112,7 @@ const TrackOrderScreen = ({ navigation }) => {
         <View style={styles.container}>
             {/* <StatusBar /> */}
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                     <Text style={{ fontSize: 16 }}>Close</Text>
                 </TouchableOpacity>

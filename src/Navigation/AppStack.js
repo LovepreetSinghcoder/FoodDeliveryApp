@@ -17,6 +17,9 @@ import UserCart from '../MainScreens/UserCart';
 import Placeorder from '../MainScreens/Placeorder';
 import PaymentAndDetails from '../MainScreens/PaymentAndDetails';
 import TrackOrderScreen from '../MainScreens/TrackOrderScreen';
+import { colors } from '../Global/styles';
+import ChangeLocationScreen from '../MainScreens/ChangeLocationScreen';
+import SearchItemScreen from '../MainScreens/SearchItemScreen';
 
 
 
@@ -37,15 +40,17 @@ const Tab = createBottomTabNavigator();
 
 const HomeStack = () => (
     <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{headerShown: false}}/>
         <Stack.Screen name="Profile" component={UserProfile} options={{headerShown: false}}/>
         <Stack.Screen name="productpage" component={Productpage} options={{headerShown: false}}/>
-        {/* <Stack.Screen name="Ordermanager" component={OrderManagementScreen} options={{headerShown: false}}/> */}
+        <Stack.Screen name="Changeloction" component={ChangeLocationScreen} options={{headerShown: false}}/>
         <Stack.Screen name="PaymentNdetail" component={PaymentAndDetails} options={{headerShown: false}}/>
         <Stack.Screen name="Usercart" component={UserCart} options={{headerShown: false}}/>
         <Stack.Screen name="Promotion" component={PromotionOffersScreen} options={{headerShown: false}}/>
         <Stack.Screen name="Editprofile" component={EditProfileScreen} options={{headerShown: false}}/>
         <Stack.Screen name="Placeorder" component={Placeorder} options={{headerShown: false}}/>
+        <Stack.Screen name="Searchpage" component={SearchItemScreen} options={{headerShown: false}}/>
+
 
 
 
@@ -84,12 +89,13 @@ const AppStack = () => {
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
                     tabBarLabelStyle: styles.tabBarLabel,
+                    tabBarActiveTintColor: colors.text1,
                 })}
                 // tabBarOptions={{ style: styles.tabBar }}
             >
                 <Tab.Screen name="Home" component={HomeStack} options={{headerShown: false}}/>
                 {/* <Tab.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/> */}
-                <Tab.Screen name="Notification" component={NotificationScreen} options={{headerShown: false}}/>
+                {/* <Tab.Screen name="Notification" component={NotificationScreen} options={{headerShown: false}}/> */}
                 <Tab.Screen name="Cart" component={UserCart} options={{headerShown: false}}/>
 
                 <Tab.Screen name="Profile" component={UserProfile} options={{headerShown: false}}/>

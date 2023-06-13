@@ -1,15 +1,18 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { btn1, btn2, colors, hr80, navbtn, navbtnin, navbtnout, nonveg, veg, incdecbtn, incdecinput, incdecout } from '../Global/styles';
 import { AntDesign } from '@expo/vector-icons';
 
 // import { firebase } from '../../Firebase/firebaseConfig'
 import { firebase } from '../Firebase/FirebaseConfig'
+import { AuthContext } from '../Context/AuthContext';
 
 // import { incdecbtn, incdecinput, incdecout } from '../globals/style';
 
-const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
+// const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 const Productpage = ({ navigation, route }) => {
+  const { userloggeduid, checkIsLogged , loading} = useContext(AuthContext);
+
     const data = route.params;
     const [ischecked, setischecked] = useState(false);
     const [quantity, setquantity] = useState('1');
@@ -294,7 +297,7 @@ const addTocart = async () => {
                 </View>
             </TouchableOpacity> */}
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                     <Text style={{ fontSize: 16 }}>Close</Text>
                 </TouchableOpacity>
