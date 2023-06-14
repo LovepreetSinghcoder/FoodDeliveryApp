@@ -41,7 +41,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
     }, [cartdata]);
 
     const deleteCart = async () => {
-        console.log('delete trigger');
+        // console.log('delete trigger');
         const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
 
         const docSnapshot = await docRef.get();
@@ -91,11 +91,11 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
     const placenow = async () => {
         setLoading(true);
-        console.log('triggered 1');
-        console.log('triggered 2');
+        // console.log('triggered 1');
+        // console.log('triggered 2');
         const docid = new Date().getTime().toString() + userloggeduid;
         const orderdatadoc = firebase.firestore().collection('UserOrders').doc(docid);
-        console.log('triggered 3');
+        // console.log('triggered 3');
         const orderitemstabledoc = firebase.firestore().collection('OrderItems').doc(docid);
 
         try {
@@ -113,7 +113,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
             await deleteCart();
             await sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ');
 
-            console.log('triggered 4');
+            // console.log('triggered 4');
             navigation.navigate('HomeScreen');
             alert('Order Placed Successfully');
         } catch (error) {
@@ -128,7 +128,8 @@ const PaymentAndDetails = ({ navigation, route }) => {
     return (
         <>
             <TouchableOpacity style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }} onPress={() => navigation.navigate('HomeScreen')}>
-                <Text style={{ fontSize: 16 }}>Close</Text>
+            <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+
 
             </TouchableOpacity>
          
@@ -201,7 +202,8 @@ const styles = StyleSheet.create({
     },
     editButtonText: {
         color: '#fff',
-        color: '#474747',
+        // color: '#474747',
+        color: colors.col1,
 
         fontSize: 16,
         fontWeight: 'bold',

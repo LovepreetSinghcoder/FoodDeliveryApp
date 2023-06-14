@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
+import { colors } from '../Global/styles';
 
 
 const EditProfileScreen = ({ navigation }) => {
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     // backgroundColor: '#4E4E4E' ,
-    backgroundColor: '#2EEAB1',
+    backgroundColor: colors.text1,
 
 
     borderRadius: 25,
@@ -122,7 +123,8 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#fff',
-    color: '#474747',
+    // color: '#474747',
+    color: colors.col1,
 
     fontSize: 16,
     fontWeight: 'bold',

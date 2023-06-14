@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 const PromotionOffersScreen = () => {
   const [promotions, setPromotions] = useState([
-    {
-      id: '1',
-      title: '20% Off on All Pizzas',
-      description: 'Use code PIZZA20 to avail the discount',
-    },
+    // {
+    //   id: '1',
+    //   title: '20% Off on All Pizzas',
+    //   description: 'Use code PIZZA20 to avail the discount',
+    // },
     {
       id: '2',
-      title: 'Free Delivery on Orders Above $50',
+      title: 'Free Delivery on Orders Above ₹100',
       description: 'No promo code required. Valid for a limited time.',
     },
     // Additional promotions

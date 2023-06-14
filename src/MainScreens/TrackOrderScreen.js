@@ -114,7 +114,7 @@ const TrackOrderScreen = ({ navigation }) => {
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                    <Text style={{ fontSize: 16 }}>Close</Text>
+                    <Text style={{ fontSize: 16 , color: colors.col1}}>Close</Text>
                 </TouchableOpacity>
             </View>
 

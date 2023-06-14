@@ -71,7 +71,7 @@ const UserProfile = ({ navigation }) => {
         placeholder="Address"
         value={userdata ? userdata.address || '' : ''}
         // onChangeText={setEmail}
-        keyboardType="address"
+        keyboardType="default"
         editable={false}
       />
       <TextInput
@@ -118,7 +118,9 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: '#fff',
-    color: '#474747',
+    // color: '#474747',
+    color: colors.col1,
+
 
     fontSize: 16,
     fontWeight: 'bold',

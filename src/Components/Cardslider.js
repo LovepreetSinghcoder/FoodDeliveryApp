@@ -2,6 +2,7 @@ import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity } from 'react
 import React from 'react'
 import { colors, veg, nonveg } from '../Global/styles'
 
+
 const Cardslider = ({ title, data, navigation }) => {
     const openProductPage = (item) => {
         // console.log('clicked ', item)

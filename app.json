@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2EEAB1"
+      "backgroundColor": "#FF3F00"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,11 +20,17 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2EEAB1"
-      }
+        "backgroundColor": "#FF3F00"
+      },
+      "package": "com.shovii.india.shovii"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1acdb80f-2457-465f-8d03-7eaa6d63c440"
+      }
     }
   }
 }

@@ -204,6 +204,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: '#474747',
+        color: colors.col1,
+
     }
     ,
     signupButton: {
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '600',
         color: '#474747',
+        color: colors.col1,
 
 
         // textShadowColor: 'grey',

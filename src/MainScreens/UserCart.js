@@ -388,7 +388,8 @@ const UserCart = ({ navigation }) => {
                 <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                     <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                        <Text style={{ fontSize: 16 }}>Close</Text>
+                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+
                     </TouchableOpacity>
                 </View>
                 <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -411,7 +412,8 @@ const UserCart = ({ navigation }) => {
                 <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                     <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                        <Text style={{ fontSize: 16 }}>Close</Text>
+                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+
                     </TouchableOpacity>
                 </View>
                 <View style={{ paddingVertical: 20 }}>
@@ -431,7 +433,8 @@ const UserCart = ({ navigation }) => {
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                    <Text style={{ fontSize: 16 }}>Close</Text>
+                <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+
                 </TouchableOpacity>
             </View>
 
@@ -607,7 +610,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '90%',
         textAlign: 'center',
-        color: '#474747',
+        // color: '#474747',
+        color: colors.col1,
 
         fontSize: 16,
         fontWeight: 'bold',

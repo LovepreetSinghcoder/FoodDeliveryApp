@@ -4,7 +4,7 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
 import { colors, veg, nonveg } from '../Global/styles'
 
-const SearchItemScreen = () => {
+const SearchItemScreen = ({navigation}) => {
     const [search, setSearch] = useState('')
     const [foodData, setFoodData] = useState([]);
 

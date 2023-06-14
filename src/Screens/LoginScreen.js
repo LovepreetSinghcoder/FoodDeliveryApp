@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
         // color: 'white',
         fontSize: 16,
         fontWeight: '600',
-        color: '#474747',
+        color: colors.col1,
     },
     signupButton: {
         // backgroundColor: '#4E4E4E',
@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '600',
         color: '#474747',
+        color: colors.col1,
 
 
         // textShadowColor: 'grey',

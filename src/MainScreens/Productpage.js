@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, TextInput, ActivityIndicator } from 'react-native'
 import React, { useContext, useState } from 'react'
 import { btn1, btn2, colors, hr80, navbtn, navbtnin, navbtnout, nonveg, veg, incdecbtn, incdecinput, incdecout } from '../Global/styles';
 import { AntDesign } from '@expo/vector-icons';
@@ -11,18 +11,20 @@ import { AuthContext } from '../Context/AuthContext';
 
 // const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 const Productpage = ({ navigation, route }) => {
-  const { userloggeduid, checkIsLogged , loading} = useContext(AuthContext);
+    const { userloggeduid, checkIsLogged } = useContext(AuthContext);
 
     const data = route.params;
     const [ischecked, setischecked] = useState(false);
     const [quantity, setquantity] = useState('1');
     const [addonquantity, setaddonquantity] = useState('0');
+    const [loading, setLoading] = useState(false);
+
     // console.log(data);
     if (route.params === undefined) {
-        navigation.navigate('home')
+        navigation.navigate('HomeScreen')
     }
 
-// OLD APPROACH
+    // OLD APPROACH
     // const addTocart = async () => {
     //     if (data.stock === 'in') {
     //         if (data.stockamount > 5) {
@@ -66,7 +68,7 @@ const Productpage = ({ navigation, route }) => {
     //                                 const existingItem = cartItems[existingItemIndex];
     //                                 console.log('dekh 8');
 
-                               
+
     //                                 const updatedItem = {
     //                                     ...existingItem,
     //                                     Foodquantity: existingItem.Foodquantity + parseInt(quantity, 10),
@@ -123,144 +125,147 @@ const Productpage = ({ navigation, route }) => {
     // };
 
 
-// NEW APPROACH
-const addTocart = async () => {
-    if (data.stock === 'in') {
-      if (data.stockamount > 5) {
-        const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
-        const data1 = {
-          item_id: data.id,
-          shop_id: data.shopId,
-          addonquantity: parseInt(addonquantity, 10),
-          foodquantity: parseInt(quantity, 10),
-          totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
-          totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
-          orderStatus: 'Pending',
-          userid: userloggeduid
-        };
-  
-        try {
-          const doc = await docRef.get();
-  
-          if (doc.exists) {
-            const cartItems = doc.data().cartItems;
-  
-            if (Array.isArray(cartItems)) {
-              const existingItemIndex = cartItems.findIndex((item) => item.item_id === data.id);
-  
-              if (existingItemIndex !== -1) {
-                const existingItem = cartItems[existingItemIndex];
-                const updatedItem = {
-                  ...existingItem,
-                  foodquantity: existingItem.foodquantity + parseInt(quantity, 10),
-                  totalFoodPrice: existingItem.totalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
+    // NEW APPROACH
+    const addTocart = async () => {
+        setLoading(true);
+        if (data.stock === 'in') {
+            if (data.stockamount > 5) {
+                const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+                const data1 = {
+                    item_id: data.id,
+                    shop_id: data.shopId,
+                    addonquantity: parseInt(addonquantity, 10),
+                    foodquantity: parseInt(quantity, 10),
+                    totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
+                    totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
+                    orderStatus: 'Pending',
+                    userid: userloggeduid
                 };
-                cartItems[existingItemIndex] = updatedItem;
-  
-                docRef.update({
-                  cartItems: cartItems,
-                });
-  
-                console.log('Updated');
-              } else {
-                docRef.update({
-                  cartItems: firebase.firestore.FieldValue.arrayUnion(data1),
-                });
-  
-                console.log('Added');
-              }
+
+                try {
+                    const doc = await docRef.get();
+
+                    if (doc.exists) {
+                        const cartItems = doc.data().cartItems;
+
+                        if (Array.isArray(cartItems)) {
+                            const existingItemIndex = cartItems.findIndex((item) => item.item_id === data.id);
+
+                            if (existingItemIndex !== -1) {
+                                const existingItem = cartItems[existingItemIndex];
+                                const updatedItem = {
+                                    ...existingItem,
+                                    foodquantity: existingItem.foodquantity + parseInt(quantity, 10),
+                                    totalFoodPrice: existingItem.totalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
+                                };
+                                cartItems[existingItemIndex] = updatedItem;
+
+                                docRef.update({
+                                    cartItems: cartItems,
+                                });
+
+                                console.log('Updated');
+                            } else {
+                                docRef.update({
+                                    cartItems: firebase.firestore.FieldValue.arrayUnion(data1),
+                                });
+
+                                console.log('Added');
+                            }
+                        } else {
+                            docRef.set({
+                                cartItems: [data1],
+                            });
+
+                            console.log('Added');
+                        }
+                    } else {
+                        docRef.set({
+                            cartItems: [data1],
+                        });
+
+                        console.log('Added');
+                    }
+
+                    alert('Added to cart');
+                } catch (error) {
+                    console.error('Error:', error);
+                }
             } else {
-              docRef.set({
-                cartItems: [data1],
-              });
-  
-              console.log('Added');
+                alert('Item is Out of Stock!');
             }
-          } else {
-            docRef.set({
-              cartItems: [data1],
-            });
-  
-            console.log('Added');
-          }
-  
-          alert('Added to cart');
-        } catch (error) {
-          console.error('Error:', error);
+        } else {
+            alert('Item is Out of Stock!');
         }
-      } else {
-        alert('Item is Out of Stock!');
-      }
-    } else {
-      alert('Item is Out of Stock!');
-    }
-  };
-  
+        setLoading(false);
 
-// NEW APPROACH
-// const addTocart = async () => {
-//   if (data.stock === 'in') {
-//     if (data.stockamount > 5) {
-//       const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
-//       const data1 = {
-//         item_id: data.id,
-//         shop_id: data.shopId,
-//         addonquantity: parseInt(addonquantity, 10),
-//         foodquantity: parseInt(quantity, 10),
-//         totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
-//         totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
-//       };
+    };
 
-//       try {
-//         const doc = await docRef.get();
 
-//         if (doc.exists) {
-//           const existingItems = doc.data();
+    // NEW APPROACH
+    // const addTocart = async () => {
+    //   if (data.stock === 'in') {
+    //     if (data.stockamount > 5) {
+    //       const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+    //       const data1 = {
+    //         item_id: data.id,
+    //         shop_id: data.shopId,
+    //         addonquantity: parseInt(addonquantity, 10),
+    //         foodquantity: parseInt(quantity, 10),
+    //         totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
+    //         totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
+    //       };
 
-//           if (Array.isArray(existingItems)) {
-//             const existingItemIndex = existingItems.findIndex((item) => item.dataid === data.id);
+    //       try {
+    //         const doc = await docRef.get();
 
-//             if (existingItemIndex !== -1) {
-//               const existingItem = existingItems[existingItemIndex];
-//               const updatedItem = {
-//                 ...existingItem,
-//                 Foodquantity: existingItem.Foodquantity + parseInt(quantity, 10),
-//                 TotalFoodPrice: existingItem.TotalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
-//               };
-//               existingItems[existingItemIndex] = updatedItem;
+    //         if (doc.exists) {
+    //           const existingItems = doc.data();
 
-//               docRef.update(existingItems);
+    //           if (Array.isArray(existingItems)) {
+    //             const existingItemIndex = existingItems.findIndex((item) => item.dataid === data.id);
 
-//               console.log('Updated');
-//             } else {
-//               existingItems.push(data1);
+    //             if (existingItemIndex !== -1) {
+    //               const existingItem = existingItems[existingItemIndex];
+    //               const updatedItem = {
+    //                 ...existingItem,
+    //                 Foodquantity: existingItem.Foodquantity + parseInt(quantity, 10),
+    //                 TotalFoodPrice: existingItem.TotalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
+    //               };
+    //               existingItems[existingItemIndex] = updatedItem;
 
-//               docRef.update(existingItems);
+    //               docRef.update(existingItems);
 
-//               console.log('Added');
-//             }
-//           } else {
-//             docRef.set([data1]);
+    //               console.log('Updated');
+    //             } else {
+    //               existingItems.push(data1);
 
-//             console.log('Added');
-//           }
-//         } else {
-//           docRef.set([data1]);
+    //               docRef.update(existingItems);
 
-//           console.log('Added');
-//         }
+    //               console.log('Added');
+    //             }
+    //           } else {
+    //             docRef.set([data1]);
 
-//         alert('Added to cart');
-//       } catch (error) {
-//         console.error('Error:', error);
-//       }
-//     } else {
-//       alert('Item is Out of Stock!');
-//     }
-//   } else {
-//     alert('Item is Out of Stock!');
-//   }
-// };
+    //             console.log('Added');
+    //           }
+    //         } else {
+    //           docRef.set([data1]);
+
+    //           console.log('Added');
+    //         }
+
+    //         alert('Added to cart');
+    //       } catch (error) {
+    //         console.error('Error:', error);
+    //       }
+    //     } else {
+    //       alert('Item is Out of Stock!');
+    //     }
+    //   } else {
+    //     alert('Item is Out of Stock!');
+    //   }
+    // };
 
 
 
@@ -299,7 +304,7 @@ const addTocart = async () => {
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                    <Text style={{ fontSize: 16 }}>Close</Text>
+                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
                 </TouchableOpacity>
             </View>
 
@@ -410,9 +415,18 @@ const addTocart = async () => {
                     </View>
 
                     <View style={styles.btncont}>
-                        <TouchableOpacity style={btn2} onPress={() => { addTocart() }}>
-                            <Text style={styles.btntxt}>Add to Cart</Text>
-                        </TouchableOpacity>
+
+                        {loading ?
+
+                            <TouchableOpacity style={btn2} >
+                                <ActivityIndicator size="small" color="black" />
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity style={btn2} onPress={() => { addTocart() }}>
+                                <Text style={styles.btntxt}>Add to Cart</Text>
+                            </TouchableOpacity>
+
+                        }
                         <TouchableOpacity style={btn2}>
                             {/* <Text style={styles.btntxt} onPress={() => navigation.navigate('placeorder', { cartdata })}>Buy Now</Text> */}
                             <Text style={styles.btntxt} onPress={() => navigation.navigate('Usercart')}>Go to Cart</Text>
@@ -516,7 +530,7 @@ const styles = StyleSheet.create({
     },
     btntxt: {
         backgroundColor: colors.text1,
-        color: '#474747',
+        color: colors.col1,
         paddingHorizontal: 10,
         paddingVertical: 5,
         fontSize: 17,

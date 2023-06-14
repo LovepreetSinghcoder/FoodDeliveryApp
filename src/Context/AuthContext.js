@@ -18,7 +18,7 @@ const AuthProvider = ({ children }) => {
     const UserLoggedHandler = (userid) => {
         setUserloggeduid(userid);
         AsyncStorage.setItem('userloggeduid', userid);
-        console.log('saved uid')
+        // console.log('saved uid')
       }
 
     // console.log('dekh veere', userloggeduid)
@@ -46,7 +46,7 @@ const AuthProvider = ({ children }) => {
         try {
           const value = await AsyncStorage.getItem('userloggeduid');
           if (value !== null) {
-            console.log('User logged UID retrieved from AsyncStorage:', value);
+            // console.log('User logged UID retrieved from AsyncStorage:', value);
             setUserloggeduid(value);
           } else {
             console.log('User logged UID not found in AsyncStorage');
@@ -64,7 +64,7 @@ const AuthProvider = ({ children }) => {
     const removeUserLoggedUidFromStorage = async () => {
         try {
             await AsyncStorage.removeItem('userloggeduid');
-            console.log('User logged UID removed from AsyncStorage');
+            // console.log('User logged UID removed from AsyncStorage');
         } catch (error) {
             console.log('Error removing userloggeduid:', error);
         }
@@ -82,7 +82,7 @@ const AuthProvider = ({ children }) => {
 
                 // Remove user-specific data from AsyncStorage
                 removeUserLoggedUidFromStorage();
-                console.log(userloggeduid)
+                // console.log(userloggeduid)
             })
             .catch((error) => {
                 // Handle any errors that occur during the logout process

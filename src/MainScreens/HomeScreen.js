@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking, Image } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import HeaderBar from '../Components/HeaderBar'
 import { AntDesign } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ import { AuthContext } from '../Context/AuthContext';
 import * as Location from 'expo-location';
 
 import axios from 'axios';
-
+const Version = '1.0.0';
 
 const HomeScreen = ({ navigation }) => {
   const { userloggeduid, checkIsLogged, SetLocationName, locationName } = useContext(AuthContext);
@@ -22,6 +22,25 @@ const HomeScreen = ({ navigation }) => {
     console.log('Button pressed');
   };
 
+  const [appdata, setAppdata] = useState(null);
+
+  const AppData = async () => {
+    const docRef = firebase.firestore().collection('AppData')
+    const doc = await docRef.get();
+    if (!doc.empty) {
+      doc.forEach((doc) => {
+        setAppdata(doc.data());
+      })
+    }
+    else {
+      console.log('no user data');
+    }
+  }
+  // console.log('dekh veer',appdata.CurrentVersion )
+  useEffect(() => {
+
+    AppData();
+  }, []);
 
   const [animation] = useState(new Animated.Value(0));
 
@@ -84,8 +103,8 @@ const HomeScreen = ({ navigation }) => {
     try {
       const location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
-      console.log('Latitude:', latitude);
-      console.log('Longitude:', longitude);
+      // console.log('Latitude:', latitude);
+      // console.log('Longitude:', longitude);
       getLocationName(latitude, longitude);
       // Do something with the latitude and longitude values
     } catch (error) {
@@ -119,7 +138,7 @@ const HomeScreen = ({ navigation }) => {
       if (geocode.length > 0) {
         const { city, country } = geocode[0];
         const locationName = `${city}, ${country}`;
-        console.log('dekh veere', city)
+        // console.log('dekh veere', city)
         // setLocationName(city);
         SetLocationName(city);
         setLocation(true)
@@ -252,6 +271,7 @@ const HomeScreen = ({ navigation }) => {
 
 
       <ScrollView>
+
         <TouchableOpacity style={styles.searchbox} onPress={() => { navigation.navigate('Searchpage') }}>
           <AntDesign name="search1" size={24} color="black" style={
             styles.searchicon
@@ -260,8 +280,37 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.input}>Search</Text>
 
         </TouchableOpacity>
+        {appdata && appdata.CurrentVersion !== Version ?
+          <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
+            <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
 
-        {/* <Categories /> */}
+              <View style={{ flexDirection: 'row', }}>
+                <View style={{ elevation: 3, width: '15%', paddingHorizontal: 6, paddingVertical: 4 }}>
+                  {/* <Text>AppIcon</Text> */}
+                  <Image source={{
+                    uri: appdata.AppIcon
+                  }} style={{ width: 40, height: 40, borderRadius: 10, }} />
+                </View>
+                <View style={{ width: '82%', paddingHorizontal: 10, paddingVertical: 0, }}>
+                  <Text style={{ fontWeight: '600' }}>Get more with new update</Text>
+                  <Text>We've enhanced the app, and added some new and exciting features!</Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 4, paddingTop: 7 }}>
+                <TouchableOpacity onPress={() => { Linking.openURL('https://play.google.com/store/apps/details?id=com.shovii.india.shovii') }} style={{ backgroundColor: colors.text1, paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20, elevation: 2 }}>
+                  <Text style={{ fontWeight: '600', fontSize: 12, color: colors.col1 }}>DOWNLOAD</Text>
+
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          :
+          null
+
+        }
+
+        <Categories navigation={navigation} />
         <OfferSlider navigation={navigation} />
         {/* <Text>HomeScreen</Text> */}
 

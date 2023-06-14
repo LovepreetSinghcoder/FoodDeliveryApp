@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../Context/AuthContext';
+import { colors } from '../Global/styles';
 
 const AccountSettingsScreen = ({ navigation }) => {
   const { logout } = useContext(AuthContext);
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 48,
     // backgroundColor: '#4E4E4E',
-    backgroundColor: '#2EEAB1',
+    backgroundColor: colors.text1,
 
 
     borderRadius: 25,
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     // color: '#fff',
     // fontSize: 16,
     // fontWeight: 'bold',
-    color: '#474747',
+    color: colors.col1,
 
     fontSize: 16,
     fontWeight: 'bold',

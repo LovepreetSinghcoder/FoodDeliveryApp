@@ -20,6 +20,7 @@ import TrackOrderScreen from '../MainScreens/TrackOrderScreen';
 import { colors } from '../Global/styles';
 import ChangeLocationScreen from '../MainScreens/ChangeLocationScreen';
 import SearchItemScreen from '../MainScreens/SearchItemScreen';
+import CategoriesDataScreen from '../MainScreens/CategoriesDataScreen';
 
 
 
@@ -50,6 +51,8 @@ const HomeStack = () => (
         <Stack.Screen name="Editprofile" component={EditProfileScreen} options={{headerShown: false}}/>
         <Stack.Screen name="Placeorder" component={Placeorder} options={{headerShown: false}}/>
         <Stack.Screen name="Searchpage" component={SearchItemScreen} options={{headerShown: false}}/>
+        <Stack.Screen name="Categoriesdata" component={CategoriesDataScreen} options={{headerShown: false}}/>
+
 
 
 

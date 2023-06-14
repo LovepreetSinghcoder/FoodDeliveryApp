@@ -1,7 +1,9 @@
 module.exports = {
     colors: {
         col1: 'white',
-        text1: '#2EEAB1',
+        // text1: '#2EEAB1', 
+        text1: '#FF3F00', 
+
         text2: 'grey',
         text3: 'black',
         textgreen: 'green',
@@ -24,7 +26,7 @@ module.exports = {
     btn2: {
         width: 150,
         height: 50,
-        backgroundColor: '#2EEAB1',
+        backgroundColor: '#FF3F00',
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
@@ -52,7 +54,7 @@ module.exports = {
         backgroundColor: 'red',
     },
     navbtn: {
-        backgroundColor: '#2EEAB1',
+        backgroundColor: '#FF3F00',
         width: 50,
         height: 50,
         alignItems: 'center',
@@ -73,7 +75,9 @@ module.exports = {
     },
     incdecbtn: {
 
-        backgroundColor: '#2EEAB1',
+        // backgroundColor: '#FF3F00',
+        backgroundColor: '#FF3F00',
+        
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 50,

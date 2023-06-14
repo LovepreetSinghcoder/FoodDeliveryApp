@@ -1,40 +1,43 @@
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { colors } from '../Global/styles'
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const Categories = () => {
+const Categories = ({ navigation }) => {
+    const OpenCategoriesPage = (item) => {
+        navigation.navigate('Categoriesdata', item)
+
+    }
     return (
         <View style={styles.container}>
             <Text style={styles.head}>Categories</Text>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={[styles.box, { backgroundColor: '#ddfbf3' }]}>
-                    {/* <MaterialCommunityIcons name="food-apple-outline" size={24} color="black" style={styles.myicon} /> */}
-                    {/* <View style={styles.s1}> */}
+                <TouchableOpacity style={[styles.box, { backgroundColor: '#ddfbf3' }]}  onPress={() => { OpenCategoriesPage('Pizza') }}>
+                
                     <Image source={require('../Images/cat_1.png')} style={styles.image} />
-                    {/* </View> */}
+ 
                     <Text style={styles.mytext}>Pizza</Text>
-                </View>
+                </TouchableOpacity>
 
-                <View style={[styles.box, { backgroundColor: '#f5e5ff' }]}>
+                <TouchableOpacity style={[styles.box, { backgroundColor: '#f5e5ff' }]} onPress={() => { OpenCategoriesPage('Burger') }}>
                     {/* <MaterialIcons name="dinner-dining" size={24} color="black" style={styles.myicon} /> */}
                     <Image source={require('../Images/cat_2.png')} style={styles.image} />
                     <Text style={styles.mytext}>Burger</Text>
-                </View>
+                </TouchableOpacity>
 
-                <View style={[styles.box, { backgroundColor: '#e5f1ff' }]}>
+                <TouchableOpacity style={[styles.box, { backgroundColor: '#e5f1ff' }]} onPress={() => { OpenCategoriesPage('Drink') }}>
                     {/* <MaterialCommunityIcons name="noodles" size={24} color="black" style={styles.myicon} /> */}
                     <Image source={require('../Images/cat_3.png')} style={styles.image} />
                     <Text style={styles.mytext}>Drink</Text>
-                </View>
+                </TouchableOpacity>
 
-                <View style={[styles.box, { backgroundColor: '#ebfde5' }]}>
+                <TouchableOpacity style={[styles.box, { backgroundColor: '#ebfde5' }]} onPress={() => { OpenCategoriesPage('Noodles') }}>
                     <Image source={require('../Images/cat_3.png')} style={styles.image} />
                     <Text style={styles.mytext}>Noodles</Text>
-                </View>
+                </TouchableOpacity>
             </ScrollView>
         </View>
     )
