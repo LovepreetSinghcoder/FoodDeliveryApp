@@ -11,7 +11,7 @@ import { AuthContext } from '../Context/AuthContext';
 import * as Location from 'expo-location';
 
 import axios from 'axios';
-const Version = '1.0.0';
+const Version = '1.3.5';
 
 const HomeScreen = ({ navigation }) => {
   const { userloggeduid, checkIsLogged, SetLocationName, locationName } = useContext(AuthContext);
@@ -231,7 +231,7 @@ const HomeScreen = ({ navigation }) => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: 20,
-          }}>Food Delivery App is not available in this location.</Text>
+          }}>Shovii is not available in your location.</Text>
           <Text style={{
             fontSize: 16,
             textAlign: 'center',

@@ -14,6 +14,24 @@ const SignUpScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [cpassword, setCPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [fcmToken, setFcmToken] = useState('')
+    useEffect(() => {
+        try {
+          messaging()
+            .getToken()
+            .then((token) => {
+              console.log('FCM token:', token);
+              setFcmToken(token)
+              // Use the token as needed (e.g., store it in your database or send it to your server)
+            })
+            .catch((error) => {
+              console.log('Error getting FCM token:', error);
+            });
+        } catch (error) {
+          console.log('try block is throw error', error);
+    
+        }
+      }, [])
 
 
     const handleSignup = async () => {
@@ -60,6 +78,7 @@ const SignUpScreen = ({ navigation }) => {
                                 name: name,
                                 address: address,
                                 uid: uid,
+                                fcmToken: fcmToken,
                             }
                         ).then(() => {
                             console.log('data added to firestore')

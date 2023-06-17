@@ -10,7 +10,7 @@ import { AuthContext } from '../Context/AuthContext';
 
 
 const Placeorder = ({ navigation, route }) => {
-  const { userloggeduid, checkIsLogged , loading} = useContext(AuthContext);
+    const { userloggeduid, checkIsLogged, loading } = useContext(AuthContext);
 
     const [orderdata, setOrderdata] = useState([]);
     const [totalCost, setTotalCost] = useState('0');
@@ -27,7 +27,7 @@ const Placeorder = ({ navigation, route }) => {
     // console.log(cartdata)
 
     useEffect(() => {
- 
+
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
 
@@ -47,7 +47,7 @@ const Placeorder = ({ navigation, route }) => {
     }, [cartdata]);
 
 
-  
+
     const [userdata, setUserdata] = useState(null);
 
 
@@ -146,40 +146,66 @@ const Placeorder = ({ navigation, route }) => {
     // useEffect(() => {
     //     deleteCart();
     // }, [])
-    const sendPushNotification = async (fcmTokens, title, message) => {
-        try {
-            const config = {
-                method: 'post',
-                url: 'https://fcm.googleapis.com/fcm/send',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo', // Replace with your server key from Firebase Console
-                },
-                data: {
-                    registration_ids: fcmTokens,
-                    notification: {
-                        title,
-                        body: message,
-                    },
-                },
-            };
+    // const sendPushNotification = async (fcmTokens, title, message) => {
+    //     try {
+    //         const config = {
+    //             method: 'post',
+    //             url: 'https://fcm.googleapis.com/fcm/send',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': 'Bearer AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo', // Replace with your server key from Firebase Console
+    //             },
+    //             data: {
+    //                 registration_ids: fcmTokens,
+    //                 notification: {
+    //                     title,
+    //                     body: message,
+    //                 },
+    //             },
+    //         };
 
-            const response = await axios.request(config);
+    //         const response = await axios.request(config);
 
-            console.log('Notification sent successfully:', response.data);
-        } catch (error) {
-            console.log('Error sending notification:', error);
-        }
-    };
+    //         console.log('Notification sent successfully:', response.data);
+    //     } catch (error) {
+    //         console.log('Error sending notification:', error);
+    //     }
+    // };
 
     // Usage example
     //   const fcmTokens = ['FCM_TOKEN_1', 'FCM_TOKEN_2', 'FCM_TOKEN_3'];
     //   sendPushNotification(fcmTokens, 'Hello', 'This is a test notification');
-    const shopTokens = 'cE13la2-TaK1HWiJ1_JEee:APA91bGlIZxF-gZ7fzLaJKG577cPR_ZVhVOystTY65LSeNFZ2dPqo-mtVIgvCyvsbVStxq6udghfkxLT59X4_mmRWDHQckLQcJph9UYgv6R31T13ez-AOAslUCwAyDcLIpvDWoosiCHM'
+    // const shopTokens = 'ckClvhl6Q3aFw5OiIMsB2e:APA91bG3YlR8A_MKK0b9wzTUFXUihpnnzUZSjcaJVhSk6VmW9Wh3XHG2qQap4h60O3FX8AjkIj1oA9aADvHNNIem_8h3GbspvHppJJsamDQjWTCzgjKvyDBUjw78NOkiO1biut1HBSAz'
     //   sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + orderby);
 
+    const fcmServerKey = 'AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo'; // Replace with your FCM server key
+    const axiosInstance = axios.create({
+        baseURL: 'https://fcm.googleapis.com/fcm/',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `key=${fcmServerKey}`,
+        },
+    });
+
+    const sendPushNotification = async (fcmTokens, title, body) => {
+        try {
+            const response = await axiosInstance.post('/send', {
+                to: fcmTokens,
+                notification: {
+                    title,
+                    body,
+                },
+                data: {}, // Optional payload data
+            });
+
+            console.log('Notification sent successfully:', response.data);
+        } catch (error) {
+            console.error('Error sending notification:', error);
+        }
+    };
 
 
+ 
     //NEW APPROACH
     const addingSomedata = (orderdata) => {
         console.log('Dekh bro 1')
@@ -221,8 +247,8 @@ const Placeorder = ({ navigation, route }) => {
         return orderdata;
     };
 
-    
- 
+
+
 
     //New Approach
     const placenow = () => {
@@ -259,7 +285,7 @@ const Placeorder = ({ navigation, route }) => {
                 return deleteCart(); // Call deleteCart function and return its promise
             })
             .then(() => {
-                return sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + userdata.name);
+                return sendPushNotification('ckClvhl6Q3aFw5OiIMsB2e:APA91bG3YlR8A_MKK0b9wzTUFXUihpnnzUZSjcaJVhSk6VmW9Wh3XHG2qQap4h60O3FX8AjkIj1oA9aADvHNNIem_8h3GbspvHppJJsamDQjWTCzgjKvyDBUjw78NOkiO1biut1HBSAz', 'New Order Received', 'mujhe nhi ptaaa');
             })
             .then(() => {
                 // Perform actions after deleteCart completes
@@ -389,6 +415,7 @@ const Placeorder = ({ navigation, route }) => {
                             <Text style={styles.editButtonText}>Place Order</Text>
                         </TouchableOpacity>
                     </View>
+
                 </View>
             </ScrollView>
         </>

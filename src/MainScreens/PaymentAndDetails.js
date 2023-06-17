@@ -20,6 +20,52 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
     }, [cartdata])
 
+    const [userdata, setUserdata] = useState([]);
+
+    useEffect(() => {
+        // Fetch data from Firebase
+        const fetchData = async () => {
+            const foodRef = firebase.firestore().collection('UserData');
+
+            foodRef.onSnapshot(snapshot => {
+                setUserdata(snapshot.docs.map(doc => doc.data()))
+            }
+            )
+        };
+
+        fetchData();
+    }, [cartdata]);
+
+    const [shopTokens, setShopTokens] = useState([]);
+
+    useEffect(() => {
+      const getShopToken = () => {
+        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+          let cartArrayNames = [];
+          const checkData = cartdata.cartItems;
+          checkData.forEach((item) => {
+            cartArrayNames.push(item.shop_id);
+          });
+    
+          const tokens = []; // Create an array to store the fcmTokens
+    
+          for (let i = 0; i < cartArrayNames.length; i++) {
+            const matchingUserId = userdata.find((user) => user.uid === cartArrayNames[i]);
+            if (matchingUserId) {
+              tokens.push(matchingUserId.fcmToken); // Save the fcmToken to the tokens array
+            }
+          }
+    
+          setShopTokens(tokens); // Update the shopTokens state with the tokens array
+        } else {
+          console.log('Empty array or null cartdata');
+        }
+      };
+    
+      getShopToken();
+    }, [cartdata, userdata]);
+    // console.log('dekh rha hai vinod', shopTokens )
+
     useEffect(() => {
 
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
@@ -55,39 +101,73 @@ const PaymentAndDetails = ({ navigation, route }) => {
     };
 
 
-    const sendPushNotification = async (fcmTokens, title, message) => {
-        try {
-            const config = {
-                method: 'post',
-                url: 'https://fcm.googleapis.com/fcm/send',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo', // Replace with your server key from Firebase Console
-                },
-                data: {
-                    registration_ids: fcmTokens,
-                    notification: {
-                        title,
-                        body: message,
-                    },
-                },
-            };
+    // const sendPushNotification = async (fcmTokens, title, message) => {
+    //     try {
+    //         const config = {
+    //             method: 'post',
+    //             url: 'https://fcm.googleapis.com/fcm/send',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': 'Bearer AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo', // Replace with your server key from Firebase Console
+    //             },
+    //             data: {
+    //                 registration_ids: fcmTokens,
+    //                 notification: {
+    //                     title,
+    //                     body: message,
+    //                 },
+    //             },
+    //         };
 
-            const response = await axios.request(config);
+    //         const response = await axios.request(config);
 
-            console.log('Notification sent successfully:', response.data);
-        } catch (error) {
-            console.log('Error sending notification:', error);
-        }
-    };
+    //         console.log('Notification sent successfully:', response.data);
+    //     } catch (error) {
+    //         console.log('Error sending notification:', error);
+    //     }
+    // };
 
     // Usage example
     //   const fcmTokens = ['FCM_TOKEN_1', 'FCM_TOKEN_2', 'FCM_TOKEN_3'];
     //   sendPushNotification(fcmTokens, 'Hello', 'This is a test notification');
-    const shopTokens = 'cE13la2-TaK1HWiJ1_JEee:APA91bGlIZxF-gZ7fzLaJKG577cPR_ZVhVOystTY65LSeNFZ2dPqo-mtVIgvCyvsbVStxq6udghfkxLT59X4_mmRWDHQckLQcJph9UYgv6R31T13ez-AOAslUCwAyDcLIpvDWoosiCHM'
+    // const shopTokens = 'cE13la2-TaK1HWiJ1_JEee:APA91bGlIZxF-gZ7fzLaJKG577cPR_ZVhVOystTY65LSeNFZ2dPqo-mtVIgvCyvsbVStxq6udghfkxLT59X4_mmRWDHQckLQcJph9UYgv6R31T13ez-AOAslUCwAyDcLIpvDWoosiCHM'
     //   sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ' + orderby);
 
     // console.log('dekh veere', totalCost)
+    const fcmServerKey = 'AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo'; // Replace with your FCM server key
+    const axiosInstance = axios.create({
+      baseURL: 'https://fcm.googleapis.com/fcm/',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `key=${fcmServerKey}`,
+      },
+    });
+
+    const sendNotification = async (deviceToken, title, body) => {
+        try {
+          const response = await axiosInstance.post('/send',  {
+            registration_ids: deviceToken,
+            notification: {
+              title,
+              body,
+            },
+            data: {}, // Optional payload data
+          });
+      
+          console.log('Notification sent successfully:', response.data);
+        } catch (error) {
+          console.error('Error sending notification:', error);
+        }
+      };
+
+   
+
+    // useEffect(() => {
+    //     console.log('trigegeegg', shopTokens)
+    //     // sNotif()
+    //     sendNotification( shopTokens, 'Dekh broro', 'body guyi tel lene');
+    // }, [])
+
 
     const placenow = async () => {
         setLoading(true);
@@ -111,7 +191,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
             });
 
             await deleteCart();
-            await sendPushNotification(shopTokens, 'New Order Received', 'mujhe nhi ptaaa ');
+            await sendNotification(shopTokens, 'New Order Received', 'Value' + totalCost );
 
             // console.log('triggered 4');
             navigation.navigate('HomeScreen');

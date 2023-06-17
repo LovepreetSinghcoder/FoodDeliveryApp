@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     btntxt: {
-        backgroundColor: colors.text1,
+        // backgroundColor: colors.text1,
         color: colors.col1,
         paddingHorizontal: 10,
         paddingVertical: 5,

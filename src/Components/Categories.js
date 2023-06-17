@@ -35,7 +35,7 @@ const Categories = ({ navigation }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={[styles.box, { backgroundColor: '#ebfde5' }]} onPress={() => { OpenCategoriesPage('Noodles') }}>
-                    <Image source={require('../Images/cat_3.png')} style={styles.image} />
+                    <Image source={require('../Images/cat_4.png')} style={styles.image} />
                     <Text style={styles.mytext}>Noodles</Text>
                 </TouchableOpacity>
             </ScrollView>
