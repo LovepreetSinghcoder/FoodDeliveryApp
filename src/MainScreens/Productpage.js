@@ -128,6 +128,7 @@ const Productpage = ({ navigation, route }) => {
     // NEW APPROACH
     const addTocart = async () => {
         setLoading(true);
+        const date = new Date().getTime().toString() 
         if (data.stock === 'in') {
             if (data.stockamount > 5) {
                 const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
@@ -139,7 +140,9 @@ const Productpage = ({ navigation, route }) => {
                     totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
                     totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
                     orderStatus: 'Pending',
-                    userid: userloggeduid
+                    userid: userloggeduid,
+                    date: date,
+                    cartItemId: date+userloggeduid
                 };
 
                 try {
@@ -419,7 +422,7 @@ const Productpage = ({ navigation, route }) => {
                         {loading ?
 
                             <TouchableOpacity style={btn2} >
-                                <ActivityIndicator size="small" color="black" />
+                                <ActivityIndicator size="small" color={colors.col1} />
                             </TouchableOpacity>
                             :
                             <TouchableOpacity style={btn2} onPress={() => { addTocart() }}>

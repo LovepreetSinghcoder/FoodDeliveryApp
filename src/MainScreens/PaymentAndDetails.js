@@ -39,30 +39,30 @@ const PaymentAndDetails = ({ navigation, route }) => {
     const [shopTokens, setShopTokens] = useState([]);
 
     useEffect(() => {
-      const getShopToken = () => {
-        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
-          let cartArrayNames = [];
-          const checkData = cartdata.cartItems;
-          checkData.forEach((item) => {
-            cartArrayNames.push(item.shop_id);
-          });
-    
-          const tokens = []; // Create an array to store the fcmTokens
-    
-          for (let i = 0; i < cartArrayNames.length; i++) {
-            const matchingUserId = userdata.find((user) => user.uid === cartArrayNames[i]);
-            if (matchingUserId) {
-              tokens.push(matchingUserId.fcmToken); // Save the fcmToken to the tokens array
+        const getShopToken = () => {
+            if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+                let cartArrayNames = [];
+                const checkData = cartdata.cartItems;
+                checkData.forEach((item) => {
+                    cartArrayNames.push(item.shop_id);
+                });
+
+                const tokens = []; // Create an array to store the fcmTokens
+
+                for (let i = 0; i < cartArrayNames.length; i++) {
+                    const matchingUserId = userdata.find((user) => user.uid === cartArrayNames[i]);
+                    if (matchingUserId) {
+                        tokens.push(matchingUserId.fcmToken); // Save the fcmToken to the tokens array
+                    }
+                }
+
+                setShopTokens(tokens); // Update the shopTokens state with the tokens array
+            } else {
+                console.log('Empty array or null cartdata');
             }
-          }
-    
-          setShopTokens(tokens); // Update the shopTokens state with the tokens array
-        } else {
-          console.log('Empty array or null cartdata');
-        }
-      };
-    
-      getShopToken();
+        };
+
+        getShopToken();
     }, [cartdata, userdata]);
     // console.log('dekh rha hai vinod', shopTokens )
 
@@ -136,38 +136,67 @@ const PaymentAndDetails = ({ navigation, route }) => {
     // console.log('dekh veere', totalCost)
     const fcmServerKey = 'AAAALDQPvlg:APA91bH3XMSBJiuy7dpj5LRf1OiB1Ncpwvk3nc-1qffGN3EzBrhLeDu0uG0t3tp7PkC9lVrsTGtTPreXVzAB_1VHsaMU-6MCSCiugZ95yFBAIsWhdhJew3_HKmlwVdUhIlzELhTtoUTo'; // Replace with your FCM server key
     const axiosInstance = axios.create({
-      baseURL: 'https://fcm.googleapis.com/fcm/',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `key=${fcmServerKey}`,
-      },
+        baseURL: 'https://fcm.googleapis.com/fcm/',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `key=${fcmServerKey}`,
+        },
     });
 
     const sendNotification = async (deviceToken, title, body) => {
         try {
-          const response = await axiosInstance.post('/send',  {
-            registration_ids: deviceToken,
-            notification: {
-              title,
-              body,
-            },
-            data: {}, // Optional payload data
-          });
-      
-          console.log('Notification sent successfully:', response.data);
-        } catch (error) {
-          console.error('Error sending notification:', error);
-        }
-      };
+            const response = await axiosInstance.post('/send', {
+                registration_ids: deviceToken,
+                notification: {
+                    title,
+                    body,
+                },
+                data: {}, // Optional payload data
+            });
 
-   
+            console.log('Notification sent successfully:', response.data);
+        } catch (error) {
+            console.error('Error sending notification:', error);
+        }
+    };
+
+
 
     // useEffect(() => {
     //     console.log('trigegeegg', shopTokens)
     //     // sNotif()
     //     sendNotification( shopTokens, 'Dekh broro', 'body guyi tel lene');
     // }, [])
+    // const docid = new Date().getTime().toString() + userloggeduid;
 
+    //New approach for adding data
+    const [updatedCartData, setUpdatedCartData] = useState(null);
+    const addingSomedata = (docid) => {
+
+
+
+        if (cartdata !== null) {
+            console.log('dekh 1');
+            const updatedData = { ...cartdata };
+            console.log('dekh 2');
+
+            updatedData.cartItems.forEach((item) => {
+                item.orderId = docid;
+            });
+
+            // console.log('Updated cart data:', updatedData);
+
+            setUpdatedCartData(updatedData);
+        }
+
+    }
+
+    // useEffect(() => {
+    //     addingSomedata()
+
+    // }, [])
+
+    // console.log('ertertert', typeof cartdata)
 
     const placenow = async () => {
         setLoading(true);
@@ -178,41 +207,54 @@ const PaymentAndDetails = ({ navigation, route }) => {
         // console.log('triggered 3');
         const orderitemstabledoc = firebase.firestore().collection('OrderItems').doc(docid);
 
-        try {
-            await orderitemstabledoc.set({ ...cartdata });
-            await orderdatadoc.set({
-                orderid: docid,
-                orderstatus: 'pending',
-                ordercost: totalCost,
-                orderdate: new Date().getTime().toString(),
-                userid: userloggeduid,
-                orderpayment: 'online',
-                paymenttotal: totalCost
-            });
+        await addingSomedata(docid);
 
-            await deleteCart();
-            await sendNotification(shopTokens, 'New Order Received', 'Value' + totalCost );
+        if (updatedCartData !== null) {
+            try {
+                await orderitemstabledoc.set({ ...updatedCartData });
+                await orderdatadoc.set({
+                    orderid: docid,
+                    orderstatus: 'pending',
+                    ordercost: totalCost,
+                    orderdate: new Date().getTime().toString(),
+                    userid: userloggeduid,
+                    orderpayment: 'online',
+                    paymenttotal: totalCost
+                });
 
-            // console.log('triggered 4');
-            navigation.navigate('HomeScreen');
-            alert('Order Placed Successfully');
-        } catch (error) {
-            console.log('Error placing order:', error);
-            alert('Error placing order. Please try again.');
-        } finally {
-            setLoading(false);
+                await deleteCart();
+                const currentTime = new Date().toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                });
+
+                await sendNotification(shopTokens, 'New Order Received', 'Time: ' + currentTime);
+                // await sendNotification(shopTokens, 'New Order Received', 'Time:' + (new Date().getTime().toString()));
+
+                // console.log('triggered 4');
+                navigation.navigate('HomeScreen');
+                alert('Order Placed Successfully');
+            } catch (error) {
+                console.log('Error placing order:', error);
+                alert('Error placing order. Please try again.');
+            } finally {
+                setLoading(false);
+            }
         }
+        setLoading(false);
+
     };
 
 
     return (
         <>
             <TouchableOpacity style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }} onPress={() => navigation.navigate('HomeScreen')}>
-            <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+                <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
 
 
             </TouchableOpacity>
-         
+
             <View style={styles.container}>
 
                 <View>
@@ -235,7 +277,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
                         <Text style={styles.editButtonText}>Current Location</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.editButton}
-                    onPress={() => navigation.navigate('Editprofile')}
+                        onPress={() => navigation.navigate('Editprofile')}
                     >
                         <Text style={styles.editButtonText}>Change Delivery Location</Text>
                     </TouchableOpacity>
