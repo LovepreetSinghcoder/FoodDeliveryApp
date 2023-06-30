@@ -109,93 +109,29 @@ const UserCart = ({ navigation }) => {
 
 
     const [allData, setAllData] = useState([]);
-    // useEffect(() => {
-    //     if (cartdata != null) {
+    const [shopInfo, setShopInfo] = useState([]);
 
-    //         console.log('Dekh bro 2')
+ 
 
-    //         const cart23 = cartdata;
-    //         const cartArrayNames = Object.keys(cart23);
+    useEffect(() => {
+        // Fetch data from Firebase
+        const fetchData = async () => {
+            const docRef = firebase.firestore().collection('shopInfo');
 
+            // foodRef.onSnapshot(snapshot => {
+            //     setFoodDataAll(snapshot.docs.map(doc => doc.data()))
+            // }
+            const doc = await docRef.get();
+            // if (!doc.empty) {
+              doc.forEach((doc) => {
+                setShopInfo(doc.data());
+              })
+            // )
+        };
 
-
-    //         console.log('dekhi bro 3', cartArrayNames.length);
-    //         let newData = [];
-    //         console.log('Dekh bro 4')
-
-    //         for (let i = 0; i < cartArrayNames.length; i++) {
-    //             console.log('Dekh bro 5')
-
-    //             const foodData = cart23[cartArrayNames[i]];
-    //             console.log('Dekh bro 6')
-
-
-    //             foodData.forEach((item) => {
-
-    //                 // newData(push.item)
-    //                 newData.push(item)
-    //             });
-
-
-    //         }
-    //         setAllData(newData)
-
-    //     }
-    // }, [cartdata]);
-
-    // console.log('ho yd', allData)
-
-    // const [totalcost, setTotalCost] = useState(null);
-
-    //CODE FOR TOTAL FOOD PRICE
-    // useEffect(() => {
-    //     // setIsLoading(true);
-    //     console.log('Dekh bro 1')
-
-    //     if (cartdata != null) {
-    //         // const cart23 = JSON.parse(cartdata);
-    //         // const cartArrayNames = Object.keys(cart23);
-    //         console.log('Dekh bro 2')
-
-    //         const cart23 = cartdata;
-    //         const cartArrayNames = Object.keys(cart23);
-
-
-
-    //         console.log('dekhi bro 3', cartArrayNames.length);
-    //         let totalfoodprice = 0;
-    //         console.log('Dekh bro 4')
-
-    //         for (let i = 0; i < cartArrayNames.length; i++) {
-    //             console.log('Dekh bro 5')
-
-    //             const foodprice = cart23[cartArrayNames[i]];
-    //             console.log('Dekh bro 6')
-
-    //             //OLD CODE
-
-    //             // foodprice.forEach((item) => {
-    //             //     totalfoodprice += (parseInt(item.data.foodPrice) * parseInt(item.Foodquantity)) +
-    //             //         (parseInt(item.data.foodAddonPrice) * parseInt(item.Addonquantity));
-    //             // });
-
-    //             //NEW CODE
-    //             foodprice.forEach((item) => {
-    //                 totalfoodprice += (parseInt(item.TotalFoodPrice)) +
-    //                     (parseInt(item.TotalAddOnPrice));
-    //             });
-
-
-    //         }
-
-    //         setTotalCost(totalfoodprice.toString());
-    //         // setIsLoading(false);
-    //     }
-    // }, [cartdata]);
-
-    // console.log('dekh bro ho gya ', totalCost)
-
-
+        fetchData();
+    }, []);
+// console.log('dekkkkk',typeof parseInt(shopInfo.minpriceorder))
 
     //New Approach
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
@@ -331,6 +267,7 @@ const UserCart = ({ navigation }) => {
 
 
     const deleteItem = async (item) => {
+        setLoading(true)
         setProcess(true)
         console.log('delete trigerr')
         // setIsLoading(true);
@@ -353,12 +290,13 @@ const UserCart = ({ navigation }) => {
         getcartdata();
         GetTotalPrice();
         setProcess(false)
+        setLoading(false)
         // setIsLoading(false);
     }
 
     // console.log(typeof (cartdata))
     // console.log(totalCost.type)
-    // console.log(typeof totalCost);
+    // console.log(totalCost);
 
     const GoToPaymentPage = () => {
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
@@ -367,6 +305,11 @@ const UserCart = ({ navigation }) => {
             }
             else if (inStock === false) {
                 alert(`The following item is Out of Stock : ${outStock}`)
+
+            }
+            else if( parseInt(totalCost) < parseInt(shopInfo.minpriceorder) ) {
+                alert(`Order value must be greater then : ${shopInfo.minpriceorder}`)
+                
 
             }
             else {
@@ -480,18 +423,18 @@ const UserCart = ({ navigation }) => {
 
                                            
 
-                                            {process ?
+                                            {/* {process ? */}
 
-                                                <TouchableOpacity style={styles.c4} >
+                                                {/* <TouchableOpacity style={styles.c4} >
                                                     <ActivityIndicator size="small" color="black" />
-                                                </TouchableOpacity>
-                                                :
+                                                </TouchableOpacity> */}
+                                                {/* // : */}
                                                 <TouchableOpacity style={styles.c4} onPress={() => deleteItem(item, nData[0].shopId)}>
                                                 <Text style={styles.txt1}>Delete</Text>
                                                 <AntDesign name="delete" size={24} color="black" style={styles.del} />
                                             </TouchableOpacity>
 
-                                            }
+                                            {/* } */}
                                         </View>
 
                                     </View>

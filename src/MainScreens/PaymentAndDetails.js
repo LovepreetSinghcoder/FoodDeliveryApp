@@ -171,7 +171,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
     //New approach for adding data
     const [updatedCartData, setUpdatedCartData] = useState(null);
-    const addingSomedata = (docid) => {
+    const addingSomedata = (docid, date) => {
 
 
 
@@ -182,6 +182,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
             updatedData.cartItems.forEach((item) => {
                 item.orderId = docid;
+                item.orderDate = date;
             });
 
             // console.log('Updated cart data:', updatedData);
@@ -202,12 +203,13 @@ const PaymentAndDetails = ({ navigation, route }) => {
         setLoading(true);
         // console.log('triggered 1');
         // console.log('triggered 2');
+        const Date = new Date().getTime().toString()
         const docid = new Date().getTime().toString() + userloggeduid;
         const orderdatadoc = firebase.firestore().collection('UserOrders').doc(docid);
         // console.log('triggered 3');
         const orderitemstabledoc = firebase.firestore().collection('OrderItems').doc(docid);
 
-        await addingSomedata(docid);
+        await addingSomedata(docid, Date);
 
         if (updatedCartData !== null) {
             try {
