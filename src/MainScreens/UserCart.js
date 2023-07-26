@@ -111,7 +111,7 @@ const UserCart = ({ navigation }) => {
     const [allData, setAllData] = useState([]);
     const [shopInfo, setShopInfo] = useState([]);
 
- 
+
 
     useEffect(() => {
         // Fetch data from Firebase
@@ -123,63 +123,66 @@ const UserCart = ({ navigation }) => {
             // }
             const doc = await docRef.get();
             // if (!doc.empty) {
-              doc.forEach((doc) => {
+            doc.forEach((doc) => {
                 setShopInfo(doc.data());
-              })
+            })
             // )
         };
 
         fetchData();
     }, []);
-// console.log('dekkkkk',typeof parseInt(shopInfo.minpriceorder))
+    // console.log('dekkkkk',typeof parseInt(shopInfo.minpriceorder))
 
     //New Approach
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
     const [closedRestaurants, setClosedRestaurants] = useState([]);
+    const [restaurantName, setRestaurantName] = useState([]);
+    // console.log('dejhhi', restaurantName.length)
+    const checkShopOpen = () => {
+        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
-    useEffect(() => {
-        const checkShopOpen = () => {
-            if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+            //NEW CODE
+            let cartArrayNames = [];
+            const checkData = cartdata.cartItems;
+            checkData.forEach((item) => {
 
-                //NEW CODE
-                let cartArrayNames = [];
-                const checkData = cartdata.cartItems;
-                checkData.forEach((item) => {
+                // const cartArrayNames = item.
+                cartArrayNames.push(item.shop_id)
+            });
+            setRestaurantName(cartArrayNames);
+            // const cartArrayNames = Object.keys(cartdata);
+            // console.log('dekh veere', cartArrayNames)
 
-                    // const cartArrayNames = item.
-                    cartArrayNames.push(item.shop_id)
-                });
-                // const cartArrayNames = Object.keys(cartdata);
-                // console.log('dekh veere', cartArrayNames)
+            // console.log('dekhi bro 1', cartArrayNames);
+            // let checkStockV = false;
+            setClosedRestaurants([]); // Clear the array before adding new items
+            for (let i = 0; i < cartArrayNames.length; i++) {
+                console.log('dekhi bro 2');
+                const matchingUserId = userdata.find((user) => user.uid === cartArrayNames[i]);
 
-                // console.log('dekhi bro 1', cartArrayNames);
-                // let checkStockV = false;
-                setClosedRestaurants([]); // Clear the array before adding new items
-                for (let i = 0; i < cartArrayNames.length; i++) {
-                    console.log('dekhi bro 2');
-                    const matchingUserId = userdata.find((user) => user.uid === cartArrayNames[i]);
+                // console.log('dekhi bro 4', matchingUserId);
+                console.log('dekhi bro 4');
 
-                    // console.log('dekhi bro 4', matchingUserId);
-                    console.log('dekhi bro 4');
+                if (matchingUserId) {
+                    console.log('dekhi bro 5');
+                    if (matchingUserId.isShop === 'Close') {
+                        console.log('dekhi bro 7');
+                        setIsRestaurantOpen(false);
+                        setClosedRestaurants((prevClosedRestaurants) => [...prevClosedRestaurants, matchingUserId.restaurantName]);
+                        console.log('Dekhi bro nhi haiga');
+                    } else {
+                        setIsRestaurantOpen(true);
 
-                    if (matchingUserId) {
-                        console.log('dekhi bro 5');
-                        if (matchingUserId.isShop === 'Close') {
-                            console.log('dekhi bro 7');
-                            setIsRestaurantOpen(false);
-                            setClosedRestaurants((prevClosedRestaurants) => [...prevClosedRestaurants, matchingUserId.restaurantName]);
-                            console.log('Dekhi bro nhi haiga');
-                        } else {
-                            setIsRestaurantOpen(true);
-
-                            console.log('dekhi bro 8');
-                        }
+                        console.log('dekhi bro 8');
                     }
                 }
-            } else {
-                console.log('Empty array or null cartdata');
             }
-        };
+        } else {
+            console.log('Empty array or null cartdata');
+        }
+    };
+    useEffect(() => {
+      
 
         checkShopOpen();
     }, [cartdata, userdata]);
@@ -289,6 +292,7 @@ const UserCart = ({ navigation }) => {
         }
         getcartdata();
         GetTotalPrice();
+        checkShopOpen();
         setProcess(false)
         setLoading(false)
         // setIsLoading(false);
@@ -296,22 +300,30 @@ const UserCart = ({ navigation }) => {
 
     // console.log(typeof (cartdata))
     // console.log(totalCost.type)
-    // console.log(totalCost);
+    // console.log(parseInt(totalCost) < parseInt(shopInfo.minpriceorder) || parseInt(totalCost) > parseInt(shopInfo.maxpriceorder));
 
     const GoToPaymentPage = () => {
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
-            if (isRestaurantOpen === false) {
+            if (restaurantName.length != 1) {
+                alert("Only one restaurant order is accepted at a time.");
+                
+            }
+            else if (shopInfo.shopIs === 'Close') {
+                alert("Technical Issue!");
+                
+            }
+            else if (isRestaurantOpen === false) {
                 alert(`The following restaurant is closed : ${closedRestaurants}`)
             }
             else if (inStock === false) {
                 alert(`The following item is Out of Stock : ${outStock}`)
 
             }
-            else if( parseInt(totalCost) < parseInt(shopInfo.minpriceorder) ) {
-                alert(`Order value must be greater then : ${shopInfo.minpriceorder}`)
-                
-
+        
+            else if (parseInt(totalCost) < parseInt(shopInfo.minpriceorder) || parseInt(totalCost) > parseInt(shopInfo.maxpriceorder)) {
+                alert(`Order value must lie within: ${shopInfo.minpriceorder} - ${shopInfo.maxpriceorder}`);
             }
+            
             else {
                 navigation.navigate('PaymentNdetail', { cartdata })
             }
@@ -331,7 +343,7 @@ const UserCart = ({ navigation }) => {
                 <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                     <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+                        <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
 
                     </TouchableOpacity>
                 </View>
@@ -355,7 +367,7 @@ const UserCart = ({ navigation }) => {
                 <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                     <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+                        <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
 
                     </TouchableOpacity>
                 </View>
@@ -376,7 +388,7 @@ const UserCart = ({ navigation }) => {
             <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
 
                 </TouchableOpacity>
             </View>
@@ -421,15 +433,15 @@ const UserCart = ({ navigation }) => {
                                                 </View>
                                             }
 
-                                           
+
 
                                             {/* {process ? */}
 
-                                                {/* <TouchableOpacity style={styles.c4} >
+                                            {/* <TouchableOpacity style={styles.c4} >
                                                     <ActivityIndicator size="small" color="black" />
                                                 </TouchableOpacity> */}
-                                                {/* // : */}
-                                                <TouchableOpacity style={styles.c4} onPress={() => deleteItem(item, nData[0].shopId)}>
+                                            {/* // : */}
+                                            <TouchableOpacity style={styles.c4} onPress={() => deleteItem(item, nData[0].shopId)}>
                                                 <Text style={styles.txt1}>Delete</Text>
                                                 <AntDesign name="delete" size={24} color="black" style={styles.del} />
                                             </TouchableOpacity>

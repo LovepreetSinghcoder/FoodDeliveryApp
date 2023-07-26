@@ -14,8 +14,9 @@ const OfferSlider = ({ navigation }) => {
 
     const GetOfferSlider = async () => {
         const docRef = firebase.firestore().collection('offerSlider');
-        const docs = await docRef.get();
+        // const docs = await docRef.get();
 
+        //OLD ONE
         // if (!docs.empty) {
         //   const imageData = docs.map((doc) => doc.data());
         //   setData(imageData);
@@ -23,19 +24,36 @@ const OfferSlider = ({ navigation }) => {
         //   console.log('No data');
         // }
 
-        docRef.onSnapshot((snapshot) => {
-            if (!snapshot.empty) {
-                const imageData = snapshot.docs.map((doc) => doc.data());
-                // const imageData = snapshot.docs.data();
+        //NEXT OLD ONE
+        // docRef.onSnapshot((snapshot) => {
+        //     if (!snapshot.empty) {
+        //         const imageData = snapshot.docs.map((doc) => doc.data());
+        //         // const imageData = snapshot.docs.data();
 
-                // setData(imageData.flat());
-                setData(imageData.flatMap(Object.values));
+        //         // setData(imageData.flat());
+        //         setData(imageData.flatMap(Object.values));
 
-            } else {
-                console.log('No data');
-            }
-        });
+        //     } else {
+        //         console.log('No data');
+        //     }
+        // });
+
+        //NEWER
+        docRef.onSnapshot(snapshot => {
+            setData(snapshot.docs.map(doc => doc.data()))
+        }
+        )
     };
+
+    // const foodRef = firebase.firestore().collection('UserData');
+
+    //   useEffect(() => {
+    //     foodRef.onSnapshot(snapshot => {
+    //       setUserData(snapshot.docs.map(doc => doc.data()))
+    //     }
+    //     )
+    //   }, [])
+    // console.log('dekh veer', data[0].img1)
 
     useEffect(() => {
 
@@ -60,21 +78,47 @@ const OfferSlider = ({ navigation }) => {
                 nextButton={<Text style={styles.buttonText}>›</Text>}
                 prevButton={<Text style={styles.buttonText}>‹</Text>}
             >
-                {data && data.map((image, index) => (
+                {/* {data && data.map((image, index) => ( */}
                     <TouchableOpacity
                         style={styles.slide}
                         // onPress={() => {
                         //     navigation.navigate('Promotion');
                         // }}
                         onPress={handleSlidePress}
-                        key={index}
+                        // key={index}
                     >
                         <Image
-                            source={{ uri: image }}
+                            source={{ uri: data && data[0] && data[0].img1 }}
                             style={styles.image}
                         />
                     </TouchableOpacity>
-                ))}
+                    <TouchableOpacity
+                        style={styles.slide}
+                        // onPress={() => {
+                        //     navigation.navigate('Promotion');
+                        // }}
+                        onPress={handleSlidePress}
+                        // key={index}
+                    >
+                        <Image
+                            source={{ uri: data && data[0] && data[0].img2 }}
+                            style={styles.image}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.slide}
+                        // onPress={() => {
+                        //     navigation.navigate('Promotion');
+                        // }}
+                        onPress={handleSlidePress}
+                        // key={index}
+                    >
+                        <Image
+                            source={{ uri: data && data[0] && data[0].img3 }}
+                            style={styles.image}
+                        />
+                    </TouchableOpacity>
+                {/* ))} */}
             </Swiper>
         </View>
 

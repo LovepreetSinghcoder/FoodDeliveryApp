@@ -11,7 +11,7 @@ import { AuthContext } from '../Context/AuthContext';
 import * as Location from 'expo-location';
 
 import axios from 'axios';
-const Version = '1.3.5';
+const Version = '1.3.7';
 
 const HomeScreen = ({ navigation }) => {
   const { userloggeduid, checkIsLogged, SetLocationName, locationName } = useContext(AuthContext);
@@ -23,6 +23,8 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const [appdata, setAppdata] = useState(null);
+  const [appNoticeData, setAppNoticeData] = useState(null);
+
 
   const AppData = async () => {
     const docRef = firebase.firestore().collection('AppData')
@@ -36,10 +38,23 @@ const HomeScreen = ({ navigation }) => {
       console.log('no user data');
     }
   }
+  const AppNoticeData = async () => {
+    const docRef = firebase.firestore().collection('AppNotice')
+    const doc = await docRef.get();
+    if (!doc.empty) {
+      doc.forEach((doc) => {
+        setAppNoticeData(doc.data());
+      })
+    }
+    else {
+      console.log('no data');
+    }
+  }
   // console.log('dekh veer',appdata.CurrentVersion )
   useEffect(() => {
 
     AppData();
+    AppNoticeData();
   }, []);
 
   const [animation] = useState(new Animated.Value(0));
@@ -309,6 +324,35 @@ const HomeScreen = ({ navigation }) => {
           null
 
         }
+          {appNoticeData && appNoticeData.showNotice === 'true' ?
+          <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
+            <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
+
+              <View style={{ flexDirection: 'row', }}>
+                <View style={{ elevation: 3, width: '15%', paddingHorizontal: 6, paddingVertical: 2 }}>
+                  {/* <Text>AppIcon</Text> */}
+                  <Image source={{
+                    uri: appNoticeData.AppIcon
+                  }} style={{ width: 40, height: 40, borderRadius: 10, }} />
+                </View>
+                <View style={{ width: '84%', paddingHorizontal: 10, paddingVertical: 0, }}>
+                  <Text style={{ fontWeight: '600' }}>{appNoticeData.noticeTitle}</Text>
+                  <Text style={{ textAlign: 'justify' }}>{appNoticeData.noticeDisc}</Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 4, paddingTop: 1 }}>
+                <TouchableOpacity onPress={() => { Linking.openURL('https://www.instagram.com/shoviiofficial/') }} style={{ backgroundColor: colors.text1, paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20, elevation: 2 }}>
+                  <Text style={{ fontWeight: '600', fontSize: 12, color: colors.col1 }}>Instagram</Text>
+
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          :
+          null
+
+        }
 
         <Categories navigation={navigation} />
         <OfferSlider navigation={navigation} />
@@ -408,11 +452,12 @@ const styles = StyleSheet.create({
   searchbox: {
     flexDirection: 'row',
     width: '92%',
-    backgroundColor: colors.col1,
+    // backgroundColor: colors.col1,
+    backgroundColor: 'white',
     borderRadius: 30,
     alignItems: 'center',
     padding: 10,
-    marginVertical: 20,
+    marginVertical: 10,
     alignSelf: 'center',
     elevation: 2,
   },

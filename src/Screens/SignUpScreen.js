@@ -1,8 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, StatusBar, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { colors } from '../Global/styles';
 import { AuthContext } from '../Context/AuthContext';
 import { firebase } from '../Firebase/FirebaseConfig'
+import messaging from '@react-native-firebase/messaging';
+
 
 const SignUpScreen = ({ navigation }) => {
     const { SignUpHandler, UserLoggedHandler } = useContext(AuthContext);

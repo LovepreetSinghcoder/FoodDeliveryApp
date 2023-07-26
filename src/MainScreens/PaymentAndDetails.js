@@ -203,13 +203,13 @@ const PaymentAndDetails = ({ navigation, route }) => {
         setLoading(true);
         // console.log('triggered 1');
         // console.log('triggered 2');
-        const Date = new Date().getTime().toString()
+        const cDate = new Date().getTime().toString()
         const docid = new Date().getTime().toString() + userloggeduid;
         const orderdatadoc = firebase.firestore().collection('UserOrders').doc(docid);
         // console.log('triggered 3');
         const orderitemstabledoc = firebase.firestore().collection('OrderItems').doc(docid);
 
-        await addingSomedata(docid, Date);
+        await addingSomedata(docid, cDate);
 
         if (updatedCartData !== null) {
             try {

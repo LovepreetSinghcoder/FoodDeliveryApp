@@ -1,6 +1,7 @@
 module.exports = {
     colors: {
-        col1: 'white',
+        // col1: 'white', 
+        col1: '#F2F2F2',
         // text1: '#2EEAB1', 
         text1: '#FF3F00', 
 
@@ -42,16 +43,27 @@ module.exports = {
         marginVertical: 20,
     },
     veg: {
-        width: 20,
+        // width: 20,
         height: 20,
-        borderRadius: 20,
+        borderRadius: 10,
         backgroundColor: 'green',
+        fontSize: 10,
+        textAlign: 'center', 
+        color: 'white',
+        fontWeight: '500',
+        justifyContent: 'center',
+        paddingHorizontal: 7
     },
     nonveg: {
-        width: 20,
         height: 20,
-        borderRadius: 20,
+        borderRadius: 10,
         backgroundColor: 'red',
+        fontSize: 10,
+        textAlign: 'center', 
+        color: 'white',
+        fontWeight: '500',
+        justifyContent: 'center',
+        paddingHorizontal: 7
     },
     navbtn: {
         backgroundColor: '#FF3F00',

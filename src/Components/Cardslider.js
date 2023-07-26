@@ -30,8 +30,12 @@ const Cardslider = ({ title, data, navigation }) => {
                                 <Text style={styles.txt1}>{item.foodName}</Text>
 
                                 <View style={styles.s2in}>
-                                    <Text style={styles.txt2}>Rs.{item.foodPrice}/-</Text>
-                                    {item.foodType == 'Veg' ? <Text style={veg}></Text> : <Text style={nonveg}></Text>}
+                                    {/* <Text style={styles.txt2}>FAST FOOD • <Text style={{textDecorationLine:'line-through'}}>{item.actualFoodPrice}</Text> • ₹{item.foodPrice}/-</Text> */}
+                                    <Text style={styles.txt2}>
+                                        Fast Food •{' '}
+                                        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red'  }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
+                                    </Text>
+                                    {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>}
                                 </View>
 
                             </View>
@@ -42,14 +46,14 @@ const Cardslider = ({ title, data, navigation }) => {
                             </View>
                             {item.stock === 'out' ?
                                 <View style={styles.s3}>
-                                    <Text style={[styles.buybtn, {backgroundColor:'red'}]}>
-                                       Out of Stock
+                                    <Text style={[styles.buybtn, { backgroundColor: 'red' }]}>
+                                        OUT OF STOCK
                                     </Text>
                                 </View>
                                 :
                                 <View style={styles.s3}>
                                     <Text style={styles.buybtn}>
-                                        Buy
+                                        BUY NOW
                                     </Text>
                                 </View>
                             }
@@ -85,41 +89,48 @@ const styles = StyleSheet.create({
         // backgroundColor: "aqua",
         width: 300,
         height: 260,
-        margin: 10,
-        borderRadius: 21,
+        marginLeft: 10,
+        marginTop: 10,
+        borderRadius: 18,
         borderWidth: 1,
         borderColor: '#d6d6d6',
         backgroundColor: colors.col1,
-        // elevation: 2
+        // elevation: 5,
+        // paddingBottom: 100
     },
     cardimgin: {
         width: "100%",
-        height: 180,
+        height: 170,
         // borderRadiusTop: 20,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
+        borderTopLeftRadius: 17,
+        borderTopRightRadius: 17
     },
     s2: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        // flexDirection: 'row',
+        // justifyContent: 'space-between',
+        // alignItems: 'center',
+        marginHorizontal: 3,
+        marginTop: 3
         // backgroundColor: 'aqua',
     },
     txt1: {
-        fontSize: 18,
+        fontSize: 16,
         color: colors.text3,
         marginHorizontal: 5,
+        fontWeight: '600',
         width: 150,
     },
     txt2: {
-        fontSize: 20,
+        fontSize: 12,
         color: colors.text2,
         marginRight: 10,
+        fontWeight: '500',
+        // textDecorationLine: 'line-through'
     },
     s2in: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 10,
+        marginHorizontal: 6,
 
     },
     s3: {
@@ -132,11 +143,12 @@ const styles = StyleSheet.create({
         backgroundColor: colors.text1,
         color: colors.col1,
         paddingHorizontal: 10,
-        paddingVertical: 5,
-        fontSize: 20,
+        paddingVertical: 8.5,
+        fontSize: 15,
         // borderRadius: 10,
-        borderBottomLeftRadius: 19,
-        borderBottomRightRadius: 19,
+        fontWeight: '600',
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
         width: '100%',
         textAlign: 'center',
     }
