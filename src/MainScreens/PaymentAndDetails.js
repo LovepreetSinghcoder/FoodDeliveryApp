@@ -12,7 +12,13 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
     const [orderdata, setOrderdata] = useState([]);
     const [totalCost, setTotalCost] = useState('0');
-    const { cartdata } = route.params;
+    // const { cartdata } = route.params;
+    // const route = useRoute();
+
+    // Access the passed values from route.params
+    const cartdata = route.params.cartdata;
+    const finalCost = route.params.totalCost;
+    // console.log('dekh bro total code', totalCost)
 
     useEffect(() => {
         // setOrderdata(JSON.parse(cartdata));
@@ -64,7 +70,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
         getShopToken();
     }, [cartdata, userdata]);
-    // console.log('dekh rha hai vinod', shopTokens )
+
 
     useEffect(() => {
 
@@ -221,7 +227,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
                     orderdate: new Date().getTime().toString(),
                     userid: userloggeduid,
                     orderpayment: 'online',
-                    paymenttotal: totalCost
+                    paymenttotal: finalCost
                 });
 
                 await deleteCart();
@@ -234,7 +240,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
                 await sendNotification(shopTokens, 'New Order Received', 'Time: ' + currentTime);
                 // await sendNotification(shopTokens, 'New Order Received', 'Time:' + (new Date().getTime().toString()));
 
-                // console.log('triggered 4');
+                console.log('New Order Received 45',shopTokens );
                 navigation.navigate('HomeScreen');
                 alert('Order Placed Successfully');
             } catch (error) {

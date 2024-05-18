@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator 
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 import { colors } from '../Global/styles';
+import { Entypo } from '@expo/vector-icons';
 
 
 const EditProfileScreen = ({ navigation }) => {
@@ -51,26 +52,18 @@ const EditProfileScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Edit Profile</Text>
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={fullName}
-        onChangeText={setFullName}
-      /> */}
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      /> */}
-      <TextInput
-        style={inputStyle}
-        placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-      // keyboardType="phone-pad"
-      />
+    
+      <View style={inputStyle}>
+        <Entypo name="address" size={21} color="#ccc" style={{ paddingLeft: 3, paddingTop: 7 }} />
+        <TextInput
+          // style={inputStyle}
+          style={styles.input_in}
+          placeholder="Address"
+          value={address}
+          onChangeText={setAddress}
+        // keyboardType="phone-pad"
+        />
+      </View>
       <Text style={inputStylet}>Please enter valid address!</Text>
 
 
@@ -100,7 +93,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
+  container_input: {
+
+  },
   input: {
+    flexDirection: 'row',
+    // paddingLeft: 5,
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -111,6 +109,11 @@ const styles = StyleSheet.create({
   invalidInput: {
     borderColor: 'red',
     borderBottomWidth: 2,
+  },
+
+  input_in: {
+    paddingLeft: 4,
+    width: '90%',
   },
   saveButton: {
     // backgroundColor: '#4E4E4E' ,

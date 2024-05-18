@@ -14,7 +14,7 @@ const CategoriesDataScreen = ({ navigation, route }) => {
     if (route.params === undefined) {
         navigation.navigate('HomeScreen')
     }
-  
+
     const [foodData, setFoodData] = useState([]);
 
     const foodRef = firebase.firestore().collection('foodData');
@@ -39,7 +39,7 @@ const CategoriesDataScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         searchResult();
-    },[Ndata, foodData])
+    }, [Ndata, foodData])
 
     const openProductPage = (item) => {
         // console.log('clicked ', item)
@@ -48,7 +48,7 @@ const CategoriesDataScreen = ({ navigation, route }) => {
     return (
         <View style={styles.Maincontainer}>
             <TouchableOpacity style={styles.searchbox}
-             onPress={() => { navigation.navigate('Searchpage') }}>
+                onPress={() => { navigation.navigate('Searchpage') }}>
 
                 <Ionicons name="search" size={24} color="black" style={
                     styles.searchicon
@@ -71,10 +71,10 @@ const CategoriesDataScreen = ({ navigation, route }) => {
                     editable={false}
                 />
 
-                <TouchableOpacity style={{ borderLeftWidth: 1, borderColor: '#8c8c8c' }} 
+                <TouchableOpacity style={{ borderLeftWidth: 1, borderColor: '#8c8c8c' }}
                 // onPress={() => { searchResult(search); Keyboard.dismiss(); }}
                 >
-                    <Text style={{ fontWeight: '600', color: '#8c8c8c', paddingLeft: 4,  }}>Search</Text>
+                    <Text style={{ fontWeight: '600', color: '#8c8c8c', paddingLeft: 4, }}>Search</Text>
                 </TouchableOpacity>
 
 
@@ -95,6 +95,13 @@ const CategoriesDataScreen = ({ navigation, route }) => {
                         >
                             <View style={styles.card}>
                                 <View style={styles.s1}>
+                                    {item.stock === 'out' ?
+                                        <View style={styles.outOfStockContainer}>
+                                            <Text style={styles.outOfStockText}>Out of Stock</Text>
+                                        </View>
+                                        :
+                                        null
+                                    }
                                     <Image source={{
                                         uri: item.foodImageUrl
                                     }} style={styles.cardimgin} />
@@ -105,14 +112,14 @@ const CategoriesDataScreen = ({ navigation, route }) => {
                                     <View style={styles.s2in}>
                                         {/* <Text style={styles.txt2}>Rs.{item.foodPrice}/-</Text> */}
                                         <Text style={styles.txt2}>
-                                        Fast Food •{' '}
-                                        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red'  }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
-                                    </Text>
+                                            Fast Food •{' '}
+                                            <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
+                                        </Text>
                                         {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>}
                                     </View>
 
                                 </View>
-                                <View style={styles.s3}>
+                                {/* <View style={styles.s3}>
                                     <Text style={styles.buybtn}>
                                         Buy
                                     </Text>
@@ -129,7 +136,7 @@ const CategoriesDataScreen = ({ navigation, route }) => {
                                             BUY NOW
                                         </Text>
                                     </View>
-                                }
+                                } */}
                             </View>
                         </TouchableOpacity>
                     )}
@@ -204,24 +211,52 @@ const styles = StyleSheet.create({
 
 
         width: '94%',
-        height: 260,
+        height: 225,
         //    marginLeft: 10,
         marginTop: 10,
-        borderRadius: 18,
+        borderRadius: 22,
         borderWidth: 1,
         borderColor: '#d6d6d6',
         backgroundColor: colors.col1,
         alignSelf: 'center',
+        // elevation: 1
+
+    },
+    s1: {
+        position: 'relative', // Position the child elements relative to this container
+
+    },
+
+    outOfStockContainer: {
+        position: 'absolute', // Position this container absolutely within its parent
+        top: 5, // Align it to the top
+        left: 5, // Align it to the left
+        backgroundColor: 'red', // Background color
+        padding: 5, // Add padding for better visibility
+        zIndex: 1, // Ensure it's above the image
+        borderRadius: 14,
+        paddingHorizontal: 10
+    },
+    outOfStockText: {
+        color: 'white', // Text color
+        fontWeight: 'bold', // Text style
 
     },
     cardimgin: {
-
         width: "100%",
         height: 170,
         // borderRadiusTop: 20,
-        borderTopLeftRadius: 17,
-        borderTopRightRadius: 17
+        borderTopLeftRadius: 21,
+        borderTopRightRadius: 21
     },
+    // cardimgin: {
+
+    //     width: "100%",
+    //     height: 170,
+    //     // borderRadiusTop: 20,
+    //     borderTopLeftRadius: 17,
+    //     borderTopRightRadius: 17
+    // },
     s2: {
 
         marginHorizontal: 3,

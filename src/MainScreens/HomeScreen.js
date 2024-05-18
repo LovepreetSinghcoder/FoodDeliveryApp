@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking, Image } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking, Image, PermissionsAndroid } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import HeaderBar from '../Components/HeaderBar'
 import { AntDesign } from '@expo/vector-icons';
@@ -9,13 +9,184 @@ import Cardslider from '../Components/Cardslider';
 import Categories from '../Components/Categories';
 import { AuthContext } from '../Context/AuthContext';
 import * as Location from 'expo-location';
+import messaging from '@react-native-firebase/messaging';
+import { Ionicons } from '@expo/vector-icons';
+
 
 import axios from 'axios';
-const Version = '1.3.7';
+import { Button } from 'react-native-elements';
+import LineWithText from '../Components/LineWithText';
+import Restaurants from '../Components/Restaurants';
+const Version = '1.5.10';
 
 const HomeScreen = ({ navigation }) => {
-  const { userloggeduid, checkIsLogged, SetLocationName, locationName } = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
+  const { userloggeduid, checkIsLogged, SetLocationName, locationName, } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+
+
+  // Hide for Expo Start 
+
+  // const requestUserPermission = async () => {
+  //   try {
+
+  //     const authStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+  //     // const authStatus = await messaging().requestPermission();
+
+  //     const enabled =
+  //       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  //     setNotificationEnabled(enabled);
+  //   } catch (error) {
+  //     console.error('Error requesting permission:', error);
+  //     setNotificationEnabled(false);
+  //   }
+  // };
+
+  // const openNotificationSettings = () => {
+  //   Linking.openSettings();
+  // };
+
+
+
+
+  // const requestNotificationPermission = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const permissionResult = await PermissionsAndroid.request(
+  //       PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+  //     );
+
+  //     // if (permissionResult === PermissionsAndroid.RESULTS.GRANTED) {
+  //     //   const authStatus = await messaging().requestPermission();
+  //     //   const enabled =
+  //     //     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //     //     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  //     //   setNotificationEnabled(enabled);
+  //     // } else {
+  //     //   // Handle the case where the user denied permission
+  //     //   setNotificationEnabled(false);
+  //     // }
+  //   } catch (error) {
+  //     console.error('Error requesting permission:', error);
+  //     setNotificationEnabled(false);
+  //   }
+  //   finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
+
+  // const requestNotificationPermission = async () => {
+  //   // setLoading(true);
+  //   console.log('render 1')
+
+  //   try {
+  //     const { status } = await PermissionsAndroid.request(
+  //       PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+  //     );
+  //     console.log('render 2')
+
+  //     if (status === PermissionsAndroid.RESULTS.GRANTED) {
+  //       // Permission granted, you can proceed with your logic here
+  //       console.log('render 3')
+
+  //       setNotificationEnabled(true);
+  //     } else {
+  //       // Handle the case where the user denied permission
+  //       console.log('render 4')
+
+  //       setNotificationEnabled(false);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error requesting permission:', error);
+  //     console.log('render 5')
+
+  //     setNotificationEnabled(false);
+  //   }
+  //   // finally {
+  //   //   setLoading(false);
+  //   // }
+  // };
+
+
+  const requestNotificationPermission = async () => {
+    // setLoading(true);
+    console.log('render 1');
+
+    try {
+      const { status } = await new Promise(async (resolve) => {
+        const result = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+        resolve(result);
+      });
+
+      console.log('render 2');
+
+      if (status === PermissionsAndroid.RESULTS.GRANTED) {
+        // Permission granted, you can proceed with your logic here
+        console.log('render 3');
+        setNotificationEnabled(true);
+      } else {
+        // Handle the case where the user denied permission
+        console.log('render 4');
+        setNotificationEnabled(false);
+      }
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+      console.log('render 5');
+      setNotificationEnabled(false);
+    }
+    // finally {
+    //   setLoading(false);
+    // }
+  };
+
+
+
+
+  // Call requestNotificationPermission() where needed
+
+
+  const openNotificationSettings = () => {
+    Linking.openSettings();
+  };
+
+
+
+  // Function to handle refresh token and save it to the server
+  const handleTokenRefresh = async () => {
+    try {
+      const refreshedToken = await messaging().getToken();
+      if (refreshedToken) {
+        // Update the token in your app's state or context
+        // Send the updated token to your backend for storage
+        // (e.g., using an API call to your server)
+        try {
+          await firebase.firestore().collection('UserData').doc(userloggeduid).update({
+            fcmToken: refreshedToken,
+          });
+          console.log('Address updated successfully');
+          // navigation.navigate('Profile')
+        } catch (error) {
+          console.log('Error updating address:', error);
+        }
+
+        console.log('FCM Token refreshed:', refreshedToken);
+      }
+    } catch (error) {
+      console.error('Error refreshing FCM token:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Optionally, you can also call handleTokenRefresh once during app initialization
+    handleTokenRefresh();
+  }, [])
+  // Hide for Expo Start End
+
 
   const handleButtonPress = () => {
     // Handle button press logic here
@@ -106,6 +277,7 @@ const HomeScreen = ({ navigation }) => {
       setLocation(false);
       setLoading(false);
 
+
       return;
     }
     // Permission granted, continue with obtaining the location
@@ -171,11 +343,30 @@ const HomeScreen = ({ navigation }) => {
     requestLocationPermission()
   }, [])
 
+
+
+
+
+  // useEffect(() => {
+  //   requestNotificationPermission();
+  // }, []);
+
   const handleInstagramLink = () => {
     Linking.openURL('https://www.instagram.com/shoviiofficial/');
   };
 
   // console.log('dekh', locationName)
+  const [newlocation, setNewLocation] = useState('');
+
+  const NewLocationhandler = () => {
+    if (newlocation.trim() === '' || newlocation.trim().length <= 3) {
+      alert('Please enter a valid location!');
+      return;
+    }
+    // console.log('triggere')
+    SetLocationName(newlocation)
+    // navigation.navigate('HomeScreen')
+  }
 
   const [location, setLocation] = useState(true)
 
@@ -185,35 +376,41 @@ const HomeScreen = ({ navigation }) => {
         <StatusBar
           backgroundColor={colors.text1}
         />
-        <View style={{ backgroundColor: colors.text1, height: 50, alignContent: 'center' }}>
-          <Text style={{ paddingVertical: 10, paddingHorizontal: 20, fontSize: 20, }}>...</Text>
-        </View>
+        <TouchableOpacity onPress={() => { navigation.navigate('Changeloction') }}>
+
+          <View style={{ backgroundColor: colors.text1, height: 50, alignContent: 'center' }}>
+            <Text style={{ paddingVertical: 10, paddingHorizontal: 20, fontSize: 20, }}>...</Text>
+          </View>
+        </TouchableOpacity>
         <Text style={{ width: '10%', alignSelf: 'center', paddingTop: 10 }}>
-          <ActivityIndicator size="large" color={colors.text1} style={{ justifyContent: 'center', }} />;
+          <ActivityIndicator size="large" color={colors.text1} style={{ justifyContent: 'center', }} />
         </Text>
       </View>
     )
   }
 
 
-  else if (location === false) {
+  else if (location === false && locationName === null) {
     return (
       <View style={styles.Maincontainer}>
         <StatusBar
           backgroundColor={colors.text1}
         />
         <View style={{ paddingVertical: 20, paddingHorizontal: 20 }}>
-          <TextInput
-            style={styles.locationinput}
-            placeholder="Set your location"
-            value={location}
-            onChangeText={setLocation}
-            keyboardType="text"
-            autoCapitalize="none"
-          />
-
+          <View style={styles.location_container}>
+            <Ionicons name="ios-location" size={28} color={colors.text1} style={{ paddingLeft: 3, paddingTop: 3 }} />
+            <TextInput
+              style={styles.locationinput}
+              placeholder="Set your location"
+              value={location}
+              // onChangeText={setLocation}
+              onChangeText={(text) => setNewLocation(text)}
+              keyboardType="text"
+              autoCapitalize="none"
+            />
+          </View>
           <TouchableOpacity style={styles.locationbutton}
-          //  onPress={() =>{setLocation()}}
+            onPress={() => { NewLocationhandler() }}
           >
             <Text style={styles.lbuttonText}>Set Location</Text>
           </TouchableOpacity>
@@ -223,7 +420,8 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const locationArrays = ['desu jodha', 'mangeana']
+  const locationArrays = ['desu jodha', 'mangiana', 'phullo', 'sekhu', 'joge wala', 'jogewala', 'mangeana', 'habuana', 'haibuana', 'panniwala moreka', 'delhi']
+
 
   if (!locationArrays.includes(locationName)) {
     return (
@@ -295,6 +493,36 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.input}>Search</Text>
 
         </TouchableOpacity>
+
+        {/* <View>
+          {notificationEnabled ? null : (
+            <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
+              <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
+
+                <View style={{ flexDirection: 'row', }}>
+                  <View style={{ elevation: 3, width: '15%', paddingHorizontal: 6, paddingVertical: 4 }}>
+                  
+                    <Image source={{
+                      uri: appdata.AppIcon
+                    }} style={{ width: 40, height: 40, borderRadius: 10, }} />
+                  </View>
+                  <View style={{ width: '82%', paddingHorizontal: 10, paddingVertical: 0, }}>
+                    <Text style={{ fontWeight: '600' }}>Enable Notification</Text>
+                    <Text>Please provide notification permissions for a better experience.!</Text>
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 4, paddingTop: 7 }}>
+                  <TouchableOpacity onPress={() => openNotificationSettings()}
+                    style={{ backgroundColor: colors.text1, paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20, elevation: 2 }}>
+                    <Text style={{ fontWeight: '600', fontSize: 12, color: colors.col1 }}>Open Notification Settings</Text>
+
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+        </View> */}
         {appdata && appdata.CurrentVersion !== Version ?
           <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
             <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
@@ -324,7 +552,7 @@ const HomeScreen = ({ navigation }) => {
           null
 
         }
-          {appNoticeData && appNoticeData.showNotice === 'true' ?
+        {appNoticeData && appNoticeData.showNotice === 'true' ?
           <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
             <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
 
@@ -353,17 +581,60 @@ const HomeScreen = ({ navigation }) => {
           null
 
         }
-
+        <LineWithText navigation={navigation} heading={'CATEGORIES'}/>
         <Categories navigation={navigation} />
+        <LineWithText navigation={navigation} heading={'OFFERS & DEALS'}/>
+
         <OfferSlider navigation={navigation} />
         {/* <Text>HomeScreen</Text> */}
+        <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'}/>
+
+        {foodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={foodData} navigation={navigation} />}
+
+        {/* <TouchableOpacity style={{ width: '95%', alignSelf: 'center', height: 235, borderRadius: 20, elevation: 2, backgroundColor: 'white' }} onPress={() => navigation.navigate('VegetableShow')}>
+          <View style={{ backgroundColor: 'green', borderTopRightRadius: 18.5, borderTopLeftRadius: 18.5, paddingBottom: 5, paddingTop: 5, paddingHorizontal: 10 }}>
+            <Text style={{ backgroundColor: 'white', borderRadius: 12, borderWidth: .5, borderColor: 'green', width: 45, paddingHorizontal: 10, color: 'green', fontSize: 12 }}>Trial</Text>
+            <Text style={{ fontWeight: '500', color: 'white', marginLeft: 3 }}>Vegetables</Text>
+          </View>
+          <View style={{ flexDirection: 'row', width: '100%', paddingHorizontal: 5 }}>
+            <View style={{ height: 180, width: '49%', borderWidth: 1, borderColor: 'grey', borderRadius: 12, marginVertical: 5 }}>
+              <Image source={require('../Images/gobhi.jpg')} style={{ width: '100%', height: '75%', borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
+              <View style={{ paddingLeft: 5, paddingTop: 2 }}>
+                <Text style={{ fontWeight: '500' }}>Gobhi</Text>
+
+                <View style={styles.s2in}>
+                  <Text style={styles.txt2}>
+                    Price •{' '}
+                    <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹60/-</Text> • ₹50/-
+                  </Text>
+                </View>
+
+              </View>
+            </View>
+            <View style={{ height: 180, width: '49%', borderWidth: 1, borderColor: 'grey', borderRadius: 12, marginVertical: 5, marginLeft: 5 }}>
+              <Image source={require('../Images/aalu.jpg')} style={{ width: '100%', height: '75%', borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
+              <View style={{ paddingLeft: 5, paddingVertical: 5 }}>
+                <Text style={{ fontWeight: '500' }}>Aalu</Text>
+
+                <View style={styles.s2in}>
+
+                  <Text style={styles.txt2}>
+                    Price •{' '}
+                    <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹20/-</Text> • ₹10/-
+                  </Text>
+                </View>
+
+              </View>
+            </View>
 
 
-        {foodData.length === 0 ? null : <Cardslider title={"Today's Special"} data={foodData} navigation={navigation} />}
+          </View>
+        </TouchableOpacity> */}
 
-        {VegData.length === 0 ? null : <Cardslider title={"Veg"} data={VegData} navigation={navigation} />}
 
-        {NonVegData.length === 0 ? null : <Cardslider title={"Non-Veg"} data={NonVegData} navigation={navigation} />}
+        {VegData.length === 0 ? null : <Cardslider title={"VEG"} data={VegData} navigation={navigation} />}
+
+        {NonVegData.length === 0 ? null : <Cardslider title={"NON-VEG"} data={NonVegData} navigation={navigation} />}
 
       </ScrollView>
     </View>
@@ -376,17 +647,31 @@ const styles = StyleSheet.create({
 
   Maincontainer: {
     // backgroundColor: 'green',
+    backgroundColor: colors.col1,
+
     flex: 1,
     height: '100%'
 
   },
+  location_container: {
 
-  locationinput: {
+    flexDirection: 'row',
     marginBottom: 12,
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginHorizontal: 2,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 25,
+  },
+
+  locationinput: {
+    // marginBottom: 12,
+    paddingLeft: 10,
+    // borderColor: '#ccc',
+    // borderWidth: 1,
+    // borderRadius: 25,
+    width: '90%'
   },
   locationbutton: {
     backgroundColor: colors.text1,
@@ -454,7 +739,7 @@ const styles = StyleSheet.create({
     width: '92%',
     // backgroundColor: colors.col1,
     backgroundColor: 'white',
-    borderRadius: 30,
+    borderRadius: 20,
     alignItems: 'center',
     padding: 10,
     marginVertical: 10,

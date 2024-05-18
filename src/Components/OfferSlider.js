@@ -4,6 +4,7 @@ import Swiper from 'react-native-swiper'
 // import { colors } from '../Global/style'
 import { colors } from '../Global/styles'
 import { firebase } from '../Firebase/FirebaseConfig'
+// import sampleimg from '../Images/sampleImg1.jpeg'
 
 
 
@@ -79,45 +80,50 @@ const OfferSlider = ({ navigation }) => {
                 prevButton={<Text style={styles.buttonText}>‹</Text>}
             >
                 {/* {data && data.map((image, index) => ( */}
-                    <TouchableOpacity
-                        style={styles.slide}
-                        // onPress={() => {
-                        //     navigation.navigate('Promotion');
-                        // }}
-                        onPress={handleSlidePress}
-                        // key={index}
-                    >
-                        <Image
-                            source={{ uri: data && data[0] && data[0].img1 }}
-                            style={styles.image}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.slide}
-                        // onPress={() => {
-                        //     navigation.navigate('Promotion');
-                        // }}
-                        onPress={handleSlidePress}
-                        // key={index}
-                    >
-                        <Image
-                            source={{ uri: data && data[0] && data[0].img2 }}
-                            style={styles.image}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.slide}
-                        // onPress={() => {
-                        //     navigation.navigate('Promotion');
-                        // }}
-                        onPress={handleSlidePress}
-                        // key={index}
-                    >
-                        <Image
-                            source={{ uri: data && data[0] && data[0].img3 }}
-                            style={styles.image}
-                        />
-                    </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.slide}
+                    // onPress={() => {
+                    //     navigation.navigate('Promotion');
+                    // }}
+                    onPress={handleSlidePress}
+                // key={index}
+                >
+                    <Image
+                        // source={{ uri: data && data[0] && data[0].img1 }}
+                        source={{ uri: data && data[0] && data[0].img1 ? data[0].img1 : 'https://firebasestorage.googleapis.com/v0/b/shovii-official.appspot.com/o/OfferSlider%2Fnew%20menu%20added.jpeg?alt=media&token=eefef563-6923-4968-aac2-c4cd11066a47' }}
+                        style={styles.image}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.slide}
+                    // onPress={() => {
+                    //     navigation.navigate('Promotion');
+                    // }}
+                    onPress={handleSlidePress}
+                // key={index}
+                >
+                    <Image
+                        // source={{ uri: data && data[0] && data[0].img2 }}
+                        source={{ uri: data && data[0] && data[0].img2 ? data[0].img2 : 'https://firebasestorage.googleapis.com/v0/b/shovii-official.appspot.com/o/OfferSlider%2Fnew%20menu%20added.jpeg?alt=media&token=eefef563-6923-4968-aac2-c4cd11066a47' }}
+
+                        style={styles.image}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.slide}
+                    // onPress={() => {
+                    //     navigation.navigate('Promotion');
+                    // }}
+                    onPress={handleSlidePress}
+                // key={index}
+                >
+                    <Image
+
+                        // source={{ uri: data && data[0] && data[0].img3 }}
+                        source={{ uri: data && data[0] && data[0].img3 ? data[0].img3 : 'https://firebasestorage.googleapis.com/v0/b/shovii-official.appspot.com/o/OfferSlider%2Fnew%20menu%20added.jpeg?alt=media&token=eefef563-6923-4968-aac2-c4cd11066a47' }}
+                        style={styles.image}
+                    />
+                </TouchableOpacity>
                 {/* ))} */}
             </Swiper>
         </View>
@@ -131,7 +137,8 @@ export default OfferSlider
 const styles = StyleSheet.create({
     offerSlider: {
         width: '100%',
-        height: 150,
+        // width: 400,
+        height: 100,
         backgroundColor: colors.col1,
         paddingHorizontal: 10,
         justifyContent: 'center',
@@ -140,7 +147,7 @@ const styles = StyleSheet.create({
     },
     slide: {
         width: '100%',
-        height: 150,
+        height: 100,
         backgroundColor: colors.col1,
         justifyContent: 'center',
         alignItems: 'center',

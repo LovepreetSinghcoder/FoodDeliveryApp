@@ -1,7 +1,7 @@
 module.exports = {
     colors: {
         // col1: 'white', 
-        col1: '#F2F2F2',
+        col1: '#fcfeff',
         // text1: '#2EEAB1', 
         text1: '#FF3F00', 
 

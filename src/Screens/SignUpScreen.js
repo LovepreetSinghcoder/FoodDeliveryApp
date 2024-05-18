@@ -4,11 +4,14 @@ import { colors } from '../Global/styles';
 import { AuthContext } from '../Context/AuthContext';
 import { firebase } from '../Firebase/FirebaseConfig'
 import messaging from '@react-native-firebase/messaging';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 
 const SignUpScreen = ({ navigation }) => {
     const { SignUpHandler, UserLoggedHandler } = useContext(AuthContext);
 
+    const [userloggeduid, setUserloggeduid] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
@@ -17,51 +20,74 @@ const SignUpScreen = ({ navigation }) => {
     const [cpassword, setCPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [fcmToken, setFcmToken] = useState('')
+    const [showMainContainer, setShowMainContainer] = useState(true);
+    const [showOTPContainer, setShowOTPContainer] = useState(false);
+    const [showNameContainer, setShowNameContainer] = useState(false);
+    const [showAddressContainer, setShowAddressContainer] = useState(false);
+    const [showPhoneContainer, setShowPhoneContainer] = useState(false);
+
+
+
+
+
+
+
+
     useEffect(() => {
         try {
-          messaging()
-            .getToken()
-            .then((token) => {
-              console.log('FCM token:', token);
-              setFcmToken(token)
-              // Use the token as needed (e.g., store it in your database or send it to your server)
-            })
-            .catch((error) => {
-              console.log('Error getting FCM token:', error);
-            });
+            messaging()
+                .getToken()
+                .then((token) => {
+                    console.log('FCM token:', token);
+                    setFcmToken(token)
+                    // Use the token as needed (e.g., store it in your database or send it to your server)
+                })
+                .catch((error) => {
+                    console.log('Error getting FCM token:', error);
+                });
         } catch (error) {
-          console.log('try block is throw error', error);
-    
+            console.log('try block is throw error', error);
+
         }
-      }, [])
+    }, [])
 
 
+
+
+    function isValidEmail(email) {
+        const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+        return emailRegex.test(email);
+    }
     const handleSignup = async () => {
 
 
         setIsLoading(true);
-        if (name === '') {
-            alert("Fill the Name field!");
-            // setCustomError("Password doesn't match");
-            setIsLoading(false);
 
+        if (!email || !password || !cpassword) {
+            alert('Please fill in all fields');
+            setIsLoading(false);
             return;
         }
 
-        else if (password != cpassword) {
-            alert("Password doesn't match");
-            // setCustomError("Password doesn't match");
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address!');
             setIsLoading(false);
-
             return;
         }
-        else if (phone.length != 10) {
-            alert("Phone number should be 10 digit");
-            setIsLoading(false);
 
-            // setCustomError("Phone number should be 10 digit");
+        if (password !== cpassword) {
+            alert("Password and Confirm Password don't match!");
+            setIsLoading(false);
             return;
         }
+
+        if (password.length < 6) {
+            alert('Password must be at least 6 characters long!');
+            setIsLoading(false);
+            return;
+        }
+
+
         try {
             await firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredentials) => {
@@ -75,23 +101,21 @@ const SignUpScreen = ({ navigation }) => {
                             {
                                 email: email,
                                 password: password,
-                                // cpassword: cpassword,
-                                phone: phone,
-                                name: name,
-                                address: address,
                                 uid: uid,
                                 fcmToken: fcmToken,
                             }
                         ).then(() => {
                             console.log('data added to firestore')
                             // setUserloggeduid(userCredentials?.user?.uid);
-                            UserLoggedHandler(userCredentials?.user?.uid);
+                            // UserLoggedHandler(userCredentials?.user?.uid);
+                            setUserloggeduid(userCredentials?.user?.uid)
+                            setShowMainContainer(false)
+                            setShowNameContainer(true)
 
                             // setSuccessmsg('User created successfully')
                         }).catch((error) => {
                             console.log('firestore error ', error)
                         }
-
                         )
                     }
 
@@ -119,13 +143,77 @@ const SignUpScreen = ({ navigation }) => {
                         console.log(error.message)
                     }
                 })
-            setIsLoading(false);
+            // setIsLoading(false);
         }
         catch (error) {
             console.log('sign up system error ', error.message)
-            setIsLoading(false);
+            // setIsLoading(false);
         }
         setIsLoading(false);
+    };
+
+    const handleProfileName = () => {
+        // Logic to save profile changes
+        setIsLoading(true)
+        if (name === '' || name.length < 3) {
+            alert("Fill the valid Name!");
+            setIsLoading(false);
+            return;
+        }
+        else {
+            setShowNameContainer(false)
+            setShowAddressContainer(true)
+        }
+
+        setIsLoading(false)
+    };
+
+    const handleProfileAddress = async () => {
+        // Logic to save profile changes
+        setIsLoading(true)
+        if (address === '' || address.length < 3) {
+            alert("Fill the valid Address!");
+            setIsLoading(false);
+
+            return;
+        }
+        else {
+            setShowAddressContainer(false)
+            setShowPhoneContainer(true)
+        }
+
+        setIsLoading(false)
+    };
+
+    const handleProfileData = async () => {
+        // Logic to save profile changes
+        setIsLoading(true)
+        if (phone.length != 10) {
+            alert("Phone number should be 10 digit");
+            setIsLoading(false);
+            return;
+        }
+
+        // setAddressError(false);
+
+        try {
+            await firebase.firestore().collection('UserData').doc(userloggeduid).update({
+                name: name,
+                phone: phone,
+                address: address,
+            });
+            console.log('Data updated successfully');
+            setShowPhoneContainer(false)
+
+            UserLoggedHandler(userloggeduid);
+
+
+        } catch (error) {
+            console.log('Error updating Data:', error);
+            alert("There is somthing error!");
+
+        }
+        setIsLoading(false)
     };
 
     return (
@@ -133,68 +221,274 @@ const SignUpScreen = ({ navigation }) => {
             <StatusBar
                 backgroundColor={colors.text1}
             />
+            <View style={styles.container_Head} >
+                <Text style={styles.container_Head_txt}>shovii</Text>
+            </View>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Name"
-                value={name}
-                onChangeText={setName}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Address"
-                value={address}
-                onChangeText={setAddress}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Phone"
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Confirm Password"
-                value={cpassword}
-                onChangeText={setCPassword}
-                secureTextEntry
-            />
+            {showMainContainer && (
+                <View style={styles.container_main}>
+                    <View style={styles.container_main_in1}>
+                        <View style={styles.container_main_in1_1}>
+                            <Text style={styles.container_main_in1_1_txt}>Sign Up</Text>
+                        </View>
+                        <View style={styles.container_main_in1_2}>
+                            <TouchableOpacity style={styles.container_main_in1_2_btn} onPress={() => navigation.navigate('login')}>
+                                <Text style={{
+                                    fontSize: 25,
+                                    fontWeight: '600',
+                                    color: '#fca78b',
+                                }}>Sign In</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.container_main_in1_2_txt} >Already have an Account?</Text>
+
+                        </View>
+                    </View>
 
 
-            {isLoading ?
+                    <View style={styles.container_main_in2}>
+                        <Entypo name="email" size={21} color="#ccc" style={{ paddingLeft: 3, paddingTop: 3 }} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                    </View>
 
-                <TouchableOpacity style={styles.button} >
-                    <ActivityIndicator size="small" color="#fff" />
-                </TouchableOpacity>
-                :
-                <TouchableOpacity style={styles.button} onPress={handleSignup}>
-                    <Text style={styles.buttonText}>SIGN UP</Text>
-                </TouchableOpacity>
+                    <View style={styles.container_main_in2}>
+                        <FontAwesome5 name="lock" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 2 }} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                    </View>
+                    <View style={styles.container_main_in2}>
+                        <FontAwesome5 name="lock" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 2 }} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Confirm Password"
+                            value={cpassword}
+                            onChangeText={setCPassword}
+                            secureTextEntry
+                        />
+                    </View>
 
+
+                    {isLoading ?
+
+                        <TouchableOpacity style={styles.button} >
+                            <ActivityIndicator size="small" color="#fff" />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+                            <Text style={styles.buttonText}>SIGN UP</Text>
+                        </TouchableOpacity>
+
+                    }
+
+                    {/* <View style={{ justifyContent: 'space-between', alignItems: 'center', marginVertical: 20 }}>
+                        <Text>Already have an account?</Text>
+                     
+                    </View> */}
+
+                </View>
+            )
             }
 
-            <View style={{ flexDirection: 'row', marginTop: 12, justifyContent: 'space-between', alignItems: 'center', paddingLeft: 10 }}>
-                <Text>Already have an account?</Text>
-                <TouchableOpacity style={styles.signupButton} onPress={() => navigation.navigate('login')}>
-                    <Text style={styles.signupButtonText}>LOGIN</Text>
-                </TouchableOpacity>
-            </View>
+
+            {showOTPContainer && (
+                <View style={styles.container_main1}>
+                    {/* <View style={styles.container_main_in1}>
+                        <View style={styles.container_main_in1_1}>
+                            <Text style={styles.container_main_in1_1_txt}>Sign Up</Text>
+                        </View>
+
+                        <TouchableOpacity style={styles.container_main_in1_1} onPress={() => navigation.navigate('login')}>
+                            <Text style={{
+                                fontSize: 25,
+                                fontWeight: '600',
+                                color: '#fca78b',
+                            }}>Sign In</Text>
+                        </TouchableOpacity>
+                    </View> */}
+
+                    <View style={styles.container_main_in2}>
+                        <FontAwesome5 name="user-check" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 2 }} />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="OTP"
+                            value={name}
+                            onChangeText={setName}
+                        />
+                    </View>
+
+
+                    {isLoading ?
+
+                        <TouchableOpacity style={styles.button} >
+                            <ActivityIndicator size="small" color="#fff" />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+                            <Text style={styles.buttonText}>VERIFY</Text>
+                        </TouchableOpacity>
+
+                    }
+
+
+
+                </View>
+
+            )}
+
+
+            {showNameContainer && (
+                <View style={styles.container_main1}>
+                    {/* <View style={styles.container_main_in1}>
+                    <View style={styles.container_main_in1_1}>
+                        <Text style={styles.container_main_in1_1_txt}>Sign Up</Text>
+                    </View>
+
+                    <TouchableOpacity style={styles.container_main_in1_1} onPress={() => navigation.navigate('login')}>
+                        <Text style={{
+                            fontSize: 25,
+                            fontWeight: '600',
+                            color: '#fca78b',
+                        }}>Sign In</Text>
+                    </TouchableOpacity>
+                </View> */}
+
+                    <View style={styles.container_main_in2}>
+                        <FontAwesome5 name="user-alt" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 2 }} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Name"
+                            value={name}
+                            onChangeText={setName}
+                        />
+                    </View>
+
+
+                    {isLoading ?
+
+                        <TouchableOpacity style={styles.button} >
+                            <ActivityIndicator size="small" color="#fff" />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={styles.button} onPress={handleProfileName}>
+                            <Text style={styles.buttonText}>NEXT</Text>
+                        </TouchableOpacity>
+
+                    }
+
+
+
+                </View>
+            )}
+
+
+            {showAddressContainer && (
+                <View style={styles.container_main1}>
+                    {/* <View style={styles.container_main_in1}>
+                        <View style={styles.container_main_in1_1}>
+                            <Text style={styles.container_main_in1_1_txt}>Sign Up</Text>
+                        </View>
+
+                        <TouchableOpacity style={styles.container_main_in1_1} onPress={() => navigation.navigate('login')}>
+                            <Text style={{
+                                fontSize: 25,
+                                fontWeight: '600',
+                                color: '#fca78b',
+                            }}>Sign In</Text>
+                        </TouchableOpacity>
+                    </View> */}
+
+                    <View style={styles.container_main_in2}>
+                        <Entypo name="address" size={21} color="#ccc" style={{ paddingLeft: 3, paddingTop: 3 }} />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Address"
+                            value={address}
+                            onChangeText={setAddress}
+                        />
+
+                    </View>
+
+
+                    {isLoading ?
+
+                        <TouchableOpacity style={styles.button} >
+                            <ActivityIndicator size="small" color="#fff" />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={styles.button} onPress={handleProfileAddress}>
+                            <Text style={styles.buttonText}>NEXT</Text>
+                        </TouchableOpacity>
+
+                    }
+
+                </View>
+            )}
+
+
+            {showPhoneContainer && (
+
+
+
+                <View style={styles.container_main1}>
+                    {/* <View style={styles.container_main_in1}>
+                    <View style={styles.container_main_in1_1}>
+                        <Text style={styles.container_main_in1_1_txt}>Sign Up</Text>
+                    </View>
+
+                    <TouchableOpacity style={styles.container_main_in1_1} onPress={() => navigation.navigate('login')}>
+                        <Text style={{
+                            fontSize: 25,
+                            fontWeight: '600',
+                            color: '#fca78b',
+                        }}>Sign In</Text>
+                    </TouchableOpacity>
+                </View> */}
+
+                    <View style={styles.container_main_in2}>
+
+
+                        <FontAwesome5 name="phone" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 2 }} />
+
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Phone"
+                            value={phone}
+                            onChangeText={setPhone}
+                            keyboardType="phone-pad"
+                        />
+
+
+                    </View>
+
+                    {isLoading ?
+
+                        <TouchableOpacity style={styles.button} >
+                            <ActivityIndicator size="small" color="#fff" />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={styles.button} onPress={handleProfileData}>
+                            <Text style={styles.buttonText}>NEXT</Text>
+                        </TouchableOpacity>
+
+                    }
+
+                </View>
+
+            )}
         </View>
     );
 };
@@ -205,17 +499,77 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 16,
     },
-    input: {
+    container_Head: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 60
+    },
+    container_Head_txt: {
+        fontSize: 50,
+        fontWeight: '900',
+        color: colors.text1,
+        fontStyle: 'italic'
+    },
+    container_main: {
+        // borderTopWidth: 1,
+        borderRadius: 14,
+        elevation: 5,
+        backgroundColor: colors.col1,
+        borderColor: colors.text1,
+        paddingBottom: 20
+    },
+    container_main_in1: {
+        flexDirection: 'row',
+        marginTop: 10,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingTop: 5,
+        paddingBottom: 10
+    },
+    container_main_in2: {
+        flexDirection: 'row',
         marginBottom: 12,
         padding: 10,
+        marginHorizontal: 10,
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 25,
     },
+    container_main_in1_1: {
+        paddingLeft: 5,
+        paddingRight: 5,
+        paddingBottom: 5
+    },
+    container_main_in1_1_txt: {
+        fontSize: 25,
+        fontWeight: '600',
+        color: colors.text1,
+    },
+    container_main_in1_2: {
+        alignItems: 'flex-end',
+        paddingRight: 5,
+        paddingTop: 11
+    },
+    container_main_in1_2_txt: {
+        color: 'grey'
+    },
+    input: {
+        paddingLeft: 10,
+        width: '90%',
+    },
+    container_main1: {
+        borderRadius: 14,
+        elevation: 5,
+        backgroundColor: colors.col1,
+        borderColor: colors.text1,
+        paddingVertical: 10
+    },
+
     button: {
         // backgroundColor: '#4E4E4E',
         backgroundColor: colors.text1,
-
+        marginHorizontal: 10,
         borderRadius: 25,
         padding: 10,
         alignItems: 'center',

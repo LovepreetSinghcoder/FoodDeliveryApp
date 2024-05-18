@@ -12,7 +12,7 @@ const Categories = ({ navigation }) => {
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.head}>Categories</Text>
+            {/* <Text style={styles.head}>Categories</Text> */}
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <TouchableOpacity style={[styles.box, { backgroundColor: '#ddfbf3' }]}  onPress={() => { OpenCategoriesPage('Pizza') }}>
@@ -67,12 +67,14 @@ const styles = StyleSheet.create({
     },
     box: {
         backgroundColor: colors.col1,
-        // elevation: 20,
+        elevation: 3,
         flexDirection: 'column',
-        marginHorizontal: 10,
-        marginBottom: 10,
+        // marginHorizontal: 10,
+        marginLeft: 10,
+
+        marginBottom: 15,
         padding: 10,
-        borderRadius: 20,
+        borderRadius: 18,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',

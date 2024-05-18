@@ -120,7 +120,7 @@ const TrackOrderScreen = ({ navigation }) => {
 
 
             <ScrollView style={styles.containerin}>
-                <Text style={styles.head1}>Orders</Text>
+                <Text style={styles.head1}>My Orders</Text>
                 <View>
                     {orders.sort(
                         // (a, b) => b.orderdate.seconds - a.orderdate.seconds
@@ -155,7 +155,7 @@ const TrackOrderScreen = ({ navigation }) => {
 
                                 <TrackOrderC foodDataAll={foodDataAll} data={order.orderid} navigation={navigation} />
 
-                                <Text style={styles.total}>Total: ₹{order.ordercost}</Text>
+                                <Text style={styles.total}>Total: {order.ordercost}₹</Text>
                                 {/* {
                                     order.orderstatus === 'Delivered' ? <Text style={styles.ordertxt3}>Thank you for ordering with us</Text> : null
                                 }
@@ -210,12 +210,13 @@ const styles = StyleSheet.create({
         // marginBottom: 100,
     },
     head1: {
-        fontSize: 25,
-        color: colors.text1,
+        fontSize: 20,
+        // color: colors.text1,
         // textAlign: 'center',
         paddingHorizontal: 15,
         marginVertical: 10,
-        fontWeight: '600'
+        fontWeight: '500',
+        paddingVertical: 10
     },
     row: {
         flexDirection: 'row',
@@ -273,18 +274,22 @@ const styles = StyleSheet.create({
 
     },
     total: {
-        fontSize: 20,
+        fontSize: 17,
         color: colors.text3,
         textAlign: 'right',
-        marginVertical: 10,
+        marginVertical: 5,
         marginRight: 20,
+        fontWeight: '600'
     },
     order: {
-        margin: 10,
-        elevation: 10,
-        backgroundColor: colors.col1,
-        paddingVertical: 10,
-        borderRadius: 25,
+        marginBottom: 10,
+        marginHorizontal: 10,
+        // alignSelf: 'center',
+        elevation: 2,
+        // backgroundColor: colors.col1,
+        backgroundColor: 'white',
+        paddingVertical: 5,
+        borderRadius: 20,
 
     },
     ordertxt1: {

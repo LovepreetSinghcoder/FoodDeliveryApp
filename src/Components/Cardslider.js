@@ -1,6 +1,7 @@
 import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { colors, veg, nonveg } from '../Global/styles'
+import LineWithText from './LineWithText'
 
 
 const Cardslider = ({ title, data, navigation }) => {
@@ -10,9 +11,10 @@ const Cardslider = ({ title, data, navigation }) => {
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.cardouthead}>
+            {/* <Text style={styles.cardouthead}>
                 {title}
-            </Text>
+            </Text> */}
+            <LineWithText navigation={navigation} heading={title}/>
             <FlatList style={styles.cardsout}
                 showsHorizontalScrollIndicator={false}
                 horizontal
@@ -22,9 +24,18 @@ const Cardslider = ({ title, data, navigation }) => {
                         onPress={() => { openProductPage(item) }}>
                         <View style={styles.card}>
                             <View style={styles.s1}>
+                                {item.stock === 'out' ?
+                                    <View style={styles.outOfStockContainer}>
+                                        <Text style={styles.outOfStockText}>Out of Stock</Text>
+                                    </View>
+                                    :
+                                    null
+                                }
+
                                 <Image source={{
                                     uri: item.foodImageUrl
                                 }} style={styles.cardimgin} />
+
                             </View>
                             <View style={styles.s2}>
                                 <Text style={styles.txt1}>{item.foodName}</Text>
@@ -33,18 +44,14 @@ const Cardslider = ({ title, data, navigation }) => {
                                     {/* <Text style={styles.txt2}>FAST FOOD • <Text style={{textDecorationLine:'line-through'}}>{item.actualFoodPrice}</Text> • ₹{item.foodPrice}/-</Text> */}
                                     <Text style={styles.txt2}>
                                         Fast Food •{' '}
-                                        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red'  }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
+                                        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
                                     </Text>
                                     {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>}
                                 </View>
 
                             </View>
-                            <View style={styles.s3}>
-                                <Text style={styles.buybtn}>
-                                    Buy
-                                </Text>
-                            </View>
-                            {item.stock === 'out' ?
+                            
+                            {/* {item.stock === 'out' ?
                                 <View style={styles.s3}>
                                     <Text style={[styles.buybtn, { backgroundColor: 'red' }]}>
                                         OUT OF STOCK
@@ -56,7 +63,7 @@ const Cardslider = ({ title, data, navigation }) => {
                                         BUY NOW
                                     </Text>
                                 </View>
-                            }
+                            } */}
                         </View>
                     </TouchableOpacity>
                 )}
@@ -88,22 +95,45 @@ const styles = StyleSheet.create({
     card: {
         // backgroundColor: "aqua",
         width: 300,
-        height: 260,
+        // height: 260,
+        height: 225,
+
         marginLeft: 10,
         marginTop: 10,
-        borderRadius: 18,
+        borderRadius: 22,
         borderWidth: 1,
         borderColor: '#d6d6d6',
-        backgroundColor: colors.col1,
+        // backgroundColor: colors.col1,
+        backgroundColor: 'white'
         // elevation: 5,
         // paddingBottom: 100
+    },
+    s1: {
+        position: 'relative', // Position the child elements relative to this container
+
+    },
+
+    outOfStockContainer: {
+        position: 'absolute', // Position this container absolutely within its parent
+        top: 5, // Align it to the top
+        left: 5, // Align it to the left
+        backgroundColor: 'red', // Background color
+        padding: 5, // Add padding for better visibility
+        zIndex: 1, // Ensure it's above the image
+        borderRadius: 14,
+        paddingHorizontal: 10
+    },
+    outOfStockText: {
+        color: 'white', // Text color
+        fontWeight: 'bold', // Text style
+
     },
     cardimgin: {
         width: "100%",
         height: 170,
         // borderRadiusTop: 20,
-        borderTopLeftRadius: 17,
-        borderTopRightRadius: 17
+        borderTopLeftRadius: 21,
+        borderTopRightRadius: 21
     },
     s2: {
         // flexDirection: 'row',

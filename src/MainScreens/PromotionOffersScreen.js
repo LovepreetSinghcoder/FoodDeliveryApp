@@ -3,17 +3,34 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 const PromotionOffersScreen = () => {
   const [promotions, setPromotions] = useState([
+    {
+      id: '1',
+      title: '30-Day Food Delivery Trial!',
+      description: 'Launching in your area for Desu Jodha, Mangeana, Haibuana, Phullo, Panniwala moreka, Jogewala, Sekhu residents. Try it out now!',
+    },
+    {
+      id: '5',
+      title: 'Cash on Delivery Available',
+      description: 'Pay with cash when your delicious meal arrives at your doorstep!',
+    },
     // {
-    //   id: '1',
-    //   title: '20% Off on All Pizzas',
-    //   description: 'Use code PIZZA20 to avail the discount',
+    //   id: '2',
+    //   title: 'Free Delivery on Orders Above ₹500',
+    //   description: 'No promo code required. Valid for a limited time.',
+    // },
+    // {
+    //   id: '3',
+    //   title: 'Buy One Get One Free on Burgers',
+    //   description: 'Order any burger, and get a second one for free!',
     // },
     {
-      id: '2',
-      title: 'Free Delivery on Orders Above ₹100',
-      description: 'No promo code required. Valid for a limited time.',
+      id: '4',
+      title: 'Weekend Combo Deal',
+      description: 'Enjoy special weekend deals every Saturday and Sunday!',
     },
-    // Additional promotions
+    
+
+    // Add more promotions here
   ]);
 
   const renderPromotion = ({ item }) => (

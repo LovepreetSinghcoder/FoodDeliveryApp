@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
@@ -24,11 +24,15 @@ const HeaderBar = ({ title, onButtonPress, navigation }) => {
           </View>
 
 
-          <Text>{locationName ? locationName.toLowerCase() : ''}</Text>
+          <Text>{locationName ? locationName.toLowerCase() : 'Select your location'}</Text>
 
 
         </View>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => { Linking.openURL('https://www.instagram.com/shoviiofficial/') }} style={{paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20,  }}>
+                  {/* <Text style={{ fontWeight: '600', fontSize: 12, color: colors.col1 }}>Instagram</Text> */}
+                  <Ionicons name="md-logo-instagram" size={28} color={colors.text1} />
+                </TouchableOpacity>
     </View>
   );
 };
@@ -38,7 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     height: 60,
     backgroundColor: "white",
   },
