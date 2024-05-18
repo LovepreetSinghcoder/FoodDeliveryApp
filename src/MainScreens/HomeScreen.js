@@ -249,6 +249,8 @@ const HomeScreen = ({ navigation }) => {
   }, []);
 
   const [foodData, setFoodData] = useState([]);
+  const [TodaySpecialFoodData, setTodaySpecialFoodData] = useState([]);
+
   const [VegData, setVegData] = useState([]);
   const [NonVegData, setNonVegData] = useState([]);
 
@@ -263,11 +265,22 @@ const HomeScreen = ({ navigation }) => {
   }, [])
 
   useEffect(() => {
-    setVegData(foodData.filter((item) => item.foodType == 'Veg' & item.stock === 'in'))
-    setNonVegData(foodData.filter((item) => item.foodType == 'Non-Veg' & item.stock === 'in'))
+    setTodaySpecialFoodData(foodData.filter((item) =>
+
+      item.foodType === 'Veg' &&
+      item.stock === 'in' &&
+      item.foodPrice > 50 
+      // &&
+      // item.rating >= 4.5
+
+      
+    ))
+    setVegData(foodData.filter((item) => item.foodType == 'Veg' && item.stock === 'in'))
+    setNonVegData(foodData.filter((item) => item.foodType == 'Non-Veg' && item.stock === 'in'))
   }, [foodData])
 
 
+  // console.log('This is the data of todayspecialfood', TodaySpecialFoodData)
 
   const requestLocationPermission = async () => {
     setLoading(true);
@@ -581,15 +594,15 @@ const HomeScreen = ({ navigation }) => {
           null
 
         }
-        <LineWithText navigation={navigation} heading={'CATEGORIES'}/>
+        <LineWithText navigation={navigation} heading={'CATEGORIES'} />
         <Categories navigation={navigation} />
-        <LineWithText navigation={navigation} heading={'OFFERS & DEALS'}/>
+        <LineWithText navigation={navigation} heading={'OFFERS & DEALS'} />
 
         <OfferSlider navigation={navigation} />
         {/* <Text>HomeScreen</Text> */}
-        <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'}/>
+        <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'} />
 
-        {foodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={foodData} navigation={navigation} />}
+        {TodaySpecialFoodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={TodaySpecialFoodData} navigation={navigation} />}
 
         {/* <TouchableOpacity style={{ width: '95%', alignSelf: 'center', height: 235, borderRadius: 20, elevation: 2, backgroundColor: 'white' }} onPress={() => navigation.navigate('VegetableShow')}>
           <View style={{ backgroundColor: 'green', borderTopRightRadius: 18.5, borderTopLeftRadius: 18.5, paddingBottom: 5, paddingTop: 5, paddingHorizontal: 10 }}>
