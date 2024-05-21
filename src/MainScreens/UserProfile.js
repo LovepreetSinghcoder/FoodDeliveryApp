@@ -58,11 +58,12 @@ const UserProfile = ({ navigation }) => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 
         <Text style={styles.heading}>My Profile</Text>
-        <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#ccc', height: 30, width: 70, paddingVertical: 4, borderRadius: 25, paddingHorizontal: 4, }}>
+
+        {/* <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#ccc', height: 30, width: 70, paddingVertical: 4, borderRadius: 25, paddingHorizontal: 4, }}>
           <Text style={{ paddingHorizontal: 5, fontSize: 16, minWidth: '10%', }}>{userdata ? userdata.totalCoin || '0' : '0'}</Text>
           <Image source={require('../Images/coin.png')} style={styles.image} />
 
-        </View>
+        </View> */}
 
       </View>
 
@@ -119,9 +120,14 @@ const UserProfile = ({ navigation }) => {
         <Text style={styles.editButtonText}>Edit Profile</Text>
       </TouchableOpacity>
 
+
+      {/* <TouchableOpacity style={styles.editButton_test}  onPress={() => navigation.navigate('MapScreen')}>
+        <Text style={styles.editButtonText}>Check Map</Text>
+      </TouchableOpacity> */}
+
       {/* <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'}/> */}
 
-    
+
     </View>
   );
 };
@@ -157,6 +163,18 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingVertical: 12,
     alignItems: 'center',
+  },
+
+  // Test Button Check map 
+
+  editButton_test : {
+   
+    backgroundColor: colors.text1,
+
+    borderRadius: 25,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 10,
   },
   editButtonText: {
     color: '#fff',

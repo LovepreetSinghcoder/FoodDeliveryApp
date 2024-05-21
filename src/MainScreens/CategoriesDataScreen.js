@@ -153,10 +153,8 @@ export default CategoriesDataScreen
 const styles = StyleSheet.create({
 
     Maincontainer: {
-        // backgroundColor: 'green',
         flex: 1,
         height: '100%'
-
     },
     searchbox: {
         flexDirection: 'row',
@@ -223,40 +221,32 @@ const styles = StyleSheet.create({
 
     },
     s1: {
-        position: 'relative', // Position the child elements relative to this container
+        position: 'relative', 
 
     },
 
     outOfStockContainer: {
-        position: 'absolute', // Position this container absolutely within its parent
-        top: 5, // Align it to the top
-        left: 5, // Align it to the left
-        backgroundColor: 'red', // Background color
-        padding: 5, // Add padding for better visibility
-        zIndex: 1, // Ensure it's above the image
+        position: 'absolute', 
+        top: 5, 
+        left: 5, 
+        backgroundColor: 'red',
+        padding: 5, 
+        zIndex: 1, 
         borderRadius: 14,
         paddingHorizontal: 10
     },
     outOfStockText: {
-        color: 'white', // Text color
-        fontWeight: 'bold', // Text style
+        color: 'white', 
+        fontWeight: 'bold', 
 
     },
     cardimgin: {
         width: "100%",
         height: 170,
-        // borderRadiusTop: 20,
         borderTopLeftRadius: 21,
         borderTopRightRadius: 21
     },
-    // cardimgin: {
-
-    //     width: "100%",
-    //     height: 170,
-    //     // borderRadiusTop: 20,
-    //     borderTopLeftRadius: 17,
-    //     borderTopRightRadius: 17
-    // },
+   
     s2: {
 
         marginHorizontal: 3,

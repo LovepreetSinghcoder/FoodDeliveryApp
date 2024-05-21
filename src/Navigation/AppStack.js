@@ -25,6 +25,9 @@ import VegetableShowScreen from '../MainScreens/VegetableShowScreen';
 import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
 import RestaurantScreen from '../MainScreens/RestaurantScreen';
+// import MapLib from '../Components/mapLib';
+
+// import MapLib from '../Components/MapLib';
 
 
 
@@ -60,6 +63,7 @@ const HomeStack = () => (
         <Stack.Screen name="LineWithText" component={LineWithText} options={{ headerShown: false }} />
         <Stack.Screen name="Restaurants" component={Restaurants} options={{ headerShown: false }} />
         <Stack.Screen name="RestaurantScreen" component={RestaurantScreen} options={{ headerShown: false }} />
+       
         
 
 
