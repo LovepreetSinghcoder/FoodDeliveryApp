@@ -119,8 +119,8 @@ android {
         applicationId 'com.shovii.india.shovii'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName "1.6.10"
+        versionCode 16
+        versionName "2.6.10"
     }
 
     splits {

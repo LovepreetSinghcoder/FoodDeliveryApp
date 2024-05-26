@@ -17,7 +17,7 @@ import axios from 'axios';
 import { Button } from 'react-native-elements';
 import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
-const Version = '1.6.10';
+const Version = '2.6.10';
 
 const HomeScreen = ({ navigation }) => {
   const { userloggeduid, checkIsLogged, SetLocationName, locationName, } = useContext(AuthContext);
