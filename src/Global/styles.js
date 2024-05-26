@@ -2,6 +2,8 @@ module.exports = {
     colors: {
         // col1: 'white', 
         col1: '#fcfeff',
+        col2: '#f8f8f8',
+
         // text1: '#2EEAB1', 
         text1: '#FF3F00', 
 

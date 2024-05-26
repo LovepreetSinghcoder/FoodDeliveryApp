@@ -9,13 +9,15 @@ import { firebase } from '../Firebase/FirebaseConfig'
 import TrackOrderC from '../Components/TrackOrderC'
 import { AuthContext } from '../Context/AuthContext'
 import { useFocusEffect } from '@react-navigation/native';
+import { FontAwesome6 } from '@expo/vector-icons';
+
 
 
 
 // const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
 const TrackOrderScreen = ({ navigation }) => {
-  const { userloggeduid, checkIsLogged , loading} = useContext(AuthContext);
+    const { userloggeduid, checkIsLogged, loading } = useContext(AuthContext);
 
     const [orders, setOrders] = useState([])
 
@@ -36,9 +38,9 @@ const TrackOrderScreen = ({ navigation }) => {
         React.useCallback(() => {
             getorders()
 
-          console.log('triggered trackorder')
+            console.log('triggered trackorder')
         }, [])
-      );
+    );
     // console.log('dekh bro', orders)
     const [foodDataAll, setFoodDataAll] = useState([]);
 
@@ -111,16 +113,24 @@ const TrackOrderScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {/* <StatusBar /> */}
-            <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
+            {/* <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                     <Text style={{ fontSize: 16 , color: colors.col1}}>Close</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
+            <TouchableOpacity style={{
+                flexDirection: 'row',
+                padding: 15,
+                alignItems: 'center'
+            }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                <FontAwesome6 name="arrow-left" size={20} color="black" />
+                <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Orders</Text>
+            </TouchableOpacity>
 
 
             <ScrollView style={styles.containerin}>
-                <Text style={styles.head1}>My Orders</Text>
+                {/* <Text style={styles.head1}>My Orders</Text> */}
                 <View>
                     {orders.sort(
                         // (a, b) => b.orderdate.seconds - a.orderdate.seconds
@@ -199,7 +209,7 @@ const styles = StyleSheet.create({
         zIndex: 20,
     },
     containerin: {
-        // marginTop: 10,
+       paddingVertical: 10,
         flex: 1,
         // backgroundColor: colors.col1,
         backgroundColor: '#edeef0',

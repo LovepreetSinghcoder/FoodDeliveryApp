@@ -8,46 +8,46 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 
 const UserProfile = ({ navigation }) => {
   const { userloggeduid, } = useContext(AuthContext);
-  const [userdata, setUserdata] = useState(null);
+  const { logout, userdata } = useContext(AuthContext);
+  const initial = userdata?.name ? userdata.name.charAt(0).toUpperCase() : 'U';
+  // const [userdata, setUserdata] = useState(null);
 
   const [fullName, setFullName] = useState('John Doe');
   const [email, setEmail] = useState('johndoe@example.com');
   const [phoneNumber, setPhoneNumber] = useState('123-456-7890');
 
   const handleEditProfile = () => {
-    // Logic to save profile changes
-    // This is just a placeholder function
-    // console.log('Profile changes saved!');
     navigation.navigate('Editprofile')
   };
 
 
-  const getuserdata = async () => {
-    const docRef = firebase.firestore().collection('UserData').where('uid', '==', userloggeduid)
-    const doc = await docRef.get();
-    if (!doc.empty) {
-      doc.forEach((doc) => {
-        setUserdata(doc.data());
-      })
-    }
-    else {
-      console.log('no user data');
-    }
-  }
+  // const getuserdata = async () => {
+  //   const docRef = firebase.firestore().collection('UserData').where('uid', '==', userloggeduid)
+  //   const doc = await docRef.get();
+  //   if (!doc.empty) {
+  //     doc.forEach((doc) => {
+  //       setUserdata(doc.data());
+  //     })
+  //   }
+  //   else {
+  //     console.log('no user data');
+  //   }
+  // }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    getuserdata();
-  }, [userloggeduid]);
+  //   getuserdata();
+  // }, [userloggeduid]);
 
 
   useFocusEffect(
     React.useCallback(() => {
-      getuserdata();
+      // getuserdata();
       console.log('triggered')
     }, [])
   );
@@ -55,77 +55,122 @@ const UserProfile = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 
-        <Text style={styles.heading}>My Profile</Text>
 
-        {/* <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#ccc', height: 30, width: 70, paddingVertical: 4, borderRadius: 25, paddingHorizontal: 4, }}>
-          <Text style={{ paddingHorizontal: 5, fontSize: 16, minWidth: '10%', }}>{userdata ? userdata.totalCoin || '0' : '0'}</Text>
-          <Image source={require('../Images/coin.png')} style={styles.image} />
+      <TouchableOpacity style={{
+        flexDirection: 'row',
+        // backgroundColor: colors.col2,
+        padding: 15,
+        alignItems: 'center'
+      }} onPress={() => { navigation.navigate('AccountSettingsScreen') }} >
+        <FontAwesome6 name="arrow-left" size={20} color="black" />
+        <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Profile</Text>
+      </TouchableOpacity>
 
-        </View> */}
+      <View style={styles.containerIn}>
+        <TouchableOpacity style={styles.cardLogo} >
+          <Text style={styles.cardLogoText}>{initial}</Text>
+        </TouchableOpacity>
 
+
+
+        <View style={styles.container_input}>
+          <FontAwesome5 name="user-alt" size={20} color="#ccc" style={{
+            paddingLeft: 5,
+            // paddingTop: 7 
+          }
+          } />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Full Name"
+            value={userdata ? userdata.name || '' : ''}
+            onChangeText={setFullName}
+            editable={false}
+          />
+        </View>
+        <View style={styles.container_input}>
+          <Entypo name="email" size={21} color="#ccc" style={{
+            paddingLeft: 3,
+            // paddingTop: 7 
+          }} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={userdata ? userdata.email || '' : ''}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            editable={false}
+          />
+        </View>
+        <View style={styles.container_input}>
+          <Entypo name="address" size={21} color="#ccc" style={{
+            paddingLeft: 3,
+            //  paddingTop: 7 
+          }} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Address"
+            value={userdata ? userdata.address || '' : ''}
+            // onChangeText={setEmail}
+            keyboardType="default"
+            editable={false}
+          />
+        </View>
+        <View style={styles.container_input}>
+          <FontAwesome5 name="phone" size={20} color="#ccc" style={{
+            paddingLeft: 5,
+          }} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            value={userdata ? userdata.phone || '' : ''}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.container_input}>
+          <FontAwesome5 name="birthday-cake" size={20} color="#ccc" style={{
+            paddingLeft: 5,
+          }} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Date of Birth"
+            value={userdata ? userdata.DOB || '' : ''}
+            onChangeText={setPhoneNumber}
+            // keyboardType="phone-pad"
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.container_input}>
+          <FontAwesome5 name="transgender" size={20} color="#ccc" style={{
+            paddingLeft: 5,
+          }} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Gender"
+            value={userdata ? userdata.gender || '' : ''}
+            onChangeText={setPhoneNumber}
+            // keyboardType="phone-pad"
+            editable={false}
+          />
+        </View>
       </View>
-
-      <View style={styles.container_input}>
-        <FontAwesome5 name="user-alt" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 7 }} />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          value={userdata ? userdata.name || '' : ''}
-          onChangeText={setFullName}
-          editable={false}
-        />
-      </View>
-      <View style={styles.container_input}>
-        <Entypo name="email" size={21} color="#ccc" style={{ paddingLeft: 3, paddingTop: 7 }} />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={userdata ? userdata.email || '' : ''}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          editable={false}
-        />
-      </View>
-      <View style={styles.container_input}>
-        <Entypo name="address" size={21} color="#ccc" style={{ paddingLeft: 3, paddingTop: 7 }} />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Address"
-          value={userdata ? userdata.address || '' : ''}
-          // onChangeText={setEmail}
-          keyboardType="default"
-          editable={false}
-        />
-      </View>
-      <View style={styles.container_input}>
-        <FontAwesome5 name="phone" size={20} color="#ccc" style={{ paddingLeft: 5, paddingTop: 7 }} />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          value={userdata ? userdata.phone || '' : ''}
-          onChangeText={setPhoneNumber}
-          keyboardType="phone-pad"
-          editable={false}
-        />
-      </View>
-
 
       <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-        <Text style={styles.editButtonText}>Edit Profile</Text>
+        <Text style={styles.editButtonText}>Update Profile</Text>
       </TouchableOpacity>
 
 
-      {/* <TouchableOpacity style={styles.editButton_test}  onPress={() => navigation.navigate('MapScreen')}>
-        <Text style={styles.editButtonText}>Check Map</Text>
-      </TouchableOpacity> */}
-
-      {/* <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'}/> */}
+    
 
 
     </View>
@@ -135,8 +180,50 @@ const UserProfile = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    // padding: 16,
+    // backgroundColor: '#fff',
+    backgroundColor: '#f5f6fb',
+
+  },
+  containerIn: {
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
+    marginTop: 80,
+    backgroundColor: colors.col2,
+    // backgroundColor: 'red',
+    borderRadius: 15
+  },
+
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    padding: 15,
+    marginHorizontal: 15,
+    marginBottom: 15,
+    borderRadius: 15,
+    alignItems: 'center',
+    // justifyContent: 'center',
+    // margin: 'auto',
+    // alignContent: 'center'
+    // , alignSelf: 'center'
+  },
+  cardLogo: {
+    backgroundColor: '#dce8ff',
+    padding: 0,
+    margin: 20,
+    marginTop: -60,
+    borderRadius: 50, // Ensures the button is round
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    height: 100
+    , alignSelf: 'center'
+
+  },
+  cardLogoText: {
+    color: '#2d6edb',
+    fontSize: 40,
+    fontWeight: '600',
   },
   heading: {
     fontSize: 22,
@@ -146,12 +233,14 @@ const styles = StyleSheet.create({
   },
   container_input: {
     flexDirection: 'row',
-    height: 40,
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 15,
     paddingHorizontal: 10,
     marginBottom: 16,
+    alignContent: 'center'
+    , alignItems: 'center'
   },
   input: {
     paddingLeft: 7
@@ -159,16 +248,16 @@ const styles = StyleSheet.create({
   editButton: {
     // backgroundColor: '#4E4E4E',
     backgroundColor: colors.text1,
-
-    borderRadius: 25,
+    margin: 15,
+    borderRadius: 15,
     paddingVertical: 12,
     alignItems: 'center',
   },
 
   // Test Button Check map 
 
-  editButton_test : {
-   
+  editButton_test: {
+
     backgroundColor: colors.text1,
 
     borderRadius: 25,

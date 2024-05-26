@@ -6,15 +6,19 @@ import { AntDesign } from '@expo/vector-icons';
 import { colors } from '../Global/styles';
 import { AuthContext } from '../Context/AuthContext';
 
+import { FontAwesome6 } from '@expo/vector-icons';
+
 const HeaderBar = ({ title, onButtonPress, navigation }) => {
-  const { locationName} = useContext(AuthContext);
+  const { locationName, userdata } = useContext(AuthContext);
+  const initial = userdata?.name ? userdata.name.charAt(0).toUpperCase() : 'U';
 
   return (
     <View style={styles.container}>
 
 
-      <TouchableOpacity style={{ flexDirection: 'row',  }} onPress={() => { navigation.navigate('Changeloction') }}>
-        <Ionicons name="ios-location" size={28} color={colors.text1} style={{ paddingVertical: 6 }} />
+      <TouchableOpacity style={{ flexDirection: 'row', }} onPress={() => { navigation.navigate('Changeloction') }}>
+        {/* <Ionicons name="ios-location" size={28} color={colors.text1} style={{ paddingVertical: 6 }} /> */}
+        <FontAwesome6 name="location-dot" size={28} color={colors.text1} style={{ paddingVertical: 6 }} />
         <View style={{ paddingHorizontal: 5 }}>
           <View style={{ flexDirection: 'row', }}>
 
@@ -29,10 +33,26 @@ const HeaderBar = ({ title, onButtonPress, navigation }) => {
 
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => { Linking.openURL('https://www.instagram.com/shoviiofficial/') }} style={{paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20,  }}>
-                  {/* <Text style={{ fontWeight: '600', fontSize: 12, color: colors.col1 }}>Instagram</Text> */}
-                  <Ionicons name="md-logo-instagram" size={28} color={colors.text1} />
-                </TouchableOpacity>
+      {/* <TouchableOpacity onPress={() => { Linking.openURL('https://www.instagram.com/shoviiofficial/') }} style={{ paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20, }}>
+        <Ionicons name="logo-instagram" size={28} color={colors.text1} />
+      </TouchableOpacity> */}
+
+      <TouchableOpacity style={{
+        backgroundColor: '#dce8ff',
+        padding: 0,
+        margin: 10,
+        borderRadius: 50, // Ensures the button is round
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 40, // Ensures the button is circular (width and height are equal)
+        height: 40
+      }} onPress={() => { navigation.navigate('AccountSettingsScreen') }}>
+        <Text style={{
+          color: '#2d6edb',
+          fontSize: 20,
+          fontWeight: 'bold',
+        }}>{initial}</Text>
+      </TouchableOpacity>
     </View>
   );
 };

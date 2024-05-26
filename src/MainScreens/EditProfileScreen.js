@@ -4,6 +4,8 @@ import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 import { colors } from '../Global/styles';
 import { Entypo } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
+
 
 
 const EditProfileScreen = ({ navigation }) => {
@@ -51,10 +53,19 @@ const EditProfileScreen = ({ navigation }) => {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Edit Profile</Text>
-    
+
+      <TouchableOpacity style={{
+        flexDirection: 'row',
+        padding: 15,
+        alignItems: 'center'
+      }} onPress={() => { navigation.navigate('AccountSettingsScreen') }} >
+        <FontAwesome6 name="arrow-left" size={20} color="black" />
+        <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Update Profile</Text>
+      </TouchableOpacity>
+
+
       <View style={inputStyle}>
-        <Entypo name="address" size={21} color="#ccc" style={{ paddingLeft: 3, paddingTop: 7 }} />
+        <Entypo name="address" size={21} color="#ccc" style={{ paddingLeft: 3,}} />
         <TextInput
           // style={inputStyle}
           style={styles.input_in}
@@ -85,7 +96,7 @@ const EditProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    // padding: 16,
     backgroundColor: '#fff',
   },
   heading: {
@@ -99,12 +110,14 @@ const styles = StyleSheet.create({
   input: {
     flexDirection: 'row',
     // paddingLeft: 5,
-    height: 40,
+    margin: 10,
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 15,
     paddingHorizontal: 10,
-    marginBottom: 16,
+    marginBottom: 16
+    ,alignItems: 'center'
   },
   invalidInput: {
     borderColor: 'red',
@@ -120,7 +133,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.text1,
 
 
-    borderRadius: 25,
+    borderRadius: 15,
+    margin: 10,
     paddingVertical: 12,
     alignItems: 'center',
   },

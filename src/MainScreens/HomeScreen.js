@@ -20,8 +20,29 @@ import Restaurants from '../Components/Restaurants';
 const Version = '2.6.10';
 
 const HomeScreen = ({ navigation }) => {
-  const { userloggeduid, checkIsLogged, SetLocationName, locationName, } = useContext(AuthContext);
+  const { userloggeduid, checkIsLogged, SetLocationName, locationName, userDataHandler, userdata } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+
+
+  const getuserdata = async () => {
+    const docRef = firebase.firestore().collection('UserData').where('uid', '==', userloggeduid)
+    const doc = await docRef.get();
+    if (!doc.empty) {
+      doc.forEach((doc) => {
+        // setUserdata(doc.data());
+        userDataHandler(doc.data());
+      })
+    }
+    else {
+      console.log('no user data');
+    }
+  }
+
+  useEffect(() => {
+
+    getuserdata();
+  }, [userloggeduid]);
+
 
 
   // Hide for Expo Start 
@@ -269,11 +290,11 @@ const HomeScreen = ({ navigation }) => {
 
       item.foodType === 'Veg' &&
       item.stock === 'in' &&
-      item.foodPrice > 50 
+      item.foodPrice > 50
       // &&
       // item.rating >= 4.5
 
-      
+
     ))
     setVegData(foodData.filter((item) => item.foodType == 'Veg' && item.stock === 'in'))
     setNonVegData(foodData.filter((item) => item.foodType == 'Non-Veg' && item.stock === 'in'))
@@ -386,9 +407,10 @@ const HomeScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.Maincontainer}>
-        <StatusBar
-          backgroundColor={colors.text1}
-        />
+     <StatusBar
+        backgroundColor={colors.col2}
+        barStyle="dark-content" 
+      />
         <TouchableOpacity onPress={() => { navigation.navigate('Changeloction') }}>
 
           <View style={{ backgroundColor: colors.text1, height: 50, alignContent: 'center' }}>
@@ -406,12 +428,13 @@ const HomeScreen = ({ navigation }) => {
   else if (location === false && locationName === null) {
     return (
       <View style={styles.Maincontainer}>
-        <StatusBar
-          backgroundColor={colors.text1}
-        />
+     <StatusBar
+        backgroundColor={colors.col2}
+        barStyle="dark-content" 
+      />
         <View style={{ paddingVertical: 20, paddingHorizontal: 20 }}>
           <View style={styles.location_container}>
-            <Ionicons name="ios-location" size={28} color={colors.text1} style={{ paddingLeft: 3, paddingTop: 3 }} />
+              <FontAwesome6 name="location-dot" size={28} color={colors.text1} style={{ paddingVertical: 6 }} />
             <TextInput
               style={styles.locationinput}
               placeholder="Set your location"
@@ -433,7 +456,7 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const locationArrays = ['desu jodha', 'mangiana', 'phullo', 'sekhu', 'joge wala', 'jogewala', 'mangeana', 'habuana', 'haibuana', 'panniwala moreka', 'delhi']
+  const locationArrays = ['desu jodha', 'mangiana', 'phullo', 'sekhu', 'joge wala', 'jogewala', 'mangeana', 'habuana', 'haibuana', 'panniwala moreka', 'delhi', 'sirsa']
 
 
   if (!locationArrays.includes(locationName)) {
@@ -443,7 +466,11 @@ const HomeScreen = ({ navigation }) => {
         flex: 1,
         backgroundColor: 'white',
       }}>
-        <StatusBar backgroundColor={colors.text1} />
+        {/* <StatusBar backgroundColor={colors.col2} /> */}
+        <StatusBar
+        backgroundColor={colors.col2}
+        barStyle="dark-content" 
+      />
         <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
 
         <View style={{
@@ -485,8 +512,12 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.Maincontainer}>
+      {/* <StatusBar
+        backgroundColor={colors.col2}
+      /> */}
       <StatusBar
-        backgroundColor={colors.text1}
+        backgroundColor={colors.col2}
+        barStyle="dark-content" 
       />
       <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
 
@@ -507,35 +538,6 @@ const HomeScreen = ({ navigation }) => {
 
         </TouchableOpacity>
 
-        {/* <View>
-          {notificationEnabled ? null : (
-            <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
-              <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
-
-                <View style={{ flexDirection: 'row', }}>
-                  <View style={{ elevation: 3, width: '15%', paddingHorizontal: 6, paddingVertical: 4 }}>
-                  
-                    <Image source={{
-                      uri: appdata.AppIcon
-                    }} style={{ width: 40, height: 40, borderRadius: 10, }} />
-                  </View>
-                  <View style={{ width: '82%', paddingHorizontal: 10, paddingVertical: 0, }}>
-                    <Text style={{ fontWeight: '600' }}>Enable Notification</Text>
-                    <Text>Please provide notification permissions for a better experience.!</Text>
-                  </View>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 4, paddingTop: 7 }}>
-                  <TouchableOpacity onPress={() => openNotificationSettings()}
-                    style={{ backgroundColor: colors.text1, paddingHorizontal: 15, paddingVertical: 5, borderRadius: 20, elevation: 2 }}>
-                    <Text style={{ fontWeight: '600', fontSize: 12, color: colors.col1 }}>Open Notification Settings</Text>
-
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
-        </View> */}
         {appdata && appdata.CurrentVersion !== Version ?
           <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
             <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>

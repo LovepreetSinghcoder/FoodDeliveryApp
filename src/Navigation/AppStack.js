@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Settings, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -25,6 +25,8 @@ import VegetableShowScreen from '../MainScreens/VegetableShowScreen';
 import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
 import RestaurantScreen from '../MainScreens/RestaurantScreen';
+import AboutScreen from '../SecondaryScreens/AboutScreen';
+import AppSettings from '../SecondaryScreens/AppSettings';
 // import MapLib from '../Components/mapLib';
 
 // import MapLib from '../Components/MapLib';
@@ -63,6 +65,12 @@ const HomeStack = () => (
         <Stack.Screen name="LineWithText" component={LineWithText} options={{ headerShown: false }} />
         <Stack.Screen name="Restaurants" component={Restaurants} options={{ headerShown: false }} />
         <Stack.Screen name="RestaurantScreen" component={RestaurantScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="AccountSettingsScreen" component={AccountSettingsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='Track Orders' component={TrackOrderScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='AboutScreen' component={AboutScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='AppSettings' component={AppSettings} options={{ headerShown: false }} />
+
+
        
         
 
@@ -96,15 +104,18 @@ const AppStack = () => {
                             iconName = 'settings';
                         } else if (route.name === 'Home') {
                             iconName = 'home';
-                        } else if (route.name === 'Profile') {
+                        } else if (route.name === 'You') {
                             iconName = 'person';
                         } else if (route.name === 'Notification') {
                             iconName = 'notifications';
-                        } else if (route.name === 'Cart') {
-                            iconName = 'md-cart';
-                        } else if (route.name === 'TrackOrders') {
-                            iconName = 'map';
+                        } 
+                        // else if (route.name === 'Cart') {
+                        //     iconName = 'md-cart';
+                        // } 
+                        else if (route.name === 'Orders') {
+                            iconName = 'list-circle-sharp';
                         }
+                        // <Ionicons name="list-circle-sharp" size={24} color="black" />
 
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
@@ -116,12 +127,12 @@ const AppStack = () => {
                 <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
                 {/* <Tab.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/> */}
                 {/* <Tab.Screen name="Notification" component={NotificationScreen} options={{headerShown: false}}/> */}
-                <Tab.Screen name="Cart" component={UserCart} options={{ headerShown: false }} />
+                {/* <Tab.Screen name="Cart" component={UserCart} options={{ headerShown: false }} /> */}
 
-                <Tab.Screen name="Profile" component={UserProfile} options={{ headerShown: false }} />
-                <Tab.Screen name="TrackOrders" component={TrackOrderScreen} options={{ headerShown: false }} />
+                <Tab.Screen name="Orders" component={TrackOrderScreen} options={{ headerShown: false }} />
+                <Tab.Screen name="You" component={UserProfile} options={{ headerShown: false }} />
 
-                <Tab.Screen name="Settings" component={AccountSettingsScreen} options={{ headerShown: false }} />
+                {/* <Tab.Screen name="Settings" component={AccountSettingsScreen} options={{ headerShown: false }} /> */}
 
 
                 {/* Add more screens to the tab navigator if needed */}
