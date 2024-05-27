@@ -59,7 +59,6 @@ const UserProfile = ({ navigation }) => {
 
       <TouchableOpacity style={{
         flexDirection: 'row',
-        // backgroundColor: colors.col2,
         padding: 15,
         alignItems: 'center'
       }} onPress={() => { navigation.navigate('AccountSettingsScreen') }} >

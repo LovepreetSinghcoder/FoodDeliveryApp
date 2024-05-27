@@ -10,6 +10,7 @@ import { firebase } from '../Firebase/FirebaseConfig'
 import Restaurants from '../Components/Restaurants';
 import LineWithText from '../Components/LineWithText';
 import MenuBar from '../Components/MenuBar';
+import BottomSlider from './BottomSlider';
 
 const RestaurantScreen = ({ navigation, route }) => {
 
@@ -171,6 +172,8 @@ const RestaurantScreen = ({ navigation, route }) => {
 
             )
             )}
+
+            <BottomSlider />
         </ScrollView>
     )
 }
@@ -181,7 +184,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ebebeb',
-    backgroundColor: colors.col1,
+        backgroundColor: colors.col1,
 
         // alignItems: 'center',
         width: '100%',
