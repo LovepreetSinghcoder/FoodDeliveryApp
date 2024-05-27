@@ -2,12 +2,9 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, TextInput,
 import React, { useContext, useState } from 'react'
 import { btn1, btn2, colors, hr80, navbtn, navbtnin, navbtnout, nonveg, veg, incdecbtn, incdecinput, incdecout } from '../Global/styles';
 import { AntDesign } from '@expo/vector-icons';
-
-// import { firebase } from '../../Firebase/firebaseConfig'
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 
-// import { incdecbtn, incdecinput, incdecout } from '../globals/style';
 
 // const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 const Productpage = ({ navigation, route }) => {
@@ -125,84 +122,85 @@ const Productpage = ({ navigation, route }) => {
     // };
 
 
-    // NEW APPROACH
-    const addTocart = async () => {
-        setLoading(true);
-        const date = new Date().getTime().toString() 
-        if (data.stock === 'in') {
-            if (data.stockamount > 5) {
-                const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
-                const data1 = {
-                    item_id: data.id,
-                    shop_id: data.shopId,
-                    addonquantity: parseInt(addonquantity, 10),
-                    foodquantity: parseInt(quantity, 10),
-                    totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
-                    totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
-                    orderStatus: 'Pending',
-                    userid: userloggeduid,
-                    date: date,
-                    cartItemId: date+userloggeduid
-                };
+    // NEW APPROACH (Stable Version - with adding food Data to the Cart with CartItems Array)
 
-                try {
-                    const doc = await docRef.get();
+    // const addTocart = async () => {
+    //     setLoading(true);
+    //     const date = new Date().getTime().toString() 
+    //     if (data.stock === 'in') {
+    //         if (data.stockamount > 5) {
+    //             const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+    //             const data1 = {
+    //                 item_id: data.id,
+    //                 shop_id: data.shopId,
+    //                 addonquantity: parseInt(addonquantity, 10),
+    //                 foodquantity: parseInt(quantity, 10),
+    //                 totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
+    //                 totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
+    //                 orderStatus: 'Pending',
+    //                 userid: userloggeduid,
+    //                 date: date,
+    //                 cartItemId: date+userloggeduid
+    //             };
 
-                    if (doc.exists) {
-                        const cartItems = doc.data().cartItems;
+    //             try {
+    //                 const doc = await docRef.get();
 
-                        if (Array.isArray(cartItems)) {
-                            const existingItemIndex = cartItems.findIndex((item) => item.item_id === data.id);
+    //                 if (doc.exists) {
+    //                     const cartItems = doc.data().cartItems;
 
-                            if (existingItemIndex !== -1) {
-                                const existingItem = cartItems[existingItemIndex];
-                                const updatedItem = {
-                                    ...existingItem,
-                                    foodquantity: existingItem.foodquantity + parseInt(quantity, 10),
-                                    totalFoodPrice: existingItem.totalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
-                                };
-                                cartItems[existingItemIndex] = updatedItem;
+    //                     if (Array.isArray(cartItems)) {
+    //                         const existingItemIndex = cartItems.findIndex((item) => item.item_id === data.id);
 
-                                docRef.update({
-                                    cartItems: cartItems,
-                                });
+    //                         if (existingItemIndex !== -1) {
+    //                             const existingItem = cartItems[existingItemIndex];
+    //                             const updatedItem = {
+    //                                 ...existingItem,
+    //                                 foodquantity: existingItem.foodquantity + parseInt(quantity, 10),
+    //                                 totalFoodPrice: existingItem.totalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
+    //                             };
+    //                             cartItems[existingItemIndex] = updatedItem;
 
-                                console.log('Updated');
-                            } else {
-                                docRef.update({
-                                    cartItems: firebase.firestore.FieldValue.arrayUnion(data1),
-                                });
+    //                             docRef.update({
+    //                                 cartItems: cartItems,
+    //                             });
 
-                                console.log('Added');
-                            }
-                        } else {
-                            docRef.set({
-                                cartItems: [data1],
-                            });
+    //                             console.log('Updated');
+    //                         } else {
+    //                             docRef.update({
+    //                                 cartItems: firebase.firestore.FieldValue.arrayUnion(data1),
+    //                             });
 
-                            console.log('Added');
-                        }
-                    } else {
-                        docRef.set({
-                            cartItems: [data1],
-                        });
+    //                             console.log('Added');
+    //                         }
+    //                     } else {
+    //                         docRef.set({
+    //                             cartItems: [data1],
+    //                         });
 
-                        console.log('Added');
-                    }
+    //                         console.log('Added');
+    //                     }
+    //                 } else {
+    //                     docRef.set({
+    //                         cartItems: [data1],
+    //                     });
 
-                    alert('Added to cart');
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            } else {
-                alert('Item is Out of Stock!');
-            }
-        } else {
-            alert('Item is Out of Stock!');
-        }
-        setLoading(false);
+    //                     console.log('Added');
+    //                 }
 
-    };
+    //                 alert('Added to cart');
+    //             } catch (error) {
+    //                 console.error('Error:', error);
+    //             }
+    //         } else {
+    //             alert('Item is Out of Stock!');
+    //         }
+    //     } else {
+    //         alert('Item is Out of Stock!');
+    //     }
+    //     setLoading(false);
+
+    // };
 
 
     // NEW APPROACH
@@ -270,7 +268,101 @@ const Productpage = ({ navigation, route }) => {
     //   }
     // };
 
+ // NEW APPROACH (Add Food Data Accoring to Restaurant Id)
 
+    const addTocart = async () => {
+        setLoading(true);
+        const date = new Date().getTime().toString() 
+        if (data.stock === 'in') {
+            if (data.stockamount > 5) {
+                const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+                const data1 = {
+                    item_id: data.id,
+                    shop_id: data.shopId,
+                    addonquantity: parseInt(addonquantity, 10),
+                    foodquantity: parseInt(quantity, 10),
+                    totalAddOnPrice: parseInt(addonquantity) * parseInt(data.foodAddonPrice),
+                    totalFoodPrice: parseInt(data.foodPrice) * parseInt(quantity),
+                    orderStatus: 'Pending',
+                    userid: userloggeduid,
+                    date: date,
+                    cartItemId: date+userloggeduid
+                };
+
+                try {
+                    const doc = await docRef.get();
+
+                    
+                    if (doc.exists) {
+                        // const currentShopID = data.shopId;
+                        // const cartItems = doc.data().cartItems;
+                        // const cartItems = doc.data().[data.shopId]
+                        const cartItems = doc.data()[data.shopId];
+
+
+
+                        if (Array.isArray(cartItems)) {
+                            const existingItemIndex = cartItems.findIndex((item) => item.item_id === data.id);
+
+                            if (existingItemIndex !== -1) {
+                                const existingItem = cartItems[existingItemIndex];
+                                const updatedItem = {
+                                    ...existingItem,
+                                    foodquantity: existingItem.foodquantity + parseInt(quantity, 10),
+                                    totalFoodPrice: existingItem.totalFoodPrice + (parseInt(data.foodPrice) * parseInt(quantity)),
+                                };
+                                cartItems[existingItemIndex] = updatedItem;
+
+                                docRef.update({
+                                    // cartItems: cartItems,
+                                    [data.shopId]: cartItems,
+
+                                });
+
+                                console.log('Updated');
+                            } else {
+                                docRef.update({
+                                    // cartItems: firebase.firestore.FieldValue.arrayUnion(data1),
+                                    [data.shopId]: firebase.firestore.FieldValue.arrayUnion(data1),
+
+                                });
+
+                                console.log('Added');
+                            }
+                        } else {
+                            docRef.set({
+                                // cartItems: [data1],
+                                [data.shopId]: [data1],
+
+                            },
+                            { merge: true } // New Added to by Chat GPT
+                        );
+
+                            console.log('Added');
+                        }
+                    } else {
+                        docRef.set({
+                            // cartItems: [data1],
+                            [data.shopId]: [data1],
+
+                        });
+
+                        console.log('Added');
+                    }
+
+                    alert('Added to cart');
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            } else {
+                alert('Item is Out of Stock!');
+            }
+        } else {
+            alert('Item is Out of Stock!');
+        }
+        setLoading(false);
+
+    };
 
 
 

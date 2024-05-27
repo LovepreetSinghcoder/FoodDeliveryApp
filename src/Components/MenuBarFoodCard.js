@@ -11,9 +11,7 @@ const MenuBarFoodCard = ({ title, data, navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* <Text style={styles.cardouthead}>
-                {title}
-            </Text> */}
+
             <LineWithText navigation={navigation} heading={title} />
             <FlatList style={styles.cardsout}
                 showsHorizontalScrollIndicator={false}
@@ -24,15 +22,43 @@ const MenuBarFoodCard = ({ title, data, navigation }) => {
                         onPress={() => { openProductPage(item) }}>
                         <View style={styles.card}>
                             <View style={styles.s2}>
+                                <View>
+                                    {item.foodType == 'Veg' ?
+                                        <>
+                                            {/* <Text style={veg}>VEG</Text> */}
+
+                                            <Image
+                                                source={require('../Images/VegPng.png')}
+                                                style={{ width: 20, height: 20, marginHorizontal: 5, marginVertical: 5 }}
+                                            />
+                                        </>
+
+                                        :
+                                        <Image
+                                            source={require('../Images/NonVeg.png')}
+                                            style={{ width: 20, height: 20, marginHorizontal: 5, marginVertical: 5 }}
+                                        />
+                                    }
+                                </View>
+
                                 <Text style={styles.txt1}>{item.foodName}</Text>
 
                                 <View style={styles.s2in}>
-                                    {/* <Text style={styles.txt2}>FAST FOOD • <Text style={{textDecorationLine:'line-through'}}>{item.actualFoodPrice}</Text> • ₹{item.foodPrice}/-</Text> */}
+
                                     <Text style={styles.txt2}>
-                                        Fast Food •{' '}
-                                        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
+                                        Fast Food
                                     </Text>
-                                    {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>}
+
+                                    {/* <Text style={styles.txt2}>
+
+                                        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹{item.actualFoodPrice}/-</Text>
+
+
+                                    </Text> */}
+                                    <Text style={[styles.txt2, { fontSize: 15, fontWeight: '500', paddingVertical: 5, color: 'black' }]}>₹{item.foodPrice}</Text>
+
+
+                                    {/* {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>} */}
                                 </View>
 
                             </View>
@@ -44,7 +70,15 @@ const MenuBarFoodCard = ({ title, data, navigation }) => {
                                     :
                                     null
                                 }
-
+                                <TouchableOpacity style={[styles.outOfStockContainer, {
+                                    top: 90,
+                                    left: -20,
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 20,
+                                    backgroundColor: '#fff6f7'
+                                }]}>
+                                    <Text style={styles.outOfStockText}>ADD +</Text>
+                                </TouchableOpacity>
                                 <Image source={{
                                     uri: item.foodImageUrl
                                 }} style={styles.cardimgin} />
@@ -108,6 +142,7 @@ const styles = StyleSheet.create({
         marginTop: 1,
         borderRadius: 10,
         borderBottomWidth: 1,
+        borderStyle: 'dashed',
         borderColor: '#d6d6d6',
         // backgroundColor: colors.col1,
         backgroundColor: 'white',
@@ -123,25 +158,30 @@ const styles = StyleSheet.create({
         position: 'absolute', // Position this container absolutely within its parent
         top: 5, // Align it to the top
         left: 5, // Align it to the left
-        backgroundColor: 'red', // Background color
+        // backgroundColor: 'white', 
+        backfaceVisibility: 'hidden',
+        borderColor: 'red',
+        borderWidth: 1,
+        borderRadius: 15,
         padding: 5, // Add padding for better visibility
         zIndex: 1, // Ensure it's above the image
         borderRadius: 14,
         paddingHorizontal: 10
     },
     outOfStockText: {
-        color: 'white', // Text color
+        color: 'red', // Text color
         fontWeight: 'bold', // Text style
+        textTransform: 'uppercase'
 
     },
     cardimgin: {
         width: "100%",
-        width: 120,
+        width: 150,
         height: 138,
         // borderRadiusTop: 20,
         // borderTopLeftRadius: 21,
         // borderTopRightRadius: 21
-        borderRadius: 20
+        borderRadius: 15
     },
     s2: {
         // flexDirection: 'row',
@@ -163,11 +203,12 @@ const styles = StyleSheet.create({
         color: colors.text2,
         marginRight: 10,
         fontWeight: '500',
-        // textDecorationLine: 'line-through'
+        flexDirection: 'column',
+
     },
     s2in: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: 'column',
+        // alignItems: 'center',
         marginHorizontal: 6,
 
     },

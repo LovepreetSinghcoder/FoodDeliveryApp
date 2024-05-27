@@ -3,14 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { btn1, btn2, colors, hr80, navbtn, navbtnin, navbtnout, nonveg, veg, incdecbtn, incdecinput, incdecout } from '../Global/styles';
 import { AntDesign } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, FontAwesome6, MaterialIcons, Fontisto } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
 
 
 import Restaurants from '../Components/Restaurants';
 import LineWithText from '../Components/LineWithText';
 import MenuBar from '../Components/MenuBar';
-import BottomSlider from './BottomSlider';
+// import BottomSlider from './BottomSlider';
+import { Button } from 'react-native-elements';
+import RestaurantCouponsSlider from '../Components/RestaurantCouponsSlider';
 
 const RestaurantScreen = ({ navigation, route }) => {
 
@@ -96,12 +98,11 @@ const RestaurantScreen = ({ navigation, route }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity style={{ flexDirection: 'row', backgroundColor: colors.col2, padding: 15 }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                <FontAwesome6 name="arrow-left" size={24} color="black" />
+
+            </TouchableOpacity>
 
             <View style={styles.container_inner1}>
                 <View style={{ paddingVertical: 5 }}>
@@ -137,31 +138,40 @@ const RestaurantScreen = ({ navigation, route }) => {
 
                 </View>
 
-                <View style={{ borderRadius: 12, flexDirection: 'row', backgroundColor: '#e3eeff', paddingHorizontal: 8, paddingVertical: 1 }}>
+                <View style={{
+                    borderRadius: 12,
+                    flexDirection: 'row',
+                    backgroundColor: '#e3eeff',
+                    paddingHorizontal: 10,
+                    paddingVertical: 3,
+                    alignContent: 'center'
+                }}>
 
                     <View style={{ alignSelf: 'center', paddingRight: 3 }}>
-                        {/* <Octicons name="stopwatch" size={24} color="black" /> */}
-                        <Entypo name="stopwatch" size={12} color="black" />
+                        <Fontisto name="stopwatch" size={15} color="black" />
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text>
-                            20-25 min 1km
-                        </Text>
-                        <View style={{ alignSelf: 'center', }}>
 
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text>20-25 min<Entypo name="dot-single" size={15} color="black" />1km</Text>
+                        <View style={{ alignSelf: 'center', }}>
                             <Entypo name="dot-single" size={15} color="black" />
                         </View>
-                        <Text>
-                            100ft Road
-                        </Text>
+                        <Text>100ft Road</Text>
                     </View>
                 </View>
+            </View>
+
+            <View>
+                <RestaurantCouponsSlider />
             </View>
             {/* <LineWithText navigation={navigation} heading={'FOODS'} />agg */}
 
             {/* <Restaurants navigation={navigation} title={'FOODS'}/> */}
 
             {/* <Text>Restaurant Foods</Text> */}
+
+           
+            
 
             {restaurantMenuIds && restaurantMenuIds.map((data, index) => (
 
@@ -172,8 +182,6 @@ const RestaurantScreen = ({ navigation, route }) => {
 
             )
             )}
-
-            <BottomSlider />
         </ScrollView>
     )
 }
@@ -191,7 +199,9 @@ const styles = StyleSheet.create({
 
     },
     container_inner1: {
-        // backgroundColor: 'green',
+        backgroundColor: colors.col2,
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
         paddingVertical: 15,
         alignItems: 'center',
 

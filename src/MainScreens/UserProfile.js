@@ -12,7 +12,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 
 
 const UserProfile = ({ navigation }) => {
-  const { userloggeduid, } = useContext(AuthContext);
+  const { userloggeduid,userDataHandler } = useContext(AuthContext);
   const { logout, userdata } = useContext(AuthContext);
   const initial = userdata?.name ? userdata.name.charAt(0).toUpperCase() : 'U';
   // const [userdata, setUserdata] = useState(null);
@@ -26,23 +26,24 @@ const UserProfile = ({ navigation }) => {
   };
 
 
-  // const getuserdata = async () => {
-  //   const docRef = firebase.firestore().collection('UserData').where('uid', '==', userloggeduid)
-  //   const doc = await docRef.get();
-  //   if (!doc.empty) {
-  //     doc.forEach((doc) => {
-  //       setUserdata(doc.data());
-  //     })
-  //   }
-  //   else {
-  //     console.log('no user data');
-  //   }
-  // }
+  const getuserdata = async () => {
+    const docRef = firebase.firestore().collection('UserData').where('uid', '==', userloggeduid)
+    const doc = await docRef.get();
+    if (!doc.empty) {
+      doc.forEach((doc) => {
+        // setUserdata(doc.data());
+        userDataHandler(doc.data())
+      })
+    }
+    else {
+      console.log('no user data');
+    }
+  }
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   getuserdata();
-  // }, [userloggeduid]);
+    getuserdata();
+  }, [userloggeduid]);
 
 
   useFocusEffect(
