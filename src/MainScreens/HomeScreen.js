@@ -606,45 +606,7 @@ const HomeScreen = ({ navigation }) => {
 
         {TodaySpecialFoodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={TodaySpecialFoodData} navigation={navigation} />}
 
-        {/* <TouchableOpacity style={{ width: '95%', alignSelf: 'center', height: 235, borderRadius: 20, elevation: 2, backgroundColor: 'white' }} onPress={() => navigation.navigate('VegetableShow')}>
-          <View style={{ backgroundColor: 'green', borderTopRightRadius: 18.5, borderTopLeftRadius: 18.5, paddingBottom: 5, paddingTop: 5, paddingHorizontal: 10 }}>
-            <Text style={{ backgroundColor: 'white', borderRadius: 12, borderWidth: .5, borderColor: 'green', width: 45, paddingHorizontal: 10, color: 'green', fontSize: 12 }}>Trial</Text>
-            <Text style={{ fontWeight: '500', color: 'white', marginLeft: 3 }}>Vegetables</Text>
-          </View>
-          <View style={{ flexDirection: 'row', width: '100%', paddingHorizontal: 5 }}>
-            <View style={{ height: 180, width: '49%', borderWidth: 1, borderColor: 'grey', borderRadius: 12, marginVertical: 5 }}>
-              <Image source={require('../Images/gobhi.jpg')} style={{ width: '100%', height: '75%', borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
-              <View style={{ paddingLeft: 5, paddingTop: 2 }}>
-                <Text style={{ fontWeight: '500' }}>Gobhi</Text>
-
-                <View style={styles.s2in}>
-                  <Text style={styles.txt2}>
-                    Price •{' '}
-                    <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹60/-</Text> • ₹50/-
-                  </Text>
-                </View>
-
-              </View>
-            </View>
-            <View style={{ height: 180, width: '49%', borderWidth: 1, borderColor: 'grey', borderRadius: 12, marginVertical: 5, marginLeft: 5 }}>
-              <Image source={require('../Images/aalu.jpg')} style={{ width: '100%', height: '75%', borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
-              <View style={{ paddingLeft: 5, paddingVertical: 5 }}>
-                <Text style={{ fontWeight: '500' }}>Aalu</Text>
-
-                <View style={styles.s2in}>
-
-                  <Text style={styles.txt2}>
-                    Price •{' '}
-                    <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹20/-</Text> • ₹10/-
-                  </Text>
-                </View>
-
-              </View>
-            </View>
-
-
-          </View>
-        </TouchableOpacity> */}
+    
 
 
         {VegData.length === 0 ? null : <Cardslider title={"VEG"} data={VegData} navigation={navigation} />}

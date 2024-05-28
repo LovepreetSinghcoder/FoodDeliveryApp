@@ -524,7 +524,7 @@ const Productpage = ({ navigation, route }) => {
                         }
                         <TouchableOpacity style={btn2}>
                             {/* <Text style={styles.btntxt} onPress={() => navigation.navigate('placeorder', { cartdata })}>Buy Now</Text> */}
-                            <Text style={styles.btntxt} onPress={() => navigation.navigate('Usercart')}>Go to Cart</Text>
+                            <Text style={styles.btntxt} onPress={() => navigation.navigate('UserCartsScreen')}>Go to Cart</Text>
 
                         </TouchableOpacity>
                     </View>

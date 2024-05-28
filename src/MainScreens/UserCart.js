@@ -4,18 +4,23 @@ import CheckBox from 'expo-checkbox';
 import { Switch } from 'react-native-elements';
 import React, { useContext, useEffect, useState } from 'react'
 import { btn2, colors, hr80, navbtn, navbtnin } from '../Global/styles'
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, FontAwesome6, Fontisto } from '@expo/vector-icons';
+
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+// import Cart from '../Components/Cart';
 
 // import BottomNav from '../components/BottomNav';
 
 // const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
-const UserCart = ({ navigation }) => {
-    const { userloggeduid, checkIsLogged, locationName, calculateDistance } = useContext(AuthContext);
+const UserCart = ({ navigation, route }) => {
+
+    const data_shopId = route.params;
+
+    const { userloggeduid, checkIsLogged, locationName, calculateDistance, userdata } = useContext(AuthContext);
 
     // console.log('ye ha loation NAM3E', locationName)
     const [cartdata, setCartdata] = useState(null);
@@ -76,17 +81,21 @@ const UserCart = ({ navigation }) => {
 
     const getcartdata = async () => {
         setLoading(true);
-        // const docRef = firebase.firestore().collection('UserCart').doc(firebase.auth().currentUser.uid);
-        const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+        // const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+        const docRef = firebase.firestore().collection('UserCart').doc('ULzOMM6qS3PuERvrNmyf4SYu3KF3');
+
 
         try {
             await docRef.get().then((doc) => {
                 if (doc.exists) {
                     // const data = JSON.stringify(doc.data());
                     // setCartdata(data)
-                    setCartdata(doc.data())
-                    setCartAllData(doc.data().cartItems)
-                    // console.log('ye rha updated data', doc.data().cartItems)
+                    // setCartdata(doc.data())
+                    // console.log("This is the data of the your Cart :", doc.data())
+                    // setCartAllData(doc.data().cartItems)
+                    // console.log("This is the data of the your Cart Test12:", doc.data().cartItems)
+
+
                 } else {
                     console.log('No such document!');
                 }
@@ -98,10 +107,67 @@ const UserCart = ({ navigation }) => {
         setLoading(false)
     }
 
+
+
+    const getSpecificArray = async () => {
+        const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+
+        try {
+            const doc = await docRef.get();
+
+            if (doc.exists) {
+                const data = doc.data();
+
+                if (data && data.hasOwnProperty(data_shopId)) {
+                    const specificArray = data[data_shopId];
+                    console.log(`Array "${data_shopId}" data:`, specificArray);
+                    setCartAllData(specificArray)
+
+                    return specificArray;
+                } else {
+                    console.log(`Array "${data_shopId}" does not exist in the document.`);
+                    return null;
+                }
+            } else {
+                console.log(`Document for user ${userloggeduid} does not exist.`);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error getting specific array:', error);
+            return null;
+        }
+    };
     useEffect(() => {
 
-        getcartdata();
+        // getcartdata();
+        getSpecificArray()
     }, [])
+
+    useEffect(() => {
+        try {
+            // const doc = await docRef.get();
+
+            // const data = doc.data();
+            const keys = Object.keys(cartdata);
+
+            // console.log('This is the Keys:', ...keys)
+            if (keys.length > 0) {
+                const firstKey = keys[1];
+                const firstData = cartdata[firstKey];
+
+                // console.log("First array name (shopId):", firstKey);
+                // console.log("First array data:", firstData);
+            } else {
+                console.log("The document has no data.");
+            }
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
+
+    }, [cartdata])
+    // console.log('This is the data We want', cartdata)
+
 
     useFocusEffect(
         React.useCallback(() => {
@@ -126,22 +192,24 @@ const UserCart = ({ navigation }) => {
     // console.log(cartdata)
 
     // console.log(JSON.parse(cartdata).cart[0].data);
-    const [userdata, setUserdata] = useState([]);
 
 
-    useEffect(() => {
-        // Fetch data from Firebase
-        const fetchData = async () => {
-            const foodRef = firebase.firestore().collection('UserData');
+    // const [userdata, setUserdata] = useState([]);
 
-            foodRef.onSnapshot(snapshot => {
-                setUserdata(snapshot.docs.map(doc => doc.data()))
-            }
-            )
-        };
 
-        fetchData();
-    }, [cartdata]);
+    // useEffect(() => {
+    //     // Fetch data from Firebase
+    //     const fetchData = async () => {
+    //         const foodRef = firebase.firestore().collection('UserData');
+
+    //         foodRef.onSnapshot(snapshot => {
+    //             setUserdata(snapshot.docs.map(doc => doc.data()))
+    //         }
+    //         )
+    //     };
+
+    //     fetchData();
+    // }, [cartdata]);
 
     const [user, setUser] = useState([]);
 
@@ -158,18 +226,19 @@ const UserCart = ({ navigation }) => {
         }
     }
 
-    // console.log('user is ', user.totalCoin)
     useEffect(() => {
 
         getuserData();
     }, [userloggeduid]);
 
-    // console.log('coins', user.totalCoin)
 
     const [foodDataAll, setFoodDataAll] = useState([]);
 
+
+    // UseEffect to get all data of all Foods 
+
     useEffect(() => {
-        // Fetch data from Firebase
+
         const fetchData = async () => {
             const foodRef = firebase.firestore().collection('foodData');
 
@@ -182,39 +251,100 @@ const UserCart = ({ navigation }) => {
         fetchData();
     }, [cartdata]);
 
-    // console.log('dekh bro', foodDataAll)
 
 
     const [allData, setAllData] = useState([]);
     const [shopInfo, setShopInfo] = useState([]);
 
 
-
+    // useEffect to get all data of ShopInfo 
     useEffect(() => {
-        // Fetch data from Firebase
         const fetchData = async () => {
             const docRef = firebase.firestore().collection('shopInfo');
+
 
             // foodRef.onSnapshot(snapshot => {
             //     setFoodDataAll(snapshot.docs.map(doc => doc.data()))
             // }
+
             const doc = await docRef.get();
-            // if (!doc.empty) {
             doc.forEach((doc) => {
                 setShopInfo(doc.data());
             })
-            // )
         };
 
         fetchData();
     }, []);
-    // console.log('dekkkkk',typeof parseInt(shopInfo.minpriceorder))
+    // console.log('This is the data of the Shop Data', shopInfo)
+
+
+    const [restaurantsData, setRestaurantsData] = useState([]);
+
+
+    // useEffect to get all data of Restaurant Data 
+    useEffect(() => {
+        const fetchData = async () => {
+            const docRef = firebase.firestore().collection('RestaurantData').where('shopId', '==', data_shopId)
+
+
+
+            // const doc = await docRef.get();
+            // doc.forEach((doc) => {
+            //     setRestaurantsData(doc.data());
+            // })
+
+            // docRef.onSnapshot(snapshot => {
+            //     setRestaurantsData(snapshot.docs.map(doc => doc.data()))
+            // }
+            // )
+            const doc = await docRef.get();
+            if (!doc.empty) {
+                doc.forEach((doc) => {
+                    setRestaurantsData(doc.data());
+                })
+            }
+            else {
+                console.log('No Restaurant Data Found!');
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // console.log('No Restaurant Data Found!',restaurantsData);
+
+
+
+
+    // console.log('This is the data of the Restaurants Data', restaurantsData)
+    const GetRestaurantDataHandler = (id) => {
+
+        if (!restaurantsData) {
+            console.log('Restaurant data is not loaded')
+            return;
+        }
+        // const data = restaurantsData.filter((item) => item.shopId == 'U08laKOtyLZWlAXzRFLVYi8ReeK2')
+        const data = restaurantsData.filter((item) => item.shopId == id)
+
+
+        // console.log('This the data we want::', data[0])
+        // return data[0];
+        return data;
+
+    }
+
+    // useEffect(() => {
+
+    //     GetRestaurantDataHandler()
+    // },[restaurantsData])
 
     //New Approach
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
     const [closedRestaurants, setClosedRestaurants] = useState([]);
     const [restaurantName, setRestaurantName] = useState([]);
-    // console.log('dejhhi', restaurantName.length)
+
+
+
     const checkShopOpen = () => {
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
@@ -274,11 +404,12 @@ const UserCart = ({ navigation }) => {
             console.log('Empty array or null cartdata');
         }
     };
-    useEffect(() => {
 
 
-        checkShopOpen();
-    }, [cartdata, userdata]);
+    // useEffect to triger checkShopOpen Fn 
+    // useEffect(() => {
+    //     checkShopOpen();
+    // }, [cartdata, userdata]);
 
 
     //Check Stock of Each Item
@@ -286,55 +417,57 @@ const UserCart = ({ navigation }) => {
     const [inStock, setInStock] = useState(true);
     const [outStock, setOutStock] = useState([]);
 
-    useEffect(() => {
-        const checkStock = () => {
-            if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
-                //NEW CODE
-                let itemIDs = [];
-                const checkData = cartdata.cartItems;
-                checkData.forEach((item) => {
+    // useEffect to check Stock of the Foods 
+    // useEffect(() => {
+    //     const checkStock = () => {
+    //         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
-                    // const cartArrayNames = item.
-                    itemIDs.push(item.item_id)
-                });
-                // const cartArrayNames = Object.keys(cartdata);
-                // console.log('dekh veere', itemIDs)
+    //             //NEW CODE
+    //             let itemIDs = [];
+    //             const checkData = cartdata.cartItems;
+    //             checkData.forEach((item) => {
+
+    //                 // const cartArrayNames = item.
+    //                 itemIDs.push(item.item_id)
+    //             });
+    //             // const cartArrayNames = Object.keys(cartdata);
+    //             // console.log('dekh veere', itemIDs)
 
 
-                // let checkStockV = false;
-                setOutStock([]); // Clear the array before adding new items
-                for (let i = 0; i < itemIDs.length; i++) {
-                    // console.log('dekhi bro 2');
-                    const matchingItemId = foodDataAll.find((item) => item.id === itemIDs[i]);
+    //             // let checkStockV = false;
+    //             setOutStock([]); // Clear the array before adding new items
+    //             for (let i = 0; i < itemIDs.length; i++) {
+    //                 // console.log('dekhi bro 2');
+    //                 const matchingItemId = foodDataAll.find((item) => item.id === itemIDs[i]);
 
-                    // console.log('dekhi bro 4', matchingUserId);
-                    // console.log('dekhi bro 4');
+    //                 // console.log('dekhi bro 4', matchingUserId);
+    //                 // console.log('dekhi bro 4');
 
-                    if (matchingItemId) {
-                        // console.log('dekhi bro 5');
-                        setRestaurantLatitude(parseFloat(matchingItemId.RestaurantCords.Lat))
-                        setRestaurantLongitude(parseFloat(matchingItemId.RestaurantCords.Long))
+    //                 if (matchingItemId) {
+    //                     // console.log('dekhi bro 5');
+    //                     setRestaurantLatitude(parseFloat(matchingItemId.RestaurantCords.Lat))
+    //                     setRestaurantLongitude(parseFloat(matchingItemId.RestaurantCords.Long))
 
-                        if (matchingItemId.stock === 'out') {
-                            // console.log('dekhi bro 7');
-                            setInStock(false);
-                            setOutStock((prevStock) => [...prevStock, matchingItemId.foodName]);
-                            // console.log('Dekhi bro nhi haiga');
-                        } else {
-                            setInStock(true);
+    //                     if (matchingItemId.stock === 'out') {
+    //                         // console.log('dekhi bro 7');
+    //                         setInStock(false);
+    //                         setOutStock((prevStock) => [...prevStock, matchingItemId.foodName]);
+    //                         // console.log('Dekhi bro nhi haiga');
+    //                     } else {
+    //                         setInStock(true);
 
-                            // console.log('dekhi bro 8');
-                        }
-                    }
-                }
-            } else {
-                console.log('Empty array or null cartdata');
-            }
-        };
+    //                         // console.log('dekhi bro 8');
+    //                     }
+    //                 }
+    //             }
+    //         } else {
+    //             console.log('Empty array or null cartdata');
+    //         }
+    //     };
 
-        checkStock();
-    }, [cartdata, foodDataAll]);
+    //     checkStock();
+    // }, [cartdata, foodDataAll]);
 
 
 
@@ -444,48 +577,41 @@ const UserCart = ({ navigation }) => {
         getTotalDeliveryCharges()
     }, userDistance)
 
-    // console.log('dekh bro delivery charges', deliveryCharges, 'And distance', userDistance)
-    // console.log('dekjdfdsf', isUseCoins)
+
     const GetTotalPrice = () => {
-        // setIsLoading(true);
-
-        // if (Object.keys(cartdata).length !== 0) {
-        // if (cartdata !== null) {
-        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
+        if (cartAllData !== null && Object.keys(cartAllData).length !== 0) {
 
 
-            const cart23 = cartdata;
+            // const cart23 = cartdata;
             let totalfoodprice = 0;
-            const foodprice = cart23.cartItems;
+            // const foodprice = cart23.cartItems;
+            const foodprice = cartAllData;
+
             foodprice.forEach((item) => {
                 totalfoodprice += (parseInt(item.totalFoodPrice)) +
                     (parseInt(item.totalAddOnPrice));
             });
             setItemCost(totalfoodprice.toString());
-            if (isUseCoins === true) {
-                let finalPrice = totalfoodprice + deliveryCharges - 10;
-                setTotalCost(finalPrice.toString());
-                console.log('Now coin is true', isUseCoins)
-            }
-            if (isUseCoins === false) {
-
-                let finalPrice = totalfoodprice + deliveryCharges;
-                setTotalCost(finalPrice.toString());
-                console.log('Now coin is false', isUseCoins)
-            }
 
 
+            // setTotalCost(totalfoodprice.toString());
 
+            console.log('This is the Grand Total Price :', totalfoodprice.toString())
             // setIsLoading(false);
+            let finalPrice = totalfoodprice + deliveryCharges + ((totalfoodprice * 12) / 100);
+            setTotalCost(finalPrice.toString());
         }
         else {
             setTotalCost('0');
         }
     }
 
+
+    // useEffect to trigger fn which finds total Price 
+
     useEffect(() => {
         GetTotalPrice();
-    }, [cartdata]);
+    }, [cartAllData]);
 
 
 
@@ -518,30 +644,29 @@ const UserCart = ({ navigation }) => {
         // setIsLoading(false);
     }
 
-    // console.log(typeof (cartdata))
-    // console.log(restaurantName, '44545545')
-    // console.log(parseInt(totalCost) < parseInt(shopInfo.minpriceorder) || parseInt(totalCost) > parseInt(shopInfo.maxpriceorder));
+
 
     const GoToPaymentPage = () => {
-        if (cartdata !== null && Object.keys(cartdata).length !== 0) {
-            if (user.totalCoin < -10) {
-                alert("Unable to place the order due to insufficient coins!");
-            }
-            else if (notdeliverable) {
+        if (cartAllData !== null && Object.keys(cartAllData).length !== 0) {
+            // if (user.totalCoin < -10) {
+            //     alert("Unable to place the order due to insufficient coins!");
+            // }
+            // else
+             if (notdeliverable) {
                 alert("This item is not available in your location.");
 
             }
-            else if (restaurantName.length != 1) {
-                alert("Only one restaurant order is accepted at a time.");
+            // else if (restaurantName.length != 1) {
+            //     alert("Only one restaurant order is accepted at a time.");
 
-            }
-            else if (shopInfo.shopIs === 'Close') {
-                alert("Technical Issue!");
+            // }
+            // else if (shopInfo.shopIs === 'Close') {
+            //     alert("Technical Issue!");
 
-            }
-            else if (isRestaurantOpen === false) {
-                alert(`The following restaurant is closed : ${closedRestaurants}`)
-            }
+            // }
+            // else if (isRestaurantOpen === false) {
+            //     alert(`The following restaurant is closed : ${closedRestaurants}`)
+            // }
             else if (inStock === false) {
                 alert(`The following item is Out of Stock : ${outStock}`)
 
@@ -567,22 +692,31 @@ const UserCart = ({ navigation }) => {
 
     }
 
+
     if (totalCost === '0') {
 
         return (
 
             <View style={[styles.containerout,]}>
-                <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
-                        <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
+                <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    padding: 15,
+                    alignItems: 'center'
+                }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                    <FontAwesome6 name="arrow-left" size={20} color="black" />
+                    <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
+                </TouchableOpacity>
 
-                    </TouchableOpacity>
-                </View>
                 <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
                     <Ionicons name="fast-food" size={250} color="#dedede" />
                     <Text style={{ color: '#dedede', fontSize: 25, fontWeight: '600' }}>Cart is Empty!</Text>
                 </View>
+
+
+
+
+
             </View>
         )
 
@@ -596,13 +730,16 @@ const UserCart = ({ navigation }) => {
             <View style={styles.containerout}>
 
 
-                <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+                <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    padding: 15,
+                    alignItems: 'center'
+                }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                    <FontAwesome6 name="arrow-left" size={20} color="black" />
+                    <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
+                </TouchableOpacity>
 
-                        <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
 
-                    </TouchableOpacity>
-                </View>
                 <View style={{ paddingVertical: 20 }}>
 
                     <ActivityIndicator size="large" color={colors.text1} />
@@ -618,16 +755,21 @@ const UserCart = ({ navigation }) => {
         <View style={styles.containerout}>
 
 
-            <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+            <TouchableOpacity style={{
+                flexDirection: 'row',
+                padding: 15,
+                alignItems: 'center'
+            }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                <FontAwesome6 name="arrow-left" size={20} color="black" />
+                {/* <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text> */}
+                <View>
+                    <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10 ,color: 'grey'}}>{restaurantsData.restaurant_name}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '500', paddingHorizontal: 10 }}>Delivery at Home  <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10 ,color: 'grey'}}>{userdata.address}</Text></Text>
+                </View>
+            </TouchableOpacity>
 
-                    <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
-
-                </TouchableOpacity>
-            </View>
 
             <ScrollView style={styles.container}>
-                <Text style={styles.head1}>My Cart</Text>
                 <View style={styles.cartout}>
                     {/* {cartdata == null || JSON.parse(cartdata).cart.length == 0 ? */}
                     {cartAllData == null ?
@@ -643,55 +785,63 @@ const UserCart = ({ navigation }) => {
                                 // console.log('ye hai aa ka result',nData[0].foodImageUrl)
                                 return (
                                     <View style={styles.cartcard}>
-                                        <Image source={{ uri: nData[0].foodImageUrl }} style={styles.cartimg} />
+                                        {/* <Image source={{ uri: nData[0].foodImageUrl }} style={styles.cartimg} /> */}
                                         <View style={styles.cartcardin}>
-                                            <View style={{
-                                                flexDirection: 'column',
-                                                justifyContent: 'space-between',
-                                                width: '100%',
-                                                // backgroundColor: colors.col1,
-                                                // borderRadius: 10,
-                                                paddingHorizontal: 3,
-                                                paddingVertical: 2,
-                                                borderBottomWidth: 1,
-                                            }}>
-                                                <Text style={{ color: 'black' }}>{nData[0].restaurantName}</Text>
-                                            </View>
+
+
                                             <View style={styles.c1}>
-                                                {/* <Text style={styles.txt1}>{item.foodquantity}&nbsp;
-                                                    {nData[0].foodName}
-                                                </Text>
-                                                <Text style={styles.txt2}>₹{nData[0].foodPrice}/each</Text> */}
 
 
-                                                <Text style={[styles.txt1, { textTransform: 'uppercase' }]}>{nData[0].foodName}</Text>
+                                                <View>
+                                                    {nData[0].foodType == 'Veg' ?
+                                                        <Image
+                                                            source={require('../Images/VegPng.png')}
+                                                            style={{ width: 15, height: 15, marginHorizontal: 5, marginVertical: 5 }}
+                                                        />
+                                                        :
+                                                        <Image
+                                                            source={require('../Images/NonVeg.png')}
+                                                            style={{ width: 15, height: 15, marginHorizontal: 5, marginVertical: 5 }}
+                                                        />
+                                                    }
 
-                                                <Text style={styles.txt2}>{nData[0].foodPrice}₹ for one {nData[0].foodunitType}</Text>
-                                                <Text>Quantity: {item.foodquantity}*{nData[0].foodunitType}</Text>
-                                            </View>
-                                            {item.addonquantity > 0 &&
-                                                <View style={styles.c2}>
-                                                    <Text style={styles.txt3}>{item.Addonquantity}&nbsp;
-                                                        {nData[0].foodAddon}
-                                                    </Text>
-                                                    <Text style={styles.txt3}>₹{nData[0].foodAddonPrice}/each</Text>
                                                 </View>
-                                            }
+                                                <View style={{ paddingHorizontal: 4 }}>
 
+                                                    <Text style={[styles.txt1,]}>{nData[0].foodName}</Text>
 
+                                                    <Text style={styles.txt2}>₹{nData[0].foodPrice}</Text>
+                                                    <Text style={styles.txt2}></Text>
 
-                                            {/* {process ? */}
+                                                    {/* <Text>Quantity: {item.foodquantity}*{nData[0].foodunitType}</Text> */}
+                                                </View>
+                                            </View>
 
-                                            {/* <TouchableOpacity style={styles.c4} >
-                                                    <ActivityIndicator size="small" color="black" />
-                                                </TouchableOpacity> */}
-                                            {/* // : */}
-                                            <TouchableOpacity style={styles.c4} onPress={() => deleteItem(item, nData[0].shopId)}>
-                                                <Text style={styles.txt1}>Delete</Text>
-                                                <AntDesign name="delete" size={22} color="black" style={styles.del} />
-                                            </TouchableOpacity>
+                                            <View >
+                                                <View style={[styles.outOfStockContainer, {
+                                                    backfaceVisibility: 'hidden',
+                                                    borderColor: 'red',
+                                                    borderWidth: 1,
+                                                    // borderRadius: 12,
+                                                    zIndex: 1,
+                                                    borderRadius: 10,
+                                                    paddingVertical: 5,
+                                                    paddingHorizontal: 5,
+                                                    backgroundColor: '#fff6f7',
+                                                    flexDirection: 'row'
+                                                }]}>
+                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>-</Text></TouchableOpacity>
+                                                    <Text style={{ fontSize: 16, fontWeight: '400' }}> {item.foodquantity} </Text>
+                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>+</Text></TouchableOpacity>
 
-                                            {/* } */}
+                                                </View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingRight: 5, paddingTop: 5 }}>
+
+                                                    <Text style={[styles.txt2, { fontWeight: '500' }]}>₹{(item.foodquantity) * (nData[0].foodPrice)}</Text>
+
+                                                </View>
+                                            </View>
+
                                         </View>
 
                                     </View>
@@ -700,6 +850,65 @@ const UserCart = ({ navigation }) => {
                         }
                             scrollEnabled={false} />}
                 </View>
+
+                <View style={[styles.cartout, { backgroundColor: '#ffffff', paddingHorizontal: 10 }]}>
+                    <View style={styles.box}>
+
+                        <View style={styles.boxIn}>
+                            <Fontisto name="stopwatch" size={15} color="black" />
+
+                            <Text style={styles.boxInText}>Delivery in <Text style={{ fontWeight: '500' }}>28 mins</Text></Text>
+                        </View>
+                        <View>
+                            <Text style={styles.boxInText}>{'>'}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.box}>
+
+                        <View style={styles.boxIn}>
+                            <Fontisto name="stopwatch" size={15} color="black" />
+                            <View>
+
+                                <Text style={styles.boxInText}>Delivery at <Text style={{ fontWeight: '500' }}>Home</Text></Text>
+                                <Text style={[styles.boxInText, { fontWeight: '400', color: 'grey' }]}>{userdata.address}</Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={styles.boxInText}>{'>'}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.box}>
+
+                        <View style={styles.boxIn}>
+                            <Fontisto name="stopwatch" size={15} color="black" />
+                            <View>
+
+                                <Text style={styles.boxInText}>{userdata.name}, <Text style={{ fontWeight: '500' }}>{userdata.phone}</Text></Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={styles.boxInText}>{'>'}</Text>
+                        </View>
+                    </View>
+
+                    <View style={[styles.box, { borderBottomWidth: 0 }]}>
+
+                        <View style={styles.boxIn}>
+                            <Fontisto name="stopwatch" size={15} color="black" />
+                            <View>
+
+                                <Text style={styles.boxInText}>Total Bill <Text style={{ fontWeight: '500' }}>₹{totalCost}</Text></Text>
+                                <Text style={[styles.boxInText, { fontWeight: '400', color: 'grey' }]}>Incl. taxes and charges</Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={styles.boxInText}>{'>'}</Text>
+                        </View>
+                    </View>
+                </View>
+
                 {totalCost && totalCost !== '0' ?
                     <>
                         <View style={{
@@ -713,24 +922,29 @@ const UserCart = ({ navigation }) => {
                                 width: '95%',
                                 alignSelf: 'center',
                                 marginVertical: 5,
-                                paddingVertical: 5,
-                                elevation: 3
+                                paddingVertical: 10,
+                                padding: 10
+                                // elevation: 3
                             }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                    <Text style={{ fontWeight: '600' }}>Item Cost:</Text>
+                                    <Text style={{ fontWeight: '600' }}>Item total:</Text>
                                     <Text style={{ fontWeight: '600' }}>{itemCost}₹</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                    <Text style={{ fontWeight: '600' }}>Delivery Charges:</Text>
+                                    <Text style={{ fontWeight: '400' }}>GST & restaurant Charges:</Text>
+                                    <Text>{(itemCost * 12) / 100}₹</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
+                                    <Text style={{ fontWeight: '400' }}>Delivery partner fee:</Text>
                                     <Text>{deliveryCharges}₹</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                    <Text style={{ fontWeight: '500' }}>Service Charges:</Text>
+                                    <Text style={{ fontWeight: '400' }}>Platform fee:</Text>
                                     <Text>0₹</Text>
                                 </View>
                                 {isUseCoins === true ?
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                        <Text style={{ fontWeight: '500' }}>Discount:</Text>
+                                        <Text style={{ fontWeight: '400' }}>Discount:</Text>
                                         <Text>-10₹</Text>
                                     </View>
                                     :
@@ -770,18 +984,61 @@ const styles = StyleSheet.create({
     containerout: {
         flex: 1,
         width: '100%',
+        backgroundColor: "#f5f6fb"
 
     },
     container: {
         flex: 1,
-        backgroundColor: colors.col1,
-        backgroundColor: '#edeef0',
+        // backgroundColor: colors.col2,
+        // backgroundColor: '#edeef0',
 
         // alignItems: 'center',
         // justifyContent: 'center',
         width: '100%',
         // height: '100%',
     },
+
+    CartContainer: {
+        backgroundColor: 'white',
+        marginVertical: 5,
+        marginHorizontal: 15,
+        borderRadius: 15,
+        flexDirection: 'row',
+        padding: 10,
+        justifyContent: 'space-between'
+    },
+    CartContainerRestaurant: {
+        // backgroundColor: 'green',
+        flexDirection: 'row',
+        paddingHorizontal: 5,
+        paddingVertical: 5
+
+    },
+    CartContainerRestaurantLogo: {
+
+        // backgroundColor: 'cyan',
+        borderRadius: 50,
+        alignContent: 'center'
+    },
+    LogoImg: {
+        width: 40, // Adjust as needed
+        height: 40
+    },
+    CartContainerRestaurantText: {
+        // backgroundColor: 'yellow',
+        paddingHorizontal: 5
+    },
+    CartContainerRestaurantText1: {
+
+        fontSize: 15,
+        fontWeight: '600'
+    },
+    CartContainerRestaurantText2: {
+
+        fontSize: 15,
+        fontWeight: '400'
+    },
+
     head1: {
         fontSize: 20,
         // textAlign: 'center',
@@ -809,12 +1066,15 @@ const styles = StyleSheet.create({
     cartcard: {
         flexDirection: 'row',
         // backgroundColor: colors.col1,
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         marginVertical: 5,
-        borderRadius: 25,
-        width: '95%',
+        // borderRadius: 15,
+        width: '100%',
         alignSelf: 'center',
-        elevation: 2,
+        // elevation: 2,
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+
         alignItems: 'center',
     },
     cartimg: {
@@ -825,12 +1085,12 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 25
     },
     cartcardin: {
-        flexDirection: 'column',
-        margin: 5,
-        width: '69%',
+        flexDirection: 'row',
+        // margin: 5,
+        width: '75%',
         alignItems: 'flex-end',
-        // justifyContent: 'center',
-        // backgroundColor: 'green',
+        justifyContent: 'space-between',
+        // backgroundColor: 'red',
 
     },
     cardlist: {
@@ -839,7 +1099,13 @@ const styles = StyleSheet.create({
     },
     cartout: {
         flex: 1,
-        width: '100%',
+        // width: '100%',
+        backgroundColor: 'white',
+        // backgroundColor: 'green',
+
+        borderRadius: 15,
+        // padding: 10,
+        margin: 10
     },
     btntxt: {
         backgroundColor: colors.text1,
@@ -878,24 +1144,24 @@ const styles = StyleSheet.create({
         zIndex: 20,
     },
     c1: {
-        flexDirection: 'column',
-        justifyContent: 'space-between',
+        flexDirection: 'row',
+        // justifyContent: 'space-between',
         width: '100%',
         // backgroundColor: colors.col1,
         borderRadius: 10,
-        paddingHorizontal: 3,
-        paddingVertical: 2
+        // paddingHorizontal: 3,
+        // paddingVertical: 2
     },
     txt1: {
-        fontSize: 16,
+        fontSize: 15,
         color: colors.text3,
         // width: '75%',
-        fontWeight: 'bold',
+        fontWeight: '500',
         marginBottom: 3
         // paddingTop: 4
     },
     txt2: {
-        fontSize: 14,
+        fontSize: 13,
         color: colors.text3,
         fontWeight: '600',
         marginBottom: 2
@@ -946,5 +1212,27 @@ const styles = StyleSheet.create({
     del: {
         color: colors.text3,
         paddingLeft: 5
+    },
+    box: {
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderStyle: 'dotted',
+        borderBottomColor: 'grey'
+    }
+    ,
+    boxIn: { flexDirection: 'row', alignContent: 'center', alignItems: 'center', }
+    ,
+    boxInText:
+    {
+        fontSize: 15,
+        color: colors.text3,
+        fontWeight: '500',
+        marginBottom: 3,
+        fontWeight: '400',
+        paddingLeft: 5,
+        paddingTop: 4
     }
 })

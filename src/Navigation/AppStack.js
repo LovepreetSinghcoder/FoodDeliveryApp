@@ -28,6 +28,7 @@ import RestaurantScreen from '../MainScreens/RestaurantScreen';
 import AboutScreen from '../SecondaryScreens/AboutScreen';
 import AppSettings from '../SecondaryScreens/AppSettings';
 import SliderScreen from '../Components/SliderScreen';
+import UserCartsScreen from '../MainScreens/UserCartsScreen';
 // import MapLib from '../Components/mapLib';
 
 // import MapLib from '../Components/MapLib';
@@ -71,6 +72,8 @@ const HomeStack = () => (
         <Stack.Screen name='AboutScreen' component={AboutScreen} options={{ headerShown: false }} />
         <Stack.Screen name='AppSettings' component={AppSettings} options={{ headerShown: false }} />
         <Stack.Screen name='Slider' component={SliderScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='UserCartsScreen' component={UserCartsScreen} options={{ headerShown: false }} />
+
 
 
        
