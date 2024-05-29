@@ -9,7 +9,7 @@ import { AuthContext } from '../Context/AuthContext';
 
 
 const TrackOrderC = ({ foodDataAll, data, navigation }) => {
-    const { userloggeduid} = useContext(AuthContext);
+    const { userloggeduid } = useContext(AuthContext);
 
     const [orderData, setOrderData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const TrackOrderC = ({ foodDataAll, data, navigation }) => {
 
         getuserData();
     }, [userloggeduid]);
-    
+
     // console.log('user is ', user.totalCoin - 5)
 
     useEffect(() => {
@@ -189,9 +189,17 @@ const TrackOrderC = ({ foodDataAll, data, navigation }) => {
     return (
         <View>
             {orderData && orderData.map((order, index) => {
-        
+
                 return (
-                    <View key={index} style={{ borderRadius: 20, backgroundColor: '#f2f2f2', width: '95%', alignSelf: 'center', marginVertical: 2, elevation: 2 }}>
+                    <View key={index} style={{
+                        // borderRadius: 10,
+                        // backgroundColor: '#f2f2f2',
+                        // width: '100%',
+                        // alignSelf: 'center',
+                        // marginVertical: 2,
+                        paddingHorizontal: 5
+                        //    elevation: 2 
+                    }}>
 
                         <FlatList style={styles.c1}
 
@@ -202,141 +210,32 @@ const TrackOrderC = ({ foodDataAll, data, navigation }) => {
                                     return (
                                         <View style={styles.rowout}>
                                             <View style={styles.row}>
-                                                <View style={styles.left}>
+                                                {/* <View style={styles.left}>
                                                     <Image source={{ uri: item.foodImageUrl }} style={styles.cartimg} />
-                                                </View>
+                                                </View> */}
+                                                {item.foodType == 'Veg' ?
+                                                    <Image
+                                                        source={require('../Images/VegPng.png')}
+                                                        style={{ width: 18, height: 18, marginHorizontal: 5, marginVertical: 10 }}
+                                                    />
+                                                    :
+                                                    <Image
+                                                        source={require('../Images/NonVeg.png')}
+                                                        style={{ width: 15, height: 15, marginHorizontal: 5, marginVertical: 10 }}
+                                                    />
+                                                }
 
                                             </View>
 
                                             <View style={styles.row1}>
                                                 <View style={[styles.left, {}]}>
-                                                    <Text style={styles.title}>{item.foodName}</Text>
-                                                    <Text style={styles.price1}>₹{item.foodPrice}</Text>
+                                                    <Text style={styles.title}> <Text style={{fontWeight: '500', color: 'grey'}}>{order.foodquantity} x </Text>{item.foodName}</Text>
+                                                    {/* <Text style={styles.price1}>₹{item.foodPrice}</Text>
                                                     <Text style={{ paddingVertical: 5, fontSize: 15, fontWeight: '600' }}>
                                                         Quantity:{order.foodquantity}
-                                                    </Text>
+                                                    </Text> */}
                                                 </View>
-                                                <View style={{ marginVertical: 10, marginHorizontal: 5 }}>
-
-
-                                                    {order.orderStatus === 'Pending' && (
-                                                        <>
-                                                            <View style={{ backgroundColor: 'orange', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 5 }}>
-
-                                                                <Text style={{ textTransform: 'uppercase', fontSize: 12, }}>
-                                                                    {order.orderStatus}
-                                                                </Text>
-                                                            </View>
-                                                            <TouchableOpacity style={{ backgroundColor: 'red', borderRadius: 15, paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}
-                                                                onPress={() => setModalVisible(true)}
-
-                                                            >
-
-                                                                <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white', alignSelf: 'center' }}>
-                                                                    Cancel
-                                                                </Text>
-
-                                                            </TouchableOpacity>
-                                                        </>
-                                                    )}
-                                                    <Modal
-                                                        animationType="none"
-                                                        transparent={true}
-                                                        visible={modalVisible}
-                                                        onRequestClose={() => {
-                                                            setModalVisible(false);
-                                                        }}
-                                                    >
-                                                        <View style={styles.centeredView}>
-                                                            <View style={styles.modalView}>
-                                                                <Text style={{ marginBottom: 10 }}>Are you sure you want to cancel your order?</Text>
-                                                                <TouchableOpacity style={{
-                                                                    backgroundColor: 'red',
-                                                                    width: 220,
-                                                                    borderRadius: 16,
-                                                                    marginTop: 5
-                                                                }} onPress={() => handleCancelOrder(order.cartItemId)}>
-                                                                    <Text style={{ color: 'white', paddingVertical: 10, alignSelf: 'center' }}>Yes, Cancel (All Items)</Text>
-                                                                </TouchableOpacity>
-                                                                <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
-                                                                    <Ionicons name="alert-circle" size={18} color="grey" />
-                                                                    <Text style={{ fontSize: 14 }}>Order cancellation: -5 coins.</Text>
-                                                                </View>
-                                                                <TouchableOpacity style={{
-                                                                    backgroundColor: 'green',
-                                                                    borderRadius: 16,
-                                                                    width: 220,
-
-                                                                    marginTop: 5
-
-                                                                }} onPress={() => setModalVisible(false)}
-                                                                >
-                                                                    <Text style={{ color: 'white', alignSelf: 'center', paddingVertical: 10 }}>No, Keep Order</Text>
-                                                                </TouchableOpacity>
-                                                                <TouchableOpacity style={{
-                                                                    backgroundColor: 'green',
-                                                                    borderRadius: 16,
-                                                                    marginTop: 5
-
-                                                                }}
-                                                                    onPress={() => setModalVisible(false)}
-                                                                >
-                                                                    <Text style={{ color: 'white', paddingHorizontal: 20, paddingVertical: 5 }}>Close</Text>
-                                                                </TouchableOpacity>
-
-                                                            </View>
-                                                        </View>
-                                                    </Modal>
-                                                    {order.orderStatus === 'Confirmed' && (
-                                                        <View style={{ backgroundColor: 'blue', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 5 }}>
-
-                                                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
-                                                                {order.orderStatus}
-                                                            </Text>
-                                                        </View>
-
-                                                    )}
-                                                    {order.orderStatus === 'Ready' && (
-                                                        <View style={{ backgroundColor: 'green', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 5 }}>
-
-                                                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
-                                                                {order.orderStatus}
-                                                            </Text>
-                                                        </View>
-
-                                                    )}
-                                                    {order.orderStatus === 'OutforDelivery' && (
-                                                        <View style={{ backgroundColor: 'purple', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 5 }}>
-
-                                                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
-                                                                Out for Delivery
-                                                            </Text>
-                                                        </View>
-
-                                                    )}
-                                                    {order.orderStatus === 'Delivered' && (
-                                                        <View style={{ backgroundColor: 'teal', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 5 }}>
-
-                                                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
-                                                                {order.orderStatus}
-                                                            </Text>
-                                                        </View>
-
-                                                    )}
-                                                    {order.orderStatus === 'Canceled' && (
-                                                        <View style={{ backgroundColor: 'red', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 5 }}>
-
-                                                            <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
-                                                                {order.orderStatus}
-                                                            </Text>
-                                                        </View>
-
-                                                    )}
-
-
-
-
-                                                </View>
+                                             
                                             </View>
                                         </View>
                                     )
@@ -366,13 +265,18 @@ const styles = StyleSheet.create({
     rowout: {
         flexDirection: 'row',
         // width: '95%'
+        borderBottomWidth: 1,
+        borderStyle: 'dotted',
+        borderBottomColor: 'grey'
     },
     row1: {
-        paddingHorizontal: 10,
+        // paddingHorizontal: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         // backgroundColor: 'blue',
-        width: '73%'
+        width: '73%',
+        paddingVertical: 5,
+        paddingTop: 7
     },
     title: {
         fontSize: 16,

@@ -38,6 +38,18 @@ module.exports = {
         margin: 10,
         alignSelf: 'center',
     },
+    productbtn2: {
+        width: 160,
+        height: 50,
+        backgroundColor: '#FF3F00',
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 2,
+        color: 'black',
+        margin: 10,
+        alignSelf: 'center',
+    },
     hr80: {
         width: '100%',
         borderBottomColor: '#E0E0E0',
@@ -90,16 +102,17 @@ module.exports = {
     incdecbtn: {
 
         // backgroundColor: '#FF3F00',
-        backgroundColor: '#FF3F00',
+        backgroundColor: '#fff6f7',
+
         
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 50,
         elevation: 2,
         padding: 10,
-        color: 'white',
+        color: 'black',
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '600',
 
     },
     incdecinput: {

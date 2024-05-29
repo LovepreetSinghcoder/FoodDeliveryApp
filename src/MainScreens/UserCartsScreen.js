@@ -225,7 +225,7 @@ const UserCartsScreen = ({ navigation }) => {
                     console.log(`shopId: ${shopId} does not exist in the document.`);
                 }
             } else {
-                console.log(`Document for user ${userLoggedUid} does not exist.`);
+                console.log(`Document for user ${userloggeduid} does not exist.`);
             }
         } catch (error) {
             console.error('Error deleting shopId array:', error);

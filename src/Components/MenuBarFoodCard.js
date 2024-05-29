@@ -25,7 +25,6 @@ const MenuBarFoodCard = ({ title, data, navigation }) => {
                                 <View>
                                     {item.foodType == 'Veg' ?
                                         <>
-                                            {/* <Text style={veg}>VEG</Text> */}
 
                                             <Image
                                                 source={require('../Images/VegPng.png')}

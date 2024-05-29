@@ -4,7 +4,7 @@ import CheckBox from 'expo-checkbox';
 import { Switch } from 'react-native-elements';
 import React, { useContext, useEffect, useState } from 'react'
 import { btn2, colors, hr80, navbtn, navbtnin } from '../Global/styles'
-import { AntDesign, Ionicons, FontAwesome6, Fontisto } from '@expo/vector-icons';
+import { AntDesign, Ionicons, FontAwesome6, Fontisto, Octicons, MaterialIcons } from '@expo/vector-icons';
 
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
@@ -652,7 +652,7 @@ const UserCart = ({ navigation, route }) => {
             //     alert("Unable to place the order due to insufficient coins!");
             // }
             // else
-             if (notdeliverable) {
+            if (notdeliverable) {
                 alert("This item is not available in your location.");
 
             }
@@ -680,7 +680,11 @@ const UserCart = ({ navigation, route }) => {
             else {
                 navigation.navigate('PaymentNdetail', {
                     // cartdata , totalCost
-                    cartdata: cartdata, // Replace with your cart data
+                    restaurantName: restaurantsData.restaurant_name,
+                    shopId: data_shopId,
+                    deliveryAdress: userdata.address,
+                    // cartdata: cartdata[{...cartAllData}],
+                    cartAllData: cartAllData, // Replace with your cart data
                     totalCost: totalCost // Replace with your total cost value
                 })
             }
@@ -763,8 +767,8 @@ const UserCart = ({ navigation, route }) => {
                 <FontAwesome6 name="arrow-left" size={20} color="black" />
                 {/* <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text> */}
                 <View>
-                    <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10 ,color: 'grey'}}>{restaurantsData.restaurant_name}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', paddingHorizontal: 10 }}>Delivery at Home  <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10 ,color: 'grey'}}>{userdata.address}</Text></Text>
+                    <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10, color: 'grey' }}>{restaurantsData.restaurant_name}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '500', paddingHorizontal: 10 }}>Delivery at Home  <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10, color: 'grey' }}>{userdata.address}</Text></Text>
                 </View>
             </TouchableOpacity>
 
@@ -830,7 +834,7 @@ const UserCart = ({ navigation, route }) => {
                                                     backgroundColor: '#fff6f7',
                                                     flexDirection: 'row'
                                                 }]}>
-                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>-</Text></TouchableOpacity>
+                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600', color: 'black' }}>-</Text></TouchableOpacity>
                                                     <Text style={{ fontSize: 16, fontWeight: '400' }}> {item.foodquantity} </Text>
                                                     <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>+</Text></TouchableOpacity>
 
@@ -855,8 +859,9 @@ const UserCart = ({ navigation, route }) => {
                     <View style={styles.box}>
 
                         <View style={styles.boxIn}>
-                            <Fontisto name="stopwatch" size={15} color="black" />
-
+                            <View style={{ backgroundColor: colors.col2, padding: 10, borderRadius: 15 }}>
+                                <Fontisto name="stopwatch" size={15} color="black" />
+                            </View>
                             <Text style={styles.boxInText}>Delivery in <Text style={{ fontWeight: '500' }}>28 mins</Text></Text>
                         </View>
                         <View>
@@ -867,11 +872,17 @@ const UserCart = ({ navigation, route }) => {
                     <View style={styles.box}>
 
                         <View style={styles.boxIn}>
-                            <Fontisto name="stopwatch" size={15} color="black" />
+                            <View style={{ backgroundColor: colors.col2, padding: 10, borderRadius: 15 }}>
+                                <Octicons name="home" size={15} color="black" />
+                            </View>
                             <View>
 
                                 <Text style={styles.boxInText}>Delivery at <Text style={{ fontWeight: '500' }}>Home</Text></Text>
-                                <Text style={[styles.boxInText, { fontWeight: '400', color: 'grey' }]}>{userdata.address}</Text>
+                                <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => navigation.navigate('Editprofile')}>
+
+                                    <Text style={[styles.boxInText, { fontWeight: '400', color: 'grey' }]}>{userdata.address}</Text>
+                                    <Text style={[styles.boxInText, { fontWeight: '400', color: colors.text1 }]}>Change Address {'>'}</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <View>
@@ -882,7 +893,9 @@ const UserCart = ({ navigation, route }) => {
                     <View style={styles.box}>
 
                         <View style={styles.boxIn}>
-                            <Fontisto name="stopwatch" size={15} color="black" />
+                            <View style={{ backgroundColor: colors.col2, padding: 10, borderRadius: 15 }}>
+                                <Ionicons name="call-outline" size={15} color="black" />
+                            </View>
                             <View>
 
                                 <Text style={styles.boxInText}>{userdata.name}, <Text style={{ fontWeight: '500' }}>{userdata.phone}</Text></Text>
@@ -896,7 +909,9 @@ const UserCart = ({ navigation, route }) => {
                     <View style={[styles.box, { borderBottomWidth: 0 }]}>
 
                         <View style={styles.boxIn}>
-                            <Fontisto name="stopwatch" size={15} color="black" />
+                            <View style={{ backgroundColor: colors.col2, padding: 10, borderRadius: 15 }}>
+                                <MaterialIcons name="notes" size={15} color="black" />
+                            </View>
                             <View>
 
                                 <Text style={styles.boxInText}>Total Bill <Text style={{ fontWeight: '500' }}>₹{totalCost}</Text></Text>
@@ -912,38 +927,58 @@ const UserCart = ({ navigation, route }) => {
                 {totalCost && totalCost !== '0' ?
                     <>
                         <View style={{
-                            marginTop: 10
+                            marginTop: 10,
+                            backgroundColor: 'white',
+                            borderColor: 'grey',
+                            borderRadius: 15,
+                            // width: '95%',
+                            alignSelf: 'center',
+                            marginVertical: 5,
+                            paddingVertical: 10,
+                            padding: 10
                         }}>
 
                             <View style={{
                                 backgroundColor: 'white',
                                 borderColor: 'grey',
                                 borderRadius: 15,
-                                width: '95%',
+                                // width: '95%',
                                 alignSelf: 'center',
-                                marginVertical: 5,
-                                paddingVertical: 10,
+                                // marginVertical: 5,
+                                // paddingVertical: 10,
                                 padding: 10
                                 // elevation: 3
                             }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingBottom: 5 }}>
                                     <Text style={{ fontWeight: '600' }}>Item total:</Text>
                                     <Text style={{ fontWeight: '600' }}>{itemCost}₹</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                    <Text style={{ fontWeight: '400' }}>GST & restaurant Charges:</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingVertical: 5, }}>
+                                    <Text style={{
+                                        fontWeight: '400', borderBottomWidth: 1,
+                                        borderStyle: 'dotted',
+                                        borderBottomColor: 'grey'
+                                    }}>GST & restaurant charges:</Text>
                                     <Text>{(itemCost * 12) / 100}₹</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                    <Text style={{ fontWeight: '400' }}>Delivery partner fee:</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingVertical: 5 }}>
+                                    <Text style={{
+                                        fontWeight: '400', borderBottomWidth: 1,
+                                        borderStyle: 'dotted',
+                                        borderBottomColor: 'grey'
+                                    }}>Delivery partner fee:</Text>
                                     <Text>{deliveryCharges}₹</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
-                                    <Text style={{ fontWeight: '400' }}>Platform fee:</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingVertical: 5 }}>
+                                    <Text style={{
+                                        fontWeight: '400', borderBottomWidth: 1,
+                                        borderStyle: 'dotted',
+                                        borderBottomColor: 'grey'
+                                    }}>Platform fee:</Text>
                                     <Text>0₹</Text>
                                 </View>
                                 {isUseCoins === true ?
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center' }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingVertical: 5 }}>
                                         <Text style={{ fontWeight: '400' }}>Discount:</Text>
                                         <Text>-10₹</Text>
                                     </View>
@@ -951,15 +986,30 @@ const UserCart = ({ navigation, route }) => {
                                     null}
 
                             </View>
+                            <View style={[styles.box, { borderBottomWidth: 0, borderTopWidth: 1, borderColor: '#cccccc' }]}>
+
+                                <View style={styles.boxIn}>
+                                    {/* <Fontisto name="stopwatch" size={15} color="black" /> */}
+                                    <View>
+
+                                        <Text style={[styles.boxInText, { fontWeight: '500' }]}>To Pay</Text>
+                                    </View>
+                                </View>
+                                <View>
+                                    {/* <Text style={styles.boxInText}>{totalCost}₹</Text> */}
+                                    <Text style={[styles.boxInText, { fontWeight: '500' }]}>{totalCost}₹</Text>
+
+                                </View>
+                            </View>
 
                         </View>
                         <View style={styles.btncont}>
                             <View style={styles.c3}>
-                                <Text style={styles.txt5}>Total</Text>
                                 <Text style={styles.txt6}>₹{totalCost}</Text>
+                                <Text style={styles.txt5}>Grand total bill</Text>
                             </View>
                             <TouchableOpacity style={btn2}>
-                                <Text style={styles.btntxt} onPress={() => GoToPaymentPage()}>Place Order</Text>
+                                <Text style={styles.btntxt} onPress={() => GoToPaymentPage()}>Proceed Order</Text>
                             </TouchableOpacity>
 
 
@@ -1181,19 +1231,22 @@ const styles = StyleSheet.create({
         color: colors.col1,
     },
     txt5: {
-        fontSize: 20,
-        color: colors.text3,
+        fontSize: 12,
+        fontWeight: '500',
+        color: colors.text1,
         marginHorizontal: 5,
     },
     txt6: {
-        fontSize: 25,
+        fontSize: 20,
         color: colors.text3,
         marginHorizontal: 5,
-        fontWeight: 'bold',
+        fontWeight: '600',
+        // paddingLeft: 5
     },
     c3: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        // flexDirection: 'row',
+        // alignItems: 'center',
+        paddingLeft: 5
     },
     c4: {
         flexDirection: 'row',

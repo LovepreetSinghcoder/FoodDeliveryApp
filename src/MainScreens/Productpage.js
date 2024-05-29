@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, TextInput, ActivityIndicator } from 'react-native'
-import React, { useContext, useState } from 'react'
-import { btn1, btn2, colors, hr80, navbtn, navbtnin, navbtnout, nonveg, veg, incdecbtn, incdecinput, incdecout } from '../Global/styles';
-import { AntDesign } from '@expo/vector-icons';
+import React, { useContext, useEffect, useState } from 'react'
+import { btn1, productbtn2, colors, hr80, navbtn, navbtnin, navbtnout, nonveg, veg, incdecbtn, incdecinput, incdecout } from '../Global/styles';
+import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 
@@ -16,10 +16,48 @@ const Productpage = ({ navigation, route }) => {
     const [addonquantity, setaddonquantity] = useState('0');
     const [loading, setLoading] = useState(false);
 
-    // console.log(data);
+    // console.log("This is the data from product page : shopID : ", data.shopId);
     if (route.params === undefined) {
         navigation.navigate('HomeScreen')
     }
+
+    const [restaurantsData, setRestaurantsData] = useState([]);
+
+
+    // useEffect to get all data of Restaurant Data 
+    useEffect(() => {
+        const fetchData = async () => {
+            const docRef = firebase.firestore().collection('RestaurantData').doc(data.shopId);
+
+
+
+            try {
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    setRestaurantsData(doc.data())
+
+                }
+                else {
+                    console.log('Error : Rstaurant data does not exist!')
+
+                }
+            }
+            catch {
+                console.log('Error while loading restaurant data!')
+            }
+        };
+
+
+
+
+
+
+
+        fetchData();
+    }, []);
+
+    // console.log('Data of the restaurant ::', restaurantsData.restaurant_name)
 
     // OLD APPROACH
     // const addTocart = async () => {
@@ -268,11 +306,11 @@ const Productpage = ({ navigation, route }) => {
     //   }
     // };
 
- // NEW APPROACH (Add Food Data Accoring to Restaurant Id)
+    // NEW APPROACH (Add Food Data Accoring to Restaurant Id)
 
     const addTocart = async () => {
         setLoading(true);
-        const date = new Date().getTime().toString() 
+        const date = new Date().getTime().toString()
         if (data.stock === 'in') {
             if (data.stockamount > 5) {
                 const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
@@ -286,13 +324,13 @@ const Productpage = ({ navigation, route }) => {
                     orderStatus: 'Pending',
                     userid: userloggeduid,
                     date: date,
-                    cartItemId: date+userloggeduid
+                    cartItemId: date + userloggeduid
                 };
 
                 try {
                     const doc = await docRef.get();
 
-                    
+
                     if (doc.exists) {
                         // const currentShopID = data.shopId;
                         // const cartItems = doc.data().cartItems;
@@ -335,8 +373,8 @@ const Productpage = ({ navigation, route }) => {
                                 [data.shopId]: [data1],
 
                             },
-                            { merge: true } // New Added to by Chat GPT
-                        );
+                                { merge: true } // New Added to by Chat GPT
+                            );
 
                             console.log('Added');
                         }
@@ -396,39 +434,90 @@ const Productpage = ({ navigation, route }) => {
                     <AntDesign name="back" size={25} color="black" style={navbtnin} />
                 </View>
             </TouchableOpacity> */}
-            <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
+
+            <TouchableOpacity style={{
+                flexDirection: 'row',
+                padding: 15,
+                alignItems: 'center',
+                backgroundColor: colors.col2
+            }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                <FontAwesome6 name="arrow-left" size={20} color="black" />
+                <TouchableOpacity onPress={() => navigation.navigate('RestaurantScreen', { id: data.shopId })}>
+
+                    <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>{restaurantsData ? restaurantsData.restaurant_name : null}</Text>
+                </TouchableOpacity>
+            </TouchableOpacity>
+
+
+            {/* <View style={{ backgroundColor: colors.text1, paddingVertical: 15, paddingHorizontal: 15 }}>
                 <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
 
                     <Text style={{ fontSize: 16, color: colors.col1 }}>Close</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
             <View style={styles.container1}>
                 <View style={styles.s1}>
+                    {/* <View> */}
+
                     <Image source={{
                         uri: data.foodImageUrl
                     }} style={styles.cardimgin} />
+                    {/* </View> */}
+
+                    <View style={styles.s3in}>
+                        <View>
+
+                            {data.foodType == 'Veg' ?
+                                <Image
+                                    source={require('../Images/VegPng.png')}
+                                    style={{ width: 20, height: 20, marginHorizontal: 5, marginVertical: 5 }}
+                                />
+                                :
+                                <Image
+                                    source={require('../Images/NonVeg.png')}
+                                    style={{ width: 20, height: 20, marginHorizontal: 5, marginVertical: 5 }}
+                                />
+                            }
+                        </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('RestaurantScreen', { id: data.shopId })}>
+
+                            <Text style={{ fontSize: 16 }}>{restaurantsData ? restaurantsData.restaurant_name : null}</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.s2in}>
+                        <Text style={styles.head1}>{data.foodName}</Text>
+                    </View>
+                    {/* <View style={styles.s3}>
+                        <Text style={styles.head4}>{data.foodDescription}</Text>
+
+                    </View> */}
+                    <View style={styles.s2in}>
+                        <Text style={[styles.head1, { paddingTop: 5, color: 'grey' }]}>₹{data.foodPrice}</Text>
+
+                    </View>
                 </View>
 
 
                 <View style={styles.s2}>
-                    <View style={styles.s2in}>
+                    {/* <View style={styles.s2in}>
                         <Text style={styles.head1}>{data.foodName}</Text>
                         <Text style={styles.head2}>₹{data.foodPrice}/-</Text>
-                    </View>
-                    <View style={styles.s3}>
+                    </View> */}
+                    {/* <View style={styles.s3}>
                         <Text style={styles.head3}>About Food</Text>
                         <Text style={styles.head4}>{data.foodDescription}</Text>
                         <View style={styles.s3in}>
                             {data.foodType == 'Veg' ? <Text style={veg}></Text> : <Text style={nonveg}></Text>}
                             <Text style={styles.head5}>{data.foodType}</Text>
                         </View>
-                    </View>
+                    </View> */}
 
 
 
 
-                    {data.restaurantName === undefined ? null : (
+                    {/* {data.restaurantName === undefined ? null : (
                         <View style={styles.container2}>
                             <Text style={styles.txt1}>Restaurant</Text>
                             {data.restaurantName !== undefined ? (
@@ -440,13 +529,11 @@ const Productpage = ({ navigation, route }) => {
                                         ? data.restrauntAddressBuilding
                                         : null}
                                 </Text>
-                                {/* <View style={styles.dash}></View> */}
                                 <Text style={styles.txt3}>{data.restrauntAddressStreet}</Text>
-                                {/* <View style={styles.dash}></View> */}
                                 <Text style={styles.txt3}>{data.restrauntAddressCity}</Text>
                             </View>
                         </View>
-                    )}
+                    )} */}
 
 
                     {data.foodAddonPrice !== '0' ?
@@ -473,35 +560,63 @@ const Productpage = ({ navigation, route }) => {
                         null}
 
                     <View style={styles.container3}>
-                        <View style={hr80}></View>
+                        {/* <View style={hr80}></View> */}
 
                         <Text style={styles.txt3}>Food Quantity</Text>
-                        <View style={incdecout}>
+                        <View style={[incdecout, {
+                            borderColor: 'red',
+                            borderWidth: 1,
+                            borderRadius: 10,
+                            paddingVertical: 5,
+                            paddingHorizontal: 5,
+                            backgroundColor: '#fff6f7',
+                            flexDirection: 'row'
+                        }]}>
 
-                            <Text onPress={() => decreaseQuantity()} style={incdecbtn}>-</Text>
+                            {/* <Text onPress={() => decreaseQuantity()} style={incdecbtn}>-</Text>
                             <TextInput value={quantity} style={incdecinput} />
-                            <Text onPress={() => increaseQuantity()} style={incdecbtn}>+</Text>
+                            <Text onPress={() => increaseQuantity()} style={incdecbtn}>+</Text> */}
+
+                            <TouchableOpacity style={{ paddingHorizontal: 15, }} onPress={() => decreaseQuantity()}><Text style={{ fontSize: 20, fontWeight: '600' }}>-</Text></TouchableOpacity>
+                            <Text style={{ fontSize: 23, fontWeight: '400' }}> {quantity} </Text>
+                            <TouchableOpacity style={{ paddingHorizontal: 15, }} onPress={() => increaseQuantity()}><Text style={{ fontSize: 20, fontWeight: '600' }}>+</Text></TouchableOpacity>
 
                         </View>
-                        <View style={hr80}></View>
+                        {/* <View style={hr80}></View> */}
                     </View>
+
+                    {/* <View style={{
+                        backfaceVisibility: 'hidden',
+                        borderColor: 'red',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        paddingVertical: 5,
+                        paddingHorizontal: 5,
+                        backgroundColor: '#fff6f7',
+                        flexDirection: 'row'
+                    }}>
+                        <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>-</Text></TouchableOpacity>
+                        <Text style={{ fontSize: 16, fontWeight: '400' }}> {quantity} </Text>
+                        <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>+</Text></TouchableOpacity>
+
+                    </View> */}
 
                     <View style={styles.container4}>
                         {/* <View style={hr80}></View> */}
 
                         <View style={styles.c4in}>
-                            <Text style={styles.txt2}>Total Price</Text>
+                            <Text style={styles.txt2}>Sub total</Text>
                             {data.foodAddonPrice ?
                                 <Text style={styles.txt3}>₹{
                                     ((parseInt(data.foodPrice) * parseInt(quantity))
                                         + parseInt(addonquantity) * parseInt(data.foodAddonPrice)).toString()
 
-                                }/-</Text>
+                                }</Text>
 
                                 :
                                 <Text style={styles.txt3}>₹{
                                     ((parseInt(data.foodPrice) * parseInt(quantity))).toString()
-                                }/-</Text>
+                                }</Text>
                             }
                         </View>
 
@@ -513,18 +628,18 @@ const Productpage = ({ navigation, route }) => {
 
                         {loading ?
 
-                            <TouchableOpacity style={btn2} >
+                            <TouchableOpacity style={productbtn2} >
                                 <ActivityIndicator size="small" color={colors.col1} />
                             </TouchableOpacity>
                             :
-                            <TouchableOpacity style={btn2} onPress={() => { addTocart() }}>
-                                <Text style={styles.btntxt}>Add to Cart</Text>
+                            <TouchableOpacity style={productbtn2} onPress={() => { addTocart() }}>
+                                <Text style={styles.btntxt}>Add +</Text>
                             </TouchableOpacity>
 
                         }
-                        <TouchableOpacity style={btn2}>
+                        <TouchableOpacity style={productbtn2}>
                             {/* <Text style={styles.btntxt} onPress={() => navigation.navigate('placeorder', { cartdata })}>Buy Now</Text> */}
-                            <Text style={styles.btntxt} onPress={() => navigation.navigate('UserCartsScreen')}>Go to Cart</Text>
+                            <Text style={styles.btntxt} onPress={() => navigation.navigate('UserCartsScreen')}>Cart</Text>
 
                         </TouchableOpacity>
                     </View>
@@ -538,6 +653,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ebebeb',
+        backgroundColor: colors.col1,
+
         // alignItems: 'center',
         width: '100%',
 
@@ -553,35 +670,43 @@ const styles = StyleSheet.create({
         // justifyContent: 'center',
     },
     s1: {
-        width: '100%',
-        height: 300,
+        width: '95%',
+        // height: 300,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        // alignItems: 'center',
+        margin: 'auto',
+        // justifyContent: 'center',
+        borderRadius: 15,
+        paddingVertical: 10,
+        marginTop: 10
 
     },
     cardimgin: {
-        width: '100%',
+        width: '95%',
         height: '100%',
+        height: 300,
+        margin: 'auto',
+        borderRadius: 15
     },
     s2: {
         width: '100%',
         padding: 20,
         position: 'relative',
-        top: -30,
+        // top: -30,
         backgroundColor: '#ebebeb',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
     s2in: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 10,
-        paddingHorizontal: 10
+        // justifyContent: 'space-between',
+        // alignItems: 'center',
+        paddingHorizontal: 15,
+        // marginBottom: 10,
+        // paddingHorizontal: 10
     },
     head1: {
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: '600',
         color: colors.text3,
         width: 220,
@@ -610,11 +735,12 @@ const styles = StyleSheet.create({
     },
     s3in: {
         backgroundColor: colors.col1,
-        padding: 10,
-        borderRadius: 10,
-        width: 130,
+        paddingHorizontal: 10,
+        paddingTop: 10,
+        // borderRadius: 10,
+        // width: 130,
         flexDirection: 'row',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
     },
     head5: {
@@ -636,9 +762,10 @@ const styles = StyleSheet.create({
 
     },
     btncont: {
-        width: '100%',
+        width: '90%',
         justifyContent: 'center',
-        alignItems: 'center',
+        // alignItems: 'center',
+        margin: 'auto',
         marginTop: 0,
         flexDirection: 'row',
     },
@@ -661,7 +788,7 @@ const styles = StyleSheet.create({
     txt2: {
         color: '#9c9c9c',
         fontSize: 20,
-        fontWeight: '600',
+        fontWeight: '500',
         marginVertical: 10,
 
     },
