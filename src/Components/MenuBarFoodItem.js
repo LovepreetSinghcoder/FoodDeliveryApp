@@ -4,7 +4,7 @@ import { firebase } from '../Firebase/FirebaseConfig'
 import Cardslider from './Cardslider';
 import MenuBarFoodCard from './MenuBarFoodCard';
 
-const MenuBarFoodItem = ({navigation, menu_id, restaurant_id, menu_name}) => {
+const MenuBarFoodItem = ({navigation, menu_id,callfn, restaurant_id, menu_name}) => {
 
     // console.log('This is the menu id ', menu_id)
     // console.log('This is the restaurant id ', restaurant_id)
@@ -30,7 +30,7 @@ const MenuBarFoodItem = ({navigation, menu_id, restaurant_id, menu_name}) => {
     <View>
       {/* <Text>MenuBarFoodItem</Text> */}
     
-      {foodData.length === 0 ? null :   <MenuBarFoodCard title={menu_name} data={foodData} navigation={navigation} />}
+      {foodData.length === 0 ? null :   <MenuBarFoodCard title={menu_name} data={foodData} navigation={navigation} callfn={callfn} />}
     </View>
   )
 }

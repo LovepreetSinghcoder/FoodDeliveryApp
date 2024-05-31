@@ -787,11 +787,11 @@ const HomeScreen = ({ navigation }) => {
         :
         null} */}
       <View style={{
-        backgroundColor: '#d6d6d6',
+        // backgroundColor: '#d6d6d6',
         height: 85,
         // borderRadius: 25,
-        borderColor: '#ccc',
-        borderTopWidth: 1,
+        // borderColor: '#ccc',
+        // borderTopWidth: 1,
         // marginHorizontal: 5,
         // borderTopLeftRadius: 15,
         // borderTopRightRadius: 15,

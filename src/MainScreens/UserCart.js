@@ -10,6 +10,7 @@ import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import EditProductSlider from '../Components/EditProductSlider';
 // import Cart from '../Components/Cart';
 
 // import BottomNav from '../components/BottomNav';
@@ -37,6 +38,7 @@ const UserCart = ({ navigation, route }) => {
     const [itemCost, setItemCost] = useState('0');
     const [totalCost, setTotalCost] = useState('0');
     const [isUseCoins, setIsUseCoins] = useState(false);
+    const [quantity, setquantity] = useState('1');
 
 
     const UseCoinButton = ({ isUseCoins, onPress }) => (
@@ -76,36 +78,17 @@ const UserCart = ({ navigation, route }) => {
     );
 
 
-
-
-
-    const getcartdata = async () => {
-        setLoading(true);
-        // const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
-        const docRef = firebase.firestore().collection('UserCart').doc('ULzOMM6qS3PuERvrNmyf4SYu3KF3');
-
-
-        try {
-            await docRef.get().then((doc) => {
-                if (doc.exists) {
-                    // const data = JSON.stringify(doc.data());
-                    // setCartdata(data)
-                    // setCartdata(doc.data())
-                    // console.log("This is the data of the your Cart :", doc.data())
-                    // setCartAllData(doc.data().cartItems)
-                    // console.log("This is the data of the your Cart Test12:", doc.data().cartItems)
-
-
-                } else {
-                    console.log('No such document!');
-                }
-            })
-        } catch (error) {
-            console.log('Error', error);
-
-        }
-        setLoading(false)
+    const increaseQuantity = () => {
+        setquantity((parseInt(quantity) + 1).toString())
     }
+    const decreaseQuantity = () => {
+        if (parseInt(quantity) > 1) {
+            setquantity((parseInt(quantity) - 1).toString())
+        }
+    }
+
+
+
 
 
 
@@ -143,6 +126,49 @@ const UserCart = ({ navigation, route }) => {
         getSpecificArray()
     }, [])
 
+    // console.log('This is the data of the cart that is in the state', cartAllData)
+
+    const increaseQuantityHandler = (item_id) => {
+        // Find the index of the item in the cartAllData array
+        const index = cartAllData.findIndex(item => item.item_id === item_id);
+
+        // Check if the item was found
+        if (index !== -1) {
+            // Update the foodquantity with the new value
+            // cartAllData[index].foodquantity = cartAllData[index].foodquantity + 1;
+
+            // setCartAllData(prevData => prevData.map(item => 
+            //     item.item_id === item_id ? { ...item, foodquantity: item.foodquantity + 1 } : item
+            //   ));
+
+            const updatedData = cartAllData.map(item =>
+                item.item_id === item_id ? { ...item, foodquantity: item.foodquantity + 1 } : item
+            );
+
+            // Update the state with the new array
+            setCartAllData(updatedData);
+            // Optionally, update the totalFoodPrice if needed
+            // Assuming you have a way to determine the price per item, let's say it's 100 for this example
+            // const pricePerItem = 100; // replace with the actual price logic if needed
+            // cartAllData[index].totalFoodPrice = quantity * pricePerItem;
+            // GetTotalPrice()
+
+            // const totalfoodprice = (parseInt(cartAllData[index].totalFoodPrice)) * (cartAllData[index].foodquantity + 1)
+
+            // console.log('This is total total cost of the 77887', totalfoodprice)
+            // setTotalCost(totalfoodprice.toString());
+            console.log('Item quantity updated successfully:', cartAllData[index]);
+        } else {
+            console.log('Item not found with item_id:', item_id);
+        }
+
+    }
+
+    // console.log('This is total food cost after upfdating,,::', totalCost)
+    const updateQuantity = () => {
+
+    }
+
     useEffect(() => {
         try {
             // const doc = await docRef.get();
@@ -171,7 +197,8 @@ const UserCart = ({ navigation, route }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            getcartdata();
+            // getcartdata();
+            getSpecificArray()
             console.log('triggered cart')
         }, [])
     );
@@ -288,15 +315,7 @@ const UserCart = ({ navigation, route }) => {
 
 
 
-            // const doc = await docRef.get();
-            // doc.forEach((doc) => {
-            //     setRestaurantsData(doc.data());
-            // })
-
-            // docRef.onSnapshot(snapshot => {
-            //     setRestaurantsData(snapshot.docs.map(doc => doc.data()))
-            // }
-            // )
+            
             const doc = await docRef.get();
             if (!doc.empty) {
                 doc.forEach((doc) => {
@@ -580,17 +599,20 @@ const UserCart = ({ navigation, route }) => {
 
     const GetTotalPrice = () => {
         if (cartAllData !== null && Object.keys(cartAllData).length !== 0) {
-
+            console.log('Trigered 1')
 
             // const cart23 = cartdata;
             let totalfoodprice = 0;
             // const foodprice = cart23.cartItems;
             const foodprice = cartAllData;
+            console.log('Trigered 2')
 
             foodprice.forEach((item) => {
                 totalfoodprice += (parseInt(item.totalFoodPrice)) +
                     (parseInt(item.totalAddOnPrice));
             });
+            console.log('Trigered 3', totalfoodprice)
+
             setItemCost(totalfoodprice.toString());
 
 
@@ -599,7 +621,9 @@ const UserCart = ({ navigation, route }) => {
             console.log('This is the Grand Total Price :', totalfoodprice.toString())
             // setIsLoading(false);
             let finalPrice = totalfoodprice + deliveryCharges + ((totalfoodprice * 12) / 100);
-            setTotalCost(finalPrice.toString());
+            // setTotalCost(finalPrice.toString());
+            setTotalCost(finalPrice.toFixed(2));
+
         }
         else {
             setTotalCost('0');
@@ -643,6 +667,7 @@ const UserCart = ({ navigation, route }) => {
         setLoading(false)
         // setIsLoading(false);
     }
+
 
 
 
@@ -694,6 +719,24 @@ const UserCart = ({ navigation, route }) => {
             alert('Cart is Empty!')
         }
 
+    }
+
+    // const openEditProductHandler = ( item_id, qty) => {
+    //     return <EditProductSlider restaurants_Data={restaurantsData} item_id={item_id} qty={qty}/>
+
+    // }
+
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const openEditProductHandler = (item_id, qty) => {
+        setSelectedProduct({ item_id, qty });
+        // console.log('This is openEditProductHandler Data ::', item_id, qty)
+    };
+
+    const closeEditProductHandler = () => {
+        setSelectedProduct(null);
+        getSpecificArray()
+        GetTotalPrice()
     }
 
 
@@ -773,15 +816,16 @@ const UserCart = ({ navigation, route }) => {
             </TouchableOpacity>
 
 
-            <ScrollView style={styles.container}>
-                <View style={styles.cartout}>
+            <ScrollView style={[styles.container, selectedProduct? {backgroundColor: '#c4c4c4', }: null]}>
+            <View style={[styles.cartout, selectedProduct? {backgroundColor: '#e0e0e0', }: { backgroundColor: '#ffffff',  }]}>
+
                     {/* {cartdata == null || JSON.parse(cartdata).cart.length == 0 ? */}
                     {cartAllData == null ?
 
                         <Text style={styles.head2}>Your Cart is Empty</Text>
                         :
                         // <FlatList style={styles.cardlist} data={JSON.parse(cartdata).cart} renderItem={
-                        <FlatList style={styles.cardlist} data={cartAllData} renderItem={
+                        <FlatList style={[styles.cardlist, selectedProduct ? {backgroundColor: '#e0e0e0',borderRadius: 15}:null]} data={cartAllData} renderItem={
 
                             ({ item }) => {
 
@@ -826,19 +870,23 @@ const UserCart = ({ navigation, route }) => {
                                                     backfaceVisibility: 'hidden',
                                                     borderColor: 'red',
                                                     borderWidth: 1,
-                                                    // borderRadius: 12,
                                                     zIndex: 1,
                                                     borderRadius: 10,
                                                     paddingVertical: 5,
                                                     paddingHorizontal: 5,
                                                     backgroundColor: '#fff6f7',
-                                                    flexDirection: 'row'
+                                                    flexDirection: 'row',
+                                                    width: 90,
+                                                    justifyContent: 'center'
                                                 }]}>
-                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600', color: 'black' }}>-</Text></TouchableOpacity>
-                                                    <Text style={{ fontSize: 16, fontWeight: '400' }}> {item.foodquantity} </Text>
-                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 16, fontWeight: '600' }}>+</Text></TouchableOpacity>
+                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 18, fontWeight: '600', }} onPress={() => openEditProductHandler(item.item_id, item.foodquantity)}>-</Text></TouchableOpacity>
+                                                    <Text style={{ fontSize: 18, fontWeight: '400' }} onPress={() => openEditProductHandler(item.item_id, item.foodquantity)}> {item.foodquantity} </Text>
+                                                    <TouchableOpacity style={{ paddingHorizontal: 10, }}><Text style={{ fontSize: 18, fontWeight: '600' }} onPress={() => openEditProductHandler(item.item_id, item.foodquantity)}>+</Text></TouchableOpacity>
 
                                                 </View>
+                                                {/* <TouchableOpacity style={btn2}>
+                                                    <Text style={styles.btntxt} onPress={() => openEditProductHandler(item.item_id, item.foodquantity)}>Open Slider</Text>
+                                                </TouchableOpacity> */}
                                                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingRight: 5, paddingTop: 5 }}>
 
                                                     <Text style={[styles.txt2, { fontWeight: '500' }]}>₹{(item.foodquantity) * (nData[0].foodPrice)}</Text>
@@ -848,6 +896,7 @@ const UserCart = ({ navigation, route }) => {
 
                                         </View>
 
+
                                     </View>
                                 )
                             }
@@ -855,7 +904,7 @@ const UserCart = ({ navigation, route }) => {
                             scrollEnabled={false} />}
                 </View>
 
-                <View style={[styles.cartout, { backgroundColor: '#ffffff', paddingHorizontal: 10 }]}>
+                <View style={[styles.cartout, selectedProduct? {backgroundColor: '#e0e0e0', }: { backgroundColor: '#ffffff'}]}>
                     <View style={styles.box}>
 
                         <View style={styles.boxIn}>
@@ -1014,6 +1063,7 @@ const UserCart = ({ navigation, route }) => {
 
 
                         </View>
+
                     </>
                     :
                     null
@@ -1021,6 +1071,32 @@ const UserCart = ({ navigation, route }) => {
                 }
 
             </ScrollView>
+            {/* {selectedProduct && (
+                <View style={{
+                    backgroundColor: 'rgba(237, 245, 255, 0.4)',
+                // backgroundColor: 'red',
+                 height: 200}}></View>
+            )} */}
+
+            {selectedProduct && (
+                <View style={{
+                    //  backgroundColor: 'green',
+                    // backgroundColor: 'rgba(237, 245, 255, 0.4)',
+                    height: 440, zIndex: 100,
+                    borderTopLeftRadius: 15,
+                    borderTopRightRadius: 15
+                }}>
+                    
+                    <TouchableOpacity style={{ backgroundColor: '#a1a1a1', borderRadius: 50, width: 50, height: 50, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',  margin: 'auto' ,marginBottom: 15, marginTop: -65}} onPress={() => closeEditProductHandler()}><Text style={{fontSize: 18, fontWeight: '600'}}>X</Text></TouchableOpacity>
+                    <EditProductSlider
+                        restaurantsData={restaurantsData}
+                        item_id={selectedProduct.item_id}
+                        qty={selectedProduct.qty}
+                        callFn={getuserData}
+                        closeFn={closeEditProductHandler}
+                    />
+                </View>
+            )}
         </View >
     )
     // }
@@ -1046,6 +1122,7 @@ const styles = StyleSheet.create({
         // justifyContent: 'center',
         width: '100%',
         // height: '100%',
+        // backgroundColor: 'grey'
     },
 
     CartContainer: {
@@ -1145,12 +1222,13 @@ const styles = StyleSheet.create({
     },
     cardlist: {
         width: '100%',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        // backgroundColor: 'red'
     },
     cartout: {
         flex: 1,
         // width: '100%',
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         // backgroundColor: 'green',
 
         borderRadius: 15,

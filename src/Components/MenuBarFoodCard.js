@@ -3,10 +3,15 @@ import React from 'react'
 import { colors, veg, nonveg } from '../Global/styles'
 import LineWithText from './LineWithText'
 
-const MenuBarFoodCard = ({ title, data, navigation }) => {
+const MenuBarFoodCard = ({ title, data, callfn, navigation }) => {
     const openProductPage = (item) => {
         // console.log('clicked ', item)
         navigation.navigate('productpage', item)
+    }
+
+    const test = (fg) => {
+        console.log('This is the item id', fg)
+
     }
 
     return (
@@ -69,15 +74,17 @@ const MenuBarFoodCard = ({ title, data, navigation }) => {
                                     :
                                     null
                                 }
-                                <TouchableOpacity style={[styles.outOfStockContainer, {
+                                {/* <TouchableOpacity style={[styles.outOfStockContainer, {
                                     top: 90,
                                     left: -20,
                                     paddingVertical: 10,
                                     paddingHorizontal: 20,
                                     backgroundColor: '#fff6f7'
-                                }]}>
+                                }]} 
+                                // onPress={() => callfn(item.id)}
+                                >
                                     <Text style={styles.outOfStockText}>ADD +</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                                 <Image source={{
                                     uri: item.foodImageUrl
                                 }} style={styles.cardimgin} />

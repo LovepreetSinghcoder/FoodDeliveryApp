@@ -10,7 +10,7 @@ const CartsComponent = ({ dataArray, shopId, restaurantsData, userloggeduid, get
     const [process, setProcess] = useState(false);
 
 
-console.log('This is the usercartScreen00',optimize)
+    // console.log('This is the usercartScreen00', optimize)
 
     const GetRestaurantDataHandler = (id) => {
 
@@ -73,40 +73,44 @@ console.log('This is the usercartScreen00',optimize)
                     const restaurantData = GetRestaurantDataHandler(item.shopId);
 
                     const restaurant = restaurantData.length > 0 ? restaurantData[0] : {};
+                    // if (item.totalFoodPrice !== undefined ) {
+                        return (
 
-                    return (
-                        <View style={styles.CartContainer}>
-                            <View style={styles.CartContainerRestaurant}>
-                                <View style={styles.CartContainerRestaurantLogo}>
-                                    <Image source={{ uri: restaurant.restaurant_logo }} style={styles.LogoImg} />
+                            <View style={styles.CartContainer}>
+                                <View style={styles.CartContainerRestaurant}>
+                                    <View style={styles.CartContainerRestaurantLogo}>
+                                        <Image source={{ uri: restaurant.restaurant_logo }} style={styles.LogoImg} />
 
+                                    </View>
+                                    <View style={styles.CartContainerRestaurantText}>
+
+                                        <Text style={styles.CartContainerRestaurantText1}>{restaurant.restaurant_name ? restaurant.restaurant_name : 'N/A'}</Text>
+
+                                        <Text style={styles.CartContainerRestaurantText2}>{
+                                            (item.transactions).length > 1 ?
+                                                <Text>{(item.transactions).length} items</Text> : <Text>{(item.transactions).length} item</Text>
+
+                                        } </Text>
+                                    </View>
                                 </View>
-                                <View style={styles.CartContainerRestaurantText}>
-
-                                    <Text style={styles.CartContainerRestaurantText1}>{restaurant.restaurant_name ? restaurant.restaurant_name : 'N/A'}</Text>
-
-                                    <Text style={styles.CartContainerRestaurantText2}>{
-                                        (item.transactions).length > 1 ?
-                                            <Text>{(item.transactions).length} items</Text> : <Text>{(item.transactions).length} item</Text>
-
-                                    } </Text>
-                                </View>
-                            </View>
-                            <View style={{ flexDirection: 'row' }}>
-                                <TouchableOpacity style={ optimize?{paddingHorizontal: 20, backgroundColor: '#ed5624',  borderRadius: 15,}: {backgroundColor: '#ed5624',  borderRadius: 15}} onPress={() => { openUserCartScreen(item.shopId) }}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <TouchableOpacity style={optimize ? { paddingHorizontal: 20, backgroundColor: '#ed5624', borderRadius: 15, } : { backgroundColor: '#ed5624', borderRadius: 15 }} onPress={() => { openUserCartScreen(item.shopId) }}>
 
 
-                                    <Cart title={'ok12'} data={item.transactions} navigation={navigation} />
-                                </TouchableOpacity>
-                                {!optimize ?
-                                    <TouchableOpacity style={styles.CartContRemove} onPress={() => deleteShopIdArray(item.shopId)}>
-                                        <Text style={styles.CartContRemoveText}>X</Text>
+                                        <Cart title={'ok12'} data={item.transactions} navigation={navigation} />
                                     </TouchableOpacity>
-                                    :
-                                    null}
+                                    {!optimize ?
+                                        <TouchableOpacity style={styles.CartContRemove} onPress={() => deleteShopIdArray(item.shopId)}>
+                                            <Text style={styles.CartContRemoveText}>X</Text>
+                                        </TouchableOpacity>
+                                        :
+                                        null}
+                                </View>
                             </View>
-                        </View>
-                    );
+
+
+                        );
+                    // }
                 }}
             />
         </View>

@@ -275,9 +275,17 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
             return null;
         }
     }
-    const dataArray = Object.keys(cartdata).map(key => ({
+    // const dataArray = Object.keys(cartdata).map(key => ({
+    //     shopId: key,
+    //     // transactions: cartdata[key]
+    //     transactions: cartdata[key].filter(transaction => transaction && Object.keys(transaction).length > 0)
+    // }));
+
+    const dataArray = Object.keys(cartdata)
+    .filter(key => cartdata[key].some(transaction => transaction && Object.keys(transaction).length > 0))
+    .map(key => ({
         shopId: key,
-        transactions: cartdata[key]
+        transactions: cartdata[key].filter(transaction => transaction && Object.keys(transaction).length > 0)
     }));
 
     // console.log('This is the data of the array::', dataArray)
@@ -291,7 +299,7 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
         }
     }
 
-console.log('This is the usercartScreen',optimize)
+// console.log('This is the usercartScreen',optimize)
     return (
         <View style={[styles.containerout,{ 
             // backgroundColor: `rgba(237, 245, 255, ${transparency})`,

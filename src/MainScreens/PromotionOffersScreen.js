@@ -6,7 +6,7 @@ const PromotionOffersScreen = () => {
     {
       id: '1',
       title: '30-Day Food Delivery Trial!',
-      description: 'Launching in your area for Desu Jodha, Mangeana, Haibuana, Phullo, Panniwala moreka, Jogewala, Sekhu residents. Try it out now!',
+      description: 'Launching in your area , Try it out now!',
     },
     {
       id: '5',

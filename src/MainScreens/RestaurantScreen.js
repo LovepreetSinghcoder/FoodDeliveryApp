@@ -92,7 +92,19 @@ const RestaurantScreen = ({ navigation, route }) => {
     //   const fff = restaurantData.menu_list;
     // console.log('dekh bro, 34', fff.length)
     // console.log('dekh bro, 34', restaurantMenuIds)
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
+    const openEditProductHandler = (item_id) => {
+        const qty = '1'
+        setSelectedProduct({ item_id, qty });
+        // console.log('This is openEditProductHandler Data ::', item_id, qty)
+    };
+
+    const closeEditProductHandler = () => {
+        setSelectedProduct(null);
+        // getSpecificArray()
+        // GetTotalPrice()
+    }
 
 
 
@@ -170,17 +182,37 @@ const RestaurantScreen = ({ navigation, route }) => {
 
             {/* <Text>Restaurant Foods</Text> */}
 
-           
-            
+
+
 
             {restaurantMenuIds && restaurantMenuIds.map((data, index) => (
 
                 <View key={index}>
                     {/* <Text>dekh bro</Text> */}
-                    <MenuBar navigation={navigation} menu_id={data} />
+                    <MenuBar navigation={navigation} menu_id={data} callfn={openEditProductHandler}/>
                 </View>
 
             )
+            )}
+
+            {selectedProduct && (
+                <View style={{
+                    //  backgroundColor: 'green',
+                    // backgroundColor: 'rgba(237, 245, 255, 0.4)',
+                    height: 440, zIndex: 100,
+                    borderTopLeftRadius: 15,
+                    borderTopRightRadius: 15
+                }}>
+
+                    <TouchableOpacity style={{ backgroundColor: '#a1a1a1', borderRadius: 50, width: 50, height: 50, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: 'auto', marginBottom: 15, marginTop: -65 }} onPress={() => closeEditProductHandler()}><Text style={{ fontSize: 18, fontWeight: '600' }}>X</Text></TouchableOpacity>
+                    <EditProductSlider
+                        restaurantsData={restaurantsData}
+                        item_id={selectedProduct.item_id}
+                        qty={selectedProduct.qty}
+                        callFn={getuserData}
+                        closeFn={closeEditProductHandler}
+                    />
+                </View>
             )}
         </ScrollView>
     )
