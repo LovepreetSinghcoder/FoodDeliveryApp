@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     },
     CartCont: {
         // backgroundColor: 'red',
-        backgroundColor: '#ed5624',
+        // backgroundColor: '#ed5624',
 
         borderRadius: 15,
         // marginHorizontal: 5,

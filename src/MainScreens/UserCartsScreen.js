@@ -10,8 +10,9 @@ import { AuthContext } from '../Context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Cart from '../Components/Cart';
+import CartsComponent from '../Components/CartsComponent';
 
-const UserCartsScreen = ({ navigation }) => {
+const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor= '#edf5ff', cartsVisibilityHandler = () => console.log("Default function called") }) => {
 
     const { userloggeduid, checkIsLogged, locationName, calculateDistance } = useContext(AuthContext);
     const [cartdata, setCartdata] = useState(null);
@@ -36,11 +37,7 @@ const UserCartsScreen = ({ navigation }) => {
         try {
             await docRef.get().then((doc) => {
                 if (doc.exists) {
-                    // const data = JSON.stringify(doc.data());
-                    // setCartdata(data)
                     setCartdata(doc.data())
-                    // console.log("This is the data of the your Cart :", doc.data().[0])
-                    // setCartAllData(doc.data().cartItems)
 
                 } else {
                     console.log('No such document!');
@@ -60,18 +57,10 @@ const UserCartsScreen = ({ navigation }) => {
 
     useEffect(() => {
         try {
-            // const doc = await docRef.get();
-
-            // const data = doc.data();
             const keys = Object.keys(cartdata);
-
-            // console.log('This is the Keys:', ...keys)
             if (keys.length > 0) {
                 const firstKey = keys[1];
                 const firstData = cartdata[firstKey];
-
-                // console.log("First array name (shopId):", firstKey);
-                // console.log("First array data:", firstData);
             } else {
                 console.log("The document has no data.");
             }
@@ -81,7 +70,6 @@ const UserCartsScreen = ({ navigation }) => {
         }
 
     }, [cartdata])
-    // console.log('This is the data We want', cartdata)
 
 
     useFocusEffect(
@@ -100,13 +88,6 @@ const UserCartsScreen = ({ navigation }) => {
         const fetchData = async () => {
             const docRef = firebase.firestore().collection('RestaurantData');
 
-
-
-            // const doc = await docRef.get();
-            // doc.forEach((doc) => {
-            //     setRestaurantsData(doc.data());
-            // })
-
             docRef.onSnapshot(snapshot => {
                 setRestaurantsData(snapshot.docs.map(doc => doc.data()))
             }
@@ -123,22 +104,14 @@ const UserCartsScreen = ({ navigation }) => {
             console.log('Restaurant data is not loaded')
             return;
         }
-        // const data = restaurantsData.filter((item) => item.shopId == 'U08laKOtyLZWlAXzRFLVYi8ReeK2')
         const data = restaurantsData.filter((item) => item.shopId == id)
-
-
-        // console.log('This the data we want::', data[0])
-        // return data[0];
         return data;
 
     }
 
 
     const GetTotalPrice = () => {
-        // setIsLoading(true);
-
-        // if (Object.keys(cartdata).length !== 0) {
-        // if (cartdata !== null) {
+        setLoading(true);
         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
 
@@ -164,7 +137,7 @@ const UserCartsScreen = ({ navigation }) => {
 
 
 
-            // setIsLoading(false);
+            setLoading(false);
         }
         else {
             setTotalCost('0');
@@ -243,67 +216,19 @@ const UserCartsScreen = ({ navigation }) => {
         navigation.navigate('Usercart', item)
     }
 
+    useEffect(() => {
+        if (!cartdata || !dataArray || dataArray.length === 0) {
 
-    if (!cartdata) {
-        return (
-            <View style={[styles.containerout,]}>
+            cartsVisibilityHandler(false)
+        }
+        else {
+            cartsVisibilityHandler(true)
 
-                <TouchableOpacity style={{
-                    flexDirection: 'row',
-                    padding: 15,
-                    alignItems: 'center'
-                }} onPress={() => { navigation.navigate('HomeScreen') }} >
-                    <FontAwesome6 name="arrow-left" size={20} color="black" />
-                    <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
-                </TouchableOpacity>
+        }
+    }, [dataArray, cartdata])
 
 
-
-
-                {/* <Text style={{ width: '10%', alignSelf: 'center', paddingTop: 10 }}>
-                    <ActivityIndicator size="large" color={colors.text1} style={{ justifyContent: 'center', }} />
-                </Text> */}
-                <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-                    <Ionicons name="fast-food" size={250} color="#dedede" />
-                    <Text style={{ color: '#dedede', fontSize: 25, fontWeight: '600' }}>Cart is Empty!</Text>
-                </View>
-            </View>
-        );
-    }
-    const dataArray = Object.keys(cartdata).map(key => ({
-        shopId: key,
-        transactions: cartdata[key]
-    }));
-
-    // console.log('This is the data of the array::', dataArray)
-
-
-    if (!dataArray || dataArray.length === 0) {
-        return (
-            <View style={[styles.containerout,]}>
-
-                <TouchableOpacity style={{
-                    flexDirection: 'row',
-                    padding: 15,
-                    alignItems: 'center'
-                }} onPress={() => { navigation.navigate('HomeScreen') }} >
-                    <FontAwesome6 name="arrow-left" size={20} color="black" />
-                    <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
-                </TouchableOpacity>
-
-                {/* <Text style={{ width: '10%', alignSelf: 'center', paddingTop: 10 }}>
-                    <ActivityIndicator size="large" color={colors.text1} style={{ justifyContent: 'center', }} />
-                </Text> */}
-                <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-                    <Ionicons name="fast-food" size={250} color="#dedede" />
-                    <Text style={{ color: '#dedede', fontSize: 25, fontWeight: '600' }}>Cart is Empty!</Text>
-                </View>
-            </View>
-        );
-    }
-
-
-    return (
+    const EmptyCartMessage = () => (
         <View style={[styles.containerout,]}>
 
             <TouchableOpacity style={{
@@ -314,22 +239,85 @@ const UserCartsScreen = ({ navigation }) => {
                 <FontAwesome6 name="arrow-left" size={20} color="black" />
                 <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
             </TouchableOpacity>
-            {/* {process ?
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Ionicons name="fast-food" size={250} color="#dedede" />
+                <Text style={{ color: '#dedede', fontSize: 25, fontWeight: '600' }}>Cart is Empty!</Text>
+            </View>
+        </View>
+    );
 
-                <View><Text>...</Text></View>
+
+    // if (!cartdata) {
+    //     return (
+    //         <View style={[styles.containerout,]}>
+
+    //             <TouchableOpacity style={{
+    //                 flexDirection: 'row',
+    //                 padding: 15,
+    //                 alignItems: 'center'
+    //             }} onPress={() => { navigation.navigate('HomeScreen') }} >
+    //                 <FontAwesome6 name="arrow-left" size={20} color="black" />
+    //                 <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
+    //             </TouchableOpacity>
+    //             <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+    //                 <Ionicons name="fast-food" size={250} color="#dedede" />
+    //                 <Text style={{ color: '#dedede', fontSize: 25, fontWeight: '600' }}>Cart is Empty!</Text>
+    //             </View>
+    //         </View>
+    //     );
+    // }
+
+
+    if (!cartdata) {
+        if (!optimize) {
+            return <EmptyCartMessage />;
+        } else {
+            return null;
+        }
+    }
+    const dataArray = Object.keys(cartdata).map(key => ({
+        shopId: key,
+        transactions: cartdata[key]
+    }));
+
+    // console.log('This is the data of the array::', dataArray)
+
+
+    if (!dataArray || dataArray.length === 0) {
+        if (!optimize) {
+            return <EmptyCartMessage />;
+        } else {
+            return null;
+        }
+    }
+
+console.log('This is the usercartScreen',optimize)
+    return (
+        <View style={[styles.containerout,{ 
+            // backgroundColor: `rgba(237, 245, 255, ${transparency})`,
+            backgroundColor: bgcolor
+            
+            }]  }>
+
+            {!optimize ?
+                <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    padding: 15,
+                    alignItems: 'center'
+                }} onPress={() => { navigation.navigate('HomeScreen') }} >
+                    <FontAwesome6 name="arrow-left" size={20} color="black" />
+                    <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text>
+                </TouchableOpacity>
 
                 :
-                null} */}
-
-            <FlatList
+                null}
+            {/* <FlatList
                 data={dataArray}
                 keyExtractor={item => item.shopId}
                 renderItem={({ item }) => {
                     const restaurantData = GetRestaurantDataHandler(item.shopId);
 
-                    // Assuming restaurantData is an array and you want the first match
                     const restaurant = restaurantData.length > 0 ? restaurantData[0] : {};
-                    // console.log('This is the console Data::OO::', restaurant.restaurant_name)
 
                     return (
                         <View style={styles.CartContainer}>
@@ -362,10 +350,11 @@ const UserCartsScreen = ({ navigation }) => {
                         </View>
                     );
                 }}
-            />
+            /> */}
 
 
-
+            {/* <Text>Ok dekhne ka akaka</Text> */}
+            <CartsComponent navigation={navigation} dataArray={dataArray} restaurantsData={restaurantsData} userloggeduid={userloggeduid} getcartdata={getcartdata} GetTotalPrice={GetTotalPrice} optimize={optimize} />
         </View>
     )
 }
@@ -380,15 +369,12 @@ const styles = StyleSheet.create({
         width: '100%',
 
     },
-    container: {
+    container_cart: {
         flex: 1,
-        backgroundColor: colors.col2,
-        // backgroundColor: '#edeef0',
+        // backgroundColor: colors.col2,
+        backgroundColor: '#edf5ff',
 
-        // alignItems: 'center',
-        // justifyContent: 'center',
         width: '100%',
-        // height: '100%',
     },
 
     CartContainer: {
@@ -401,7 +387,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     CartContainerRestaurant: {
-        // backgroundColor: 'green',
         flexDirection: 'row',
         paddingHorizontal: 5,
         paddingVertical: 5

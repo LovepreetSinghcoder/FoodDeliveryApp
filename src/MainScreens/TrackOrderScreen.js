@@ -143,7 +143,7 @@ const TrackOrderScreen = ({ navigation }) => {
 
         try {
             const orderRef = firebase.firestore().collection('UserOrders').doc(orderid);
-            const orderSnapshot = await orderRef.get();
+            // const orderSnapshot = await orderRef.get();
 
             // if (orderSnapshot.exists) {
             //     await orderRef.update({
@@ -199,7 +199,7 @@ const TrackOrderScreen = ({ navigation }) => {
                     ).map((order, index) => {
                         const findRestaurantData = allRestaurantsData.find((items) => items.shopId === order.shopId);
                         // console.log('This is the data of the restaurant', findRestaurantData.restaurant_name)
-                        console.log('This is the data of the restaurant', order.orderStatus)
+                        // console.log('This is the data of the restaurant', order.orderStatus)
 
                         return (
                             <View style={styles.order} key={index}>
@@ -233,7 +233,7 @@ const TrackOrderScreen = ({ navigation }) => {
                                                             {order.orderStatus}
                                                         </Text>
                                                     </View> */}
-                                                    <TouchableOpacity style={{ backgroundColor: 'red', borderRadius: 5, paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}
+                                                    <TouchableOpacity style={{ backgroundColor: '#ffa187', borderRadius: 5, paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}
                                                         onPress={() => setModalVisible(true)}
 
                                                     >
@@ -294,7 +294,7 @@ const TrackOrderScreen = ({ navigation }) => {
                                                 </View>
                                             </Modal>
                                             {order.orderStatus === 'Confirmed' && (
-                                                <View style={{ backgroundColor: 'blue', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
+                                                <View style={{ backgroundColor: '#8a8aff', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
 
                                                     <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
                                                         {order.orderStatus}
@@ -303,16 +303,16 @@ const TrackOrderScreen = ({ navigation }) => {
 
                                             )}
                                             {order.orderStatus === 'Ready' && (
-                                                <View style={{ backgroundColor: 'green', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
+                                                <View style={{ backgroundColor: '#88fc9a', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
 
-                                                    <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
+                                                    <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'black' }}>
                                                         {order.orderStatus}
                                                     </Text>
                                                 </View>
 
                                             )}
                                             {order.orderStatus === 'OutforDelivery' && (
-                                                <View style={{ backgroundColor: 'purple', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
+                                                <View style={{ backgroundColor: '#d28aff', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
 
                                                     <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
                                                         Out for Delivery
@@ -321,16 +321,16 @@ const TrackOrderScreen = ({ navigation }) => {
 
                                             )}
                                             {order.orderStatus === 'Delivered' && (
-                                                <View style={{ backgroundColor: 'teal', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
+                                                <View style={{ backgroundColor: '#b8ffff', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
 
-                                                    <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
+                                                    <Text style={{ textTransform: 'uppercase', fontSize: 12, color: '#a3a3a3' }}>
                                                         {order.orderStatus}
                                                     </Text>
                                                 </View>
 
                                             )}
                                             {order.orderStatus === 'Canceled' && (
-                                                <View style={{ backgroundColor: 'red', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
+                                                <View style={{ backgroundColor: '#ffa187', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
 
                                                     <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
                                                         {order.orderStatus}

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking, Image, PermissionsAndroid } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import HeaderBar from '../Components/HeaderBar'
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
 import { colors, veg, nonveg } from '../Global/styles'
 import OfferSlider from '../Components/OfferSlider';
@@ -17,6 +17,7 @@ import axios from 'axios';
 import { Button } from 'react-native-elements';
 import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
+import UserCartsScreen from './UserCartsScreen';
 const Version = '2.6.10';
 
 const HomeScreen = ({ navigation }) => {
@@ -333,20 +334,7 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // Function to perform reverse geocoding
-  // const reverseGeocode = async (latitude, longitude) => {
-  //   const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
 
-  //   try {
-  //     const response = await axios.get(url);
-  //     const data = response.data;
-  //     const readableLocation = data.display_name;
-  //     console.log('Readable Location:', data);
-  //     // Do something with the readable location
-  //   } catch (error) {
-  //     console.log('Error reverse geocoding:', error);
-  //   }
-  // };
 
 
   const getLocationName = async (latitude, longitude) => {
@@ -404,37 +392,209 @@ const HomeScreen = ({ navigation }) => {
 
   const [location, setLocation] = useState(true)
 
+
+
+
+
+
+  const [floatingCartsComponent, setFloatingCartsComponent] = useState(true)
+
+  const floatingCartsComponentHandler = (value) => {
+
+    setFloatingCartsComponent(value)
+  }
+
+
+
+  // console.log('This is the value for the state of the floating component', floatingCartsComponent)
+
+
+
+
+
+
+
+
+
+
   if (loading) {
     return (
       <View style={styles.Maincontainer}>
-     <StatusBar
-        backgroundColor={colors.col2}
-        barStyle="dark-content" 
-      />
+        <StatusBar
+          backgroundColor={colors.col2}
+          barStyle="dark-content"
+        />
         <TouchableOpacity onPress={() => { navigation.navigate('Changeloction') }}>
 
-          <View style={{ backgroundColor: colors.text1, height: 50, alignContent: 'center' }}>
-            <Text style={{ paddingVertical: 10, paddingHorizontal: 20, fontSize: 20, }}>...</Text>
+
+          <View style={{
+            backgroundColor: colors.col2,
+            height: 60,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 8, // Adding some border radius for better look
+            margin: 10
+          }}>
+            <Text style={{
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              fontSize: 25,
+              color: '#ccc',
+              fontWeight: '800',
+              textAlign: 'center',
+              fontStyle: 'italic'
+            }}>
+              shovii
+            </Text>
           </View>
         </TouchableOpacity>
         <Text style={{ width: '10%', alignSelf: 'center', paddingTop: 10 }}>
           <ActivityIndicator size="large" color={colors.text1} style={{ justifyContent: 'center', }} />
         </Text>
+
+        <View style={[styles.loadingCont,]} >
+        </View>
+
+        <View style={{
+          elevation: 0, paddingVertical: 5, marginHorizontal: 16, borderRadius: 15, flexDirection: 'row'
+        }} >
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 40,
+            width: 80,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 18,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 40,
+            width: 80,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 18,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 40,
+            width: 80,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 18,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 40,
+            width: 80,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 18,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+        </View>
+
+        <View style={[styles.loadingCont, { backgroundColor: colors.col2, elevation: 0, height: 80, borderRadius: 15 }]} >
+        </View>
+        <View style={{
+          elevation: 0, paddingVertical: 5, marginHorizontal: 16, borderRadius: 15, flexDirection: 'row'
+        }} >
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 80,
+            width: 90,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 80,
+            width: 90,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 80,
+            width: 90,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+          <View style={{
+            backgroundColor: colors.col2,
+            marginLeft: 10,
+            height: 80,
+            width: 90,
+            marginBottom: 15,
+            padding: 10,
+            borderRadius: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}  >
+          </View>
+
+
+        </View>
+
+        <View style={[styles.loadingCont, { height: 200 }]} >
+        </View>
+        <View style={[styles.loadingCont, { height: 200 }]} >
+        </View>
       </View>
     )
   }
 
 
   else if (location === false && locationName === null) {
+    // else if (location === true ) {
+
+
     return (
       <View style={styles.Maincontainer}>
-     <StatusBar
-        backgroundColor={colors.col2}
-        barStyle="dark-content" 
-      />
-        <View style={{ paddingVertical: 20, paddingHorizontal: 20 }}>
+        <StatusBar
+          backgroundColor={colors.col2}
+          barStyle="dark-content"
+        />
+        <View style={{ paddingVertical: 10, paddingHorizontal: 16, marginTop: 10, }}>
           <View style={styles.location_container}>
-              <FontAwesome6 name="location-dot" size={28} color={colors.text1} style={{ paddingVertical: 6 }} />
+            <FontAwesome6 name="location-dot" size={28} color={colors.text1} style={{ paddingVertical: 6 }} />
             <TextInput
               style={styles.locationinput}
               placeholder="Set your location"
@@ -468,9 +628,9 @@ const HomeScreen = ({ navigation }) => {
       }}>
         {/* <StatusBar backgroundColor={colors.col2} /> */}
         <StatusBar
-        backgroundColor={colors.col2}
-        barStyle="dark-content" 
-      />
+          backgroundColor={colors.col2}
+          barStyle="dark-content"
+        />
         <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
 
         <View style={{
@@ -517,13 +677,13 @@ const HomeScreen = ({ navigation }) => {
       /> */}
       <StatusBar
         backgroundColor={colors.col2}
-        barStyle="dark-content" 
+        barStyle="dark-content"
       />
       <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
 
 
 
-      {/* <OrderManagementScreen /> */}
+
 
 
 
@@ -606,7 +766,7 @@ const HomeScreen = ({ navigation }) => {
 
         {TodaySpecialFoodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={TodaySpecialFoodData} navigation={navigation} />}
 
-    
+
 
 
         {VegData.length === 0 ? null : <Cardslider title={"VEG"} data={VegData} navigation={navigation} />}
@@ -614,6 +774,34 @@ const HomeScreen = ({ navigation }) => {
         {NonVegData.length === 0 ? null : <Cardslider title={"NON-VEG"} data={NonVegData} navigation={navigation} />}
 
       </ScrollView>
+
+      {/* component for cart and want to be floating on all items  */}
+      {/* {floatingCartsComponent ?
+        <View style={{
+          // backgroundColor: colors.col2,
+          height: 100,
+          zIndex: 100
+        }}>
+          <UserCartsScreen optimize={true} navigation={navigation} cartsVisibilityHandler={floatingCartsComponentHandler} />
+        </View>
+        :
+        null} */}
+      <View style={{
+        backgroundColor: '#d6d6d6',
+        height: 85,
+        // borderRadius: 25,
+        borderColor: '#ccc',
+        borderTopWidth: 1,
+        // marginHorizontal: 5,
+        // borderTopLeftRadius: 15,
+        // borderTopRightRadius: 15,
+        // paddingTop: 6,
+        zIndex: 100,
+        // marginTop: -50
+      }}>
+        <UserCartsScreen optimize={true} navigation={navigation}   bgcolor={'#d6d6d6'}/>
+      </View>
+
     </View>
   )
 }
@@ -632,32 +820,40 @@ const styles = StyleSheet.create({
   },
   location_container: {
 
+
     flexDirection: 'row',
     marginBottom: 12,
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 5,
     marginHorizontal: 2,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 25,
+    borderRadius: 15,
   },
 
   locationinput: {
-    // marginBottom: 12,
-    paddingLeft: 10,
-    // borderColor: '#ccc',
-    // borderWidth: 1,
-    // borderRadius: 25,
-    width: '90%'
+    paddingLeft: 5,
+    width: '90%',
+    fontSize: 15
+
   },
   locationbutton: {
-    backgroundColor: colors.text1,
-    borderRadius: 25,
-    padding: 10,
+    // backgroundColor: colors.text1,
+    // borderRadius: 15,
+    // padding: 10,
+    // alignItems: 'center',
+
+    backgroundColor: colors.text1
+    ,
+    // backgroundColor: 'red',
+    borderRadius: 15,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   lbuttonText: {
     color: 'white',
+    color: '#474747',
+    color: colors.col1,
     fontSize: 16,
     fontWeight: '600'
   },
@@ -701,7 +897,17 @@ const styles = StyleSheet.create({
   },
 
 
-
+  loadingCont: {
+    flexDirection: 'row',
+    width: '92%',
+    borderRadius: 20,
+    alignItems: 'center',
+    padding: 10,
+    marginVertical: 10,
+    alignSelf: 'center',
+    backgroundColor: colors.col2,
+    height: 50
+  },
 
   container: {
     // marginTop: 50,
@@ -722,6 +928,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     alignSelf: 'center',
     elevation: 2,
+
+
   },
   input: {
     marginLeft: 10,

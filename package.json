@@ -1,6 +1,6 @@
 {
-  "name": "shovii",
-  "version": "1.6.10",
+  "name": "hovii",
+  "version": "2.6.10",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
