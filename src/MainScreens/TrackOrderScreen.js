@@ -311,6 +311,15 @@ const TrackOrderScreen = ({ navigation }) => {
                                                 </View>
 
                                             )}
+                                            {order.orderStatus === 'WaitforPickUp' && (
+                                                <View style={{ backgroundColor: '#d28aff', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
+
+                                                    <Text style={{ textTransform: 'uppercase', fontSize: 12, color: 'white' }}>
+                                                        Wait for PickUp
+                                                    </Text>
+                                                </View>
+
+                                            )}
                                             {order.orderStatus === 'OutforDelivery' && (
                                                 <View style={{ backgroundColor: '#d28aff', borderRadius: 5, paddingHorizontal: 15, paddingVertical: 5 }}>
 

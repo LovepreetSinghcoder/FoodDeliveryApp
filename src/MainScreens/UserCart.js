@@ -11,6 +11,8 @@ import { AuthContext } from '../Context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import EditProductSlider from '../Components/EditProductSlider';
+import * as Location from 'expo-location';
+
 // import Cart from '../Components/Cart';
 
 // import BottomNav from '../components/BottomNav';
@@ -39,7 +41,7 @@ const UserCart = ({ navigation, route }) => {
     const [totalCost, setTotalCost] = useState('0');
     const [isUseCoins, setIsUseCoins] = useState(false);
     const [quantity, setquantity] = useState('1');
-
+    const [userLocationName, setUserLocationName] = useState('')
 
     const UseCoinButton = ({ isUseCoins, onPress }) => (
         <View
@@ -103,7 +105,7 @@ const UserCart = ({ navigation, route }) => {
 
                 if (data && data.hasOwnProperty(data_shopId)) {
                     const specificArray = data[data_shopId];
-                    console.log(`Array "${data_shopId}" data:`, specificArray);
+                    // console.log(`Array "${data_shopId}" data:`, specificArray);
                     setCartAllData(specificArray)
 
                     return specificArray;
@@ -157,7 +159,7 @@ const UserCart = ({ navigation, route }) => {
 
             // console.log('This is total total cost of the 77887', totalfoodprice)
             // setTotalCost(totalfoodprice.toString());
-            console.log('Item quantity updated successfully:', cartAllData[index]);
+            // console.log('Item quantity updated successfully:', cartAllData[index]);
         } else {
             console.log('Item not found with item_id:', item_id);
         }
@@ -165,9 +167,7 @@ const UserCart = ({ navigation, route }) => {
     }
 
     // console.log('This is total food cost after upfdating,,::', totalCost)
-    const updateQuantity = () => {
 
-    }
 
     useEffect(() => {
         try {
@@ -203,40 +203,7 @@ const UserCart = ({ navigation, route }) => {
         }, [])
     );
 
-    // useEffect(() => {
-    //     if (cartdata != null) {
-    //         const foodprice = JSON.parse(cartdata).cart;
-    //         let totalfoodprice = 0;
-    //         foodprice.map((item) => {
-    //             // console.log(item.data.foodPrice)
-    //             totalfoodprice = (parseInt(item.data.foodPrice) * parseInt(item.Foodquantity)) +
-    //                 (parseInt(item.data.foodAddonPrice) * parseInt(item.Addonquantity)) + totalfoodprice;
-    //         })
-    //         // console.log(totalfoodprice)
-    //         setTotalCost(JSON.stringify(totalfoodprice))
-    //     }
-    // }, [cartdata])
-    // console.log(cartdata)
 
-    // console.log(JSON.parse(cartdata).cart[0].data);
-
-
-    // const [userdata, setUserdata] = useState([]);
-
-
-    // useEffect(() => {
-    //     // Fetch data from Firebase
-    //     const fetchData = async () => {
-    //         const foodRef = firebase.firestore().collection('UserData');
-
-    //         foodRef.onSnapshot(snapshot => {
-    //             setUserdata(snapshot.docs.map(doc => doc.data()))
-    //         }
-    //         )
-    //     };
-
-    //     fetchData();
-    // }, [cartdata]);
 
     const [user, setUser] = useState([]);
 
@@ -297,6 +264,28 @@ const UserCart = ({ navigation, route }) => {
             const doc = await docRef.get();
             doc.forEach((doc) => {
                 setShopInfo(doc.data());
+            })
+        };
+
+        fetchData();
+    }, []);
+
+    const [platformDeliveryCharges, setPlatformDeliveryCharges] = useState([]);
+
+
+    // useEffect to get all data of ShopInfo 
+    useEffect(() => {
+        const fetchData = async () => {
+            const docRef = firebase.firestore().collection('PlatformDeliveryPartnerManagement');
+
+
+            // foodRef.onSnapshot(snapshot => {
+            //     setFoodDataAll(snapshot.docs.map(doc => doc.data()))
+            // }
+
+            const doc = await docRef.get();
+            doc.forEach((doc) => {
+                setPlatformDeliveryCharges(doc.data());
             })
         };
 
@@ -425,10 +414,7 @@ const UserCart = ({ navigation, route }) => {
     };
 
 
-    // useEffect to triger checkShopOpen Fn 
-    // useEffect(() => {
-    //     checkShopOpen();
-    // }, [cartdata, userdata]);
+
 
 
     //Check Stock of Each Item
@@ -437,107 +423,127 @@ const UserCart = ({ navigation, route }) => {
     const [outStock, setOutStock] = useState([]);
 
 
-    // useEffect to check Stock of the Foods 
-    // useEffect(() => {
-    //     const checkStock = () => {
-    //         if (cartdata !== null && Object.keys(cartdata).length !== 0) {
 
-    //             //NEW CODE
-    //             let itemIDs = [];
-    //             const checkData = cartdata.cartItems;
-    //             checkData.forEach((item) => {
+    const requestLocationPermission = async () => {
+        setLoading(true);
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            console.log('Permission to access location was denied');
+            setLoading(false);
+            return false; // Return false if permission is not granted
+        }
+        // Permission granted, continue with obtaining the location
+        await getLocation();
+        setLoading(false);
+        return true; // Return true if permission is granted
+    };
 
-    //                 // const cartArrayNames = item.
-    //                 itemIDs.push(item.item_id)
-    //             });
-    //             // const cartArrayNames = Object.keys(cartdata);
-    //             // console.log('dekh veere', itemIDs)
+    const [userCoords, setUserCoords] = useState({})
+
+    useEffect(() => {
+        requestLocationPermission()
+    }, [])
 
 
-    //             // let checkStockV = false;
-    //             setOutStock([]); // Clear the array before adding new items
-    //             for (let i = 0; i < itemIDs.length; i++) {
-    //                 // console.log('dekhi bro 2');
-    //                 const matchingItemId = foodDataAll.find((item) => item.id === itemIDs[i]);
+    const getLocation = async () => {
+        try {
+            const location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
 
-    //                 // console.log('dekhi bro 4', matchingUserId);
-    //                 // console.log('dekhi bro 4');
+            // Set the state with the obtained latitude and longitude
+            setUserLatitude(latitude);
+            setUserLongitude(longitude);
 
-    //                 if (matchingItemId) {
-    //                     // console.log('dekhi bro 5');
-    //                     setRestaurantLatitude(parseFloat(matchingItemId.RestaurantCords.Lat))
-    //                     setRestaurantLongitude(parseFloat(matchingItemId.RestaurantCords.Long))
+            // Obtain and set the location name
+            await getLocationName(latitude, longitude);
 
-    //                     if (matchingItemId.stock === 'out') {
-    //                         // console.log('dekhi bro 7');
-    //                         setInStock(false);
-    //                         setOutStock((prevStock) => [...prevStock, matchingItemId.foodName]);
-    //                         // console.log('Dekhi bro nhi haiga');
-    //                     } else {
-    //                         setInStock(true);
-
-    //                         // console.log('dekhi bro 8');
-    //                     }
-    //                 }
-    //             }
-    //         } else {
-    //             console.log('Empty array or null cartdata');
-    //         }
-    //     };
-
-    //     checkStock();
-    // }, [cartdata, foodDataAll]);
+            console.log("Coordinates obtained: ", latitude, longitude);
+            return { latitude, longitude }; // Return coordinates for further use if needed
+        } catch (error) {
+            console.log('Error getting location:', error);
+            return null;
+        }
+    };
 
 
 
-    // console.log('dekh coreds', restaurantLatitude, restaurantLongitude)
-    // const getCoordinatesFromLocationName = async (locationName) => {
-    //     try {
-    //         const encodedLocationName = encodeURIComponent(locationName);
-    //         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedLocationName}`);
+    // const [userLatitude, setUserLatitude] = useState('')
+    // const [userLongitude, setUserLongitude] = useState('')
 
-    //         if (!response.ok) {
-    //             throw new Error('Failed to fetch coordinates');
-    //         }
 
-    //         const data = await response.json();
+    const getLocationName = async (latitude, longitude) => {
+        try {
+            const geocode = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude
+            });
 
-    //         if (data.length > 0) {
-    //             const { lat, lon } = data[0];
-    //             console.log('dekh veere location coords 34', parseFloat(lat), parseFloat(lon))
-    //             setUserLatitude(parseFloat(lat))
-    //             setUserLongitude(parseFloat(lon))
-    //             // return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
-    //         } else {
-    //             throw new Error('Location not found');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching coordinates 001:', error);
-    //         return null;
-    //     }
-    // };
+            if (geocode.length > 0) {
+                const { city, country } = geocode[0];
+                const locationName = `${city}, ${country}`;
+                const locationCity = `${city}`;
 
-    // useEffect(() => {
-    //     getCoordinatesFromLocationName(locationName)
-    // }, [locationName])
+                // console.log('dekh veere', city)
+                // setLocationName(city);
+                // SetLocationName(city);
+                // setLocation(true)
+                setUserLocationName(locationCity)
+                // console.log("this is the the calue of the location Name", locationName)
 
-    // useEffect(() => {
-    //     const distance = calculateDistance(userLatitude, userLongitude, restaurantLatitude, restaurantLongitude)
-    //     console.log('this is th distance in km 88888', (distance))
-    //     const roundValue = Math.round(distance)
-    //     setUserDistance(roundValue)
+                return locationName;
+            }
+        } catch (error) {
+            console.log('Error fetching location name:', error);
+        }
 
-    // }, [restaurantLatitude])
+        return null;
+    };
 
-    // useEffect(() => {
-    //     if (userDistance > 9) {
-    //         setNotdeliverable(true)
-    //     }
-    //     else {
-    //         setNotdeliverable(false)
 
-    //     }
-    // }, [userDistance])
+    // console.log('This is the value of the coords', userLatitude, userLongitude)
+    // console.log('This is the value of the city', userLocationName)
+    const haversineDistance = (coords1, coords2) => {
+        const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+        const lat1 = coords1.latitude;
+        const lon1 = coords1.longitude;
+        const lat2 = coords2.latitude;
+        const lon2 = coords2.longitude;
+
+        const R = 6371; // Radius of the Earth in kilometers
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // Distance in kilometers
+        return distance;
+    };
+
+    const [distancebtwCustomerRestaurant, setDistancebtwCustomerRestaurant] = useState(null)
+
+
+
+    useEffect(() => {
+        if (restaurantsData && restaurantsData.location && restaurantsData.location.geolocation) {
+            const restaurantLatitude = restaurantsData.location.geolocation.latitude;
+            const restaurantLongitude = restaurantsData.location.geolocation.longitude;
+
+            const coords1 = { latitude: restaurantLatitude, longitude: restaurantLongitude };
+            const coords2 = { latitude: userLatitude, longitude: userLongitude };
+
+            const calculatedDistance = haversineDistance(coords1, coords2);
+            setDistancebtwCustomerRestaurant(calculatedDistance);
+        } else {
+            console.warn('restaurantData or its location/geolocation properties are not available.');
+        }
+    }, [restaurantsData, userLatitude, userLongitude]);
+
+
 
     const handleIsCoinSelected = (value) => {
         setIsUseCoins(value)
@@ -585,16 +591,20 @@ const UserCart = ({ navigation, route }) => {
     }, [locationName])
 
     const getTotalDeliveryCharges = () => {
-        if (userDistance >= 0) {
-            const deliveryCharges = 10 * userDistance;
+        if (distancebtwCustomerRestaurant >= 0) {
+            const deliveryCharges = platformDeliveryCharges.deliveryCharges * distancebtwCustomerRestaurant;
             setDeliveryCharges(deliveryCharges)
+            
+            return deliveryCharges
         }
+    
+
 
     }
 
     useEffect(() => {
         getTotalDeliveryCharges()
-    }, userDistance)
+    }, [distancebtwCustomerRestaurant, platformDeliveryCharges])
 
 
     const GetTotalPrice = () => {
@@ -618,9 +628,12 @@ const UserCart = ({ navigation, route }) => {
 
             // setTotalCost(totalfoodprice.toString());
 
-            console.log('This is the Grand Total Price :', totalfoodprice.toString())
+            console.log(deliveryCharges, 'This is the Grand Total Price :', totalfoodprice.toString())
+
             // setIsLoading(false);
-            let finalPrice = totalfoodprice + deliveryCharges + ((totalfoodprice * 12) / 100);
+            const totalDeliveryCharges = getTotalDeliveryCharges()
+            const GSTnRestaurantCharges = restaurantsData.GSTnRestaurantCharges ?? 0;
+            let finalPrice = totalfoodprice + totalDeliveryCharges + ((totalfoodprice * GSTnRestaurantCharges) / 100);
             // setTotalCost(finalPrice.toString());
             setTotalCost(finalPrice.toFixed(2));
 
@@ -635,7 +648,7 @@ const UserCart = ({ navigation, route }) => {
 
     useEffect(() => {
         GetTotalPrice();
-    }, [cartAllData]);
+    }, [cartAllData,distancebtwCustomerRestaurant, platformDeliveryCharges]);
 
 
 
@@ -672,6 +685,13 @@ const UserCart = ({ navigation, route }) => {
 
 
     const GoToPaymentPage = () => {
+        if (deliveryCharges > platformDeliveryCharges.maxDeliveryCharges && deliveryCharges > 300) {
+            alert('We regret to inform you that delivery from this restaurant is not available in your location. Would you like to choose another restaurant?');
+
+
+            return;
+        }
+        const GSTnRestaurantCharges = restaurantsData.GSTnRestaurantCharges ?? 0;
         if (cartAllData !== null && Object.keys(cartAllData).length !== 0) {
             // if (user.totalCoin < -10) {
             //     alert("Unable to place the order due to insufficient coins!");
@@ -685,10 +705,7 @@ const UserCart = ({ navigation, route }) => {
             //     alert("Only one restaurant order is accepted at a time.");
 
             // }
-            // else if (shopInfo.shopIs === 'Close') {
-            //     alert("Technical Issue!");
-
-            // }
+          
             // else if (isRestaurantOpen === false) {
             //     alert(`The following restaurant is closed : ${closedRestaurants}`)
             // }
@@ -705,12 +722,18 @@ const UserCart = ({ navigation, route }) => {
             else {
                 navigation.navigate('PaymentNdetail', {
                     // cartdata , totalCost
+                    restaurantData: restaurantsData,
                     restaurantName: restaurantsData.restaurant_name,
                     shopId: data_shopId,
                     deliveryAdress: userdata.address,
                     // cartdata: cartdata[{...cartAllData}],
                     cartAllData: cartAllData, // Replace with your cart data
-                    totalCost: totalCost // Replace with your total cost value
+                    totalCost: totalCost ,// Replace with your total cost value
+                    itemCost: itemCost, // Replace with your total cost value
+                    deliveryCharges: deliveryCharges, // Replace with your total cost value
+                    GSTnCharger: GSTnRestaurantCharges
+
+
                 })
             }
 
@@ -811,13 +834,21 @@ const UserCart = ({ navigation, route }) => {
                 {/* <Text style={{ fontSize: 20, fontWeight: '500', paddingHorizontal: 10 }}>Your Cart</Text> */}
                 <View>
                     <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10, color: 'grey' }}>{restaurantsData.restaurant_name}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', paddingHorizontal: 10 }}>Delivery at Home  <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10, color: 'grey' }}>{userdata.address}</Text></Text>
+                    <Text style={{ fontSize: 16, fontWeight: '500', paddingHorizontal: 10 }}>Delivery at Home  <Text style={{ fontSize: 15, fontWeight: '400', paddingHorizontal: 10, color: 'grey' }}>{userdata.address.substring(0, 18)}...</Text></Text>
                 </View>
             </TouchableOpacity>
 
 
-            <ScrollView style={[styles.container, selectedProduct? {backgroundColor: '#c4c4c4', }: null]}>
-            <View style={[styles.cartout, selectedProduct? {backgroundColor: '#e0e0e0', }: { backgroundColor: '#ffffff',  }]}>
+            <ScrollView style={[styles.container, selectedProduct? {
+                // backgroundColor: '#c4c4c4',
+                // backgroundColor: '#fff',
+
+                 }: null]}>
+            <View style={[styles.cartout, selectedProduct? {
+                // backgroundColor: '#e0e0e0',
+                 }: { 
+                    backgroundColor: '#ffffff', 
+                     }]}>
 
                     {/* {cartdata == null || JSON.parse(cartdata).cart.length == 0 ? */}
                     {cartAllData == null ?
@@ -825,7 +856,9 @@ const UserCart = ({ navigation, route }) => {
                         <Text style={styles.head2}>Your Cart is Empty</Text>
                         :
                         // <FlatList style={styles.cardlist} data={JSON.parse(cartdata).cart} renderItem={
-                        <FlatList style={[styles.cardlist, selectedProduct ? {backgroundColor: '#e0e0e0',borderRadius: 15}:null]} data={cartAllData} renderItem={
+                        <FlatList style={[styles.cardlist, selectedProduct ? {
+                            // backgroundColor: '#e0e0e0',
+                            borderRadius: 15}:null]} data={cartAllData} renderItem={
 
                             ({ item }) => {
 
@@ -904,7 +937,9 @@ const UserCart = ({ navigation, route }) => {
                             scrollEnabled={false} />}
                 </View>
 
-                <View style={[styles.cartout, selectedProduct? {backgroundColor: '#e0e0e0', }: { backgroundColor: '#ffffff'}]}>
+                <View style={[styles.cartout, selectedProduct? {
+                    // backgroundColor: '#e0e0e0',
+                     }: { backgroundColor: '#ffffff'}]}>
                     <View style={styles.box}>
 
                         <View style={styles.boxIn}>
@@ -929,7 +964,7 @@ const UserCart = ({ navigation, route }) => {
                                 <Text style={styles.boxInText}>Delivery at <Text style={{ fontWeight: '500' }}>Home</Text></Text>
                                 <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => navigation.navigate('Editprofile')}>
 
-                                    <Text style={[styles.boxInText, { fontWeight: '400', color: 'grey' }]}>{userdata.address}</Text>
+                                    <Text style={[styles.boxInText, { fontWeight: '400', color: 'grey' }]}>{userdata.address.substring(0, 15)}...</Text>
                                     <Text style={[styles.boxInText, { fontWeight: '400', color: colors.text1 }]}>Change Address {'>'}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -1008,7 +1043,7 @@ const UserCart = ({ navigation, route }) => {
                                         borderStyle: 'dotted',
                                         borderBottomColor: 'grey'
                                     }}>GST & restaurant charges:</Text>
-                                    <Text>{(itemCost * 12) / 100}₹</Text>
+                                    <Text>{(itemCost * (restaurantsData.GSTnRestaurantCharges ?? 0)) / 100}₹</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingVertical: 5 }}>
                                     <Text style={{
@@ -1016,7 +1051,7 @@ const UserCart = ({ navigation, route }) => {
                                         borderStyle: 'dotted',
                                         borderBottomColor: 'grey'
                                     }}>Delivery partner fee:</Text>
-                                    <Text>{deliveryCharges}₹</Text>
+                                    <Text>{deliveryCharges.toFixed(2)}₹</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '95%', alignSelf: 'center', paddingVertical: 5 }}>
                                     <Text style={{
@@ -1080,11 +1115,13 @@ const UserCart = ({ navigation, route }) => {
 
             {selectedProduct && (
                 <View style={{
-                    //  backgroundColor: 'green',
+                     backgroundColor: colors.text1,
                     // backgroundColor: 'rgba(237, 245, 255, 0.4)',
                     height: 440, zIndex: 100,
-                    borderTopLeftRadius: 15,
-                    borderTopRightRadius: 15
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 15,
+                    // paddingVertical: 10
+                    // marginTop: -20
                 }}>
                     
                     <TouchableOpacity style={{ backgroundColor: '#a1a1a1', borderRadius: 50, width: 50, height: 50, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',  margin: 'auto' ,marginBottom: 15, marginTop: -65}} onPress={() => closeEditProductHandler()}><Text style={{fontSize: 18, fontWeight: '600'}}>X</Text></TouchableOpacity>

@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Cart from './Cart';
 import { colors } from '../Global/styles';
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 
-const CartsComponent = ({ dataArray, shopId, restaurantsData, userloggeduid, getcartdata, GetTotalPrice, navigation, optimize }) => {
+const CartsComponent = ({ dataArray, shopId, restaurantsData,  getcartdata, GetTotalPrice, navigation, optimize }) => {
+    const { userloggeduid, trigger} = useContext(AuthContext);
+
     const [loading, setLoading] = useState(false);
     const [process, setProcess] = useState(false);
 
@@ -41,7 +43,7 @@ const CartsComponent = ({ dataArray, shopId, restaurantsData, userloggeduid, get
                     await docRef.update({
                         [shopId]: firebase.firestore.FieldValue.delete()
                     });
-
+                  
                     console.log(`Deleted shopId: ${shopId}`);
                 } else {
                     console.log(`shopId: ${shopId} does not exist in the document.`);
@@ -55,6 +57,7 @@ const CartsComponent = ({ dataArray, shopId, restaurantsData, userloggeduid, get
 
         getcartdata();
         GetTotalPrice();
+        // trigger()
         // checkShopOpen();
         setProcess(false)
         setLoading(false)
@@ -156,7 +159,8 @@ const styles = StyleSheet.create({
     },
     LogoImg: {
         width: 40, // Adjust as needed
-        height: 40
+        height: 40,
+        borderRadius: 50
     },
     CartContainerRestaurantText: {
         // backgroundColor: 'yellow',

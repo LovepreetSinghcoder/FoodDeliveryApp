@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         // elevation: 10,
         borderRadius: 10,
+        // paddingHorizontal: 5
     },
     head: {
         // color: colors.text1,
@@ -71,10 +72,11 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         // marginHorizontal: 10,
         marginLeft: 10,
+        // marginHorizontal: 5,
 
         marginBottom: 15,
         padding: 10,
-        borderRadius: 18,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',

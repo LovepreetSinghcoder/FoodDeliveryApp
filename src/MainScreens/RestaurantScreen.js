@@ -13,6 +13,8 @@ import MenuBar from '../Components/MenuBar';
 // import BottomSlider from './BottomSlider';
 import { Button } from 'react-native-elements';
 import RestaurantCouponsSlider from '../Components/RestaurantCouponsSlider';
+import MenuBarFoodCard from '../Components/MenuBarFoodCard';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const RestaurantScreen = ({ navigation, route }) => {
 
@@ -42,13 +44,26 @@ const RestaurantScreen = ({ navigation, route }) => {
     }
 
 
-    const GetFoodData = async () => {
+    const GetAllFoodData = async () => {
         const docRef = firebase.firestore().collection('foodData');
         docRef.onSnapshot(snapshot => {
             setAllFoodData(snapshot.docs.map(doc => doc.data()))
         }
         )
     }
+    const [foodData, setFoodData] = useState([]);
+
+    const GetFoodData = async () => {
+        const docRef = await firebase.firestore().collection('foodData').where('shopId', '==', RestaurantId);
+        await docRef.onSnapshot(snapshot => {
+            setFoodData(snapshot.docs.map(doc => doc.data()))
+        }
+        )
+    }
+
+    useEffect(() => {
+        GetFoodData();
+    }, [RestaurantId])
 
     const GetRestaurantData = async () => {
         const docRef = firebase.firestore().collection('RestaurantData').where('restaurant_id', '==', RestaurantId)
@@ -117,9 +132,45 @@ const RestaurantScreen = ({ navigation, route }) => {
             </TouchableOpacity>
 
             <View style={styles.container_inner1}>
+                {restaurantData.isShop === 'Open'
+                    ?
+
+                    <LinearGradient
+                        colors={['#000000', '#0f9b0f']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        // style={styles.container}
+                        style={{
+                            transform: [{ rotate: '-5deg' }],
+                            padding: 10,
+                            borderRadius: 12,
+                            backgroundColor: 'transparent',
+                            marginBottom: 5
+                        }}
+                    >
+                        <Text style={{ fontSize: 18, fontWeight: '400', color: 'white' }}>Opened</Text>
+
+                    </LinearGradient>
+                    :
+                    <LinearGradient
+                        colors={['#8E0E00', '#1F1C18']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{
+                            transform: [{ rotate: '5deg' }],
+                            padding: 10,
+                            borderRadius: 12,
+                            backgroundColor: 'transparent',
+                            marginBottom: 5
+                        }}
+                    >
+                        <Text style={{ fontSize: 18, fontWeight: '400', color: 'white' }}>Closed</Text>
+
+                    </LinearGradient>
+                }
                 <View style={{ paddingVertical: 5 }}>
                     <Text style={{ fontSize: 25, fontWeight: '500' }}>
-                        {/* Shovii - Shop of Village */}{restaurantData.restaurant_name}
+                        {restaurantData.restaurant_name}
                     </Text>
                 </View>
 
@@ -180,16 +231,15 @@ const RestaurantScreen = ({ navigation, route }) => {
 
             {/* <Restaurants navigation={navigation} title={'FOODS'}/> */}
 
-            {/* <Text>Restaurant Foods</Text> */}
-
-
+            <View>
+                {foodData.length === 0 ? null : <MenuBarFoodCard title={'Menu'} data={foodData} navigation={navigation} callfn={console.log('ok')} />}
+            </View>
 
 
             {restaurantMenuIds && restaurantMenuIds.map((data, index) => (
 
                 <View key={index}>
-                    {/* <Text>dekh bro</Text> */}
-                    <MenuBar navigation={navigation} menu_id={data} callfn={openEditProductHandler}/>
+                    <MenuBar navigation={navigation} menu_id={data} callfn={openEditProductHandler} />
                 </View>
 
             )
@@ -197,16 +247,13 @@ const RestaurantScreen = ({ navigation, route }) => {
 
             {selectedProduct && (
                 <View style={{
-                    //  backgroundColor: 'green',
-                    // backgroundColor: 'rgba(237, 245, 255, 0.4)',
                     height: 440, zIndex: 100,
                     borderTopLeftRadius: 15,
                     borderTopRightRadius: 15
                 }}>
-
                     <TouchableOpacity style={{ backgroundColor: '#a1a1a1', borderRadius: 50, width: 50, height: 50, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: 'auto', marginBottom: 15, marginTop: -65 }} onPress={() => closeEditProductHandler()}><Text style={{ fontSize: 18, fontWeight: '600' }}>X</Text></TouchableOpacity>
                     <EditProductSlider
-                        restaurantsData={restaurantsData}
+                        restaurantsData={restaurantData}
                         item_id={selectedProduct.item_id}
                         qty={selectedProduct.qty}
                         callFn={getuserData}

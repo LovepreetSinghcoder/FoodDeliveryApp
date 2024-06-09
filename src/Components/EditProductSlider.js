@@ -519,6 +519,7 @@ const EditProductSlider = ({ navigation, restaurantsData, item_id, qty, callFn =
                             paddingVertical: 5,
                             paddingHorizontal: 5,
                             backgroundColor: '#fff6f7',
+                            
                             flexDirection: 'row'
                         }]}>
 
@@ -569,7 +570,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ebebeb',
         backgroundColor: colors.col1,
-        // backgroundColor: 'red',
+        backgroundColor: 'red',
         // alignItems: 'center',
         width: '100%',
         borderRadius: 15,
@@ -581,7 +582,7 @@ const styles = StyleSheet.create({
         // top: 0,
         flex: 1,
         // backgroundColor: '#fff',
-        backgroundColor: '#ebebeb',
+        backgroundColor: '#a1a1a1',
         // backgroundColor: 'green',
         // backgroundColor: 'grey',
 
@@ -589,24 +590,32 @@ const styles = StyleSheet.create({
         // borderRadius: 15,
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-        paddingTop: 5
+        paddingTop: 0,
+        // borderTopWidth: 5,
+        // borderTopColor: 'black',
+        // borderTopColor: colors.text1,
+
+
 
         // justifyContent: 'center',
     },
     s1: {
         width: '95%',
         // height: 300,
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
+        backgroundColor: 'white',
+        
         // alignItems: 'center',
         margin: 'auto',
+
         // justifyContent: 'center',
         borderRadius: 15,
-        paddingVertical: 10,
-        marginTop: 10
+        paddingVertical: 5,
+        marginVertical: 10
 
     },
     cardimgin: {
-        width: '95%',
+        width: '97%',
         height: '100%',
         height: 200,
         margin: 'auto',
@@ -617,7 +626,9 @@ const styles = StyleSheet.create({
         padding: 20,
         position: 'relative',
         // top: -30,
-        backgroundColor: '#ebebeb',
+        // backgroundColor: '#ebebeb',
+        backgroundColor: '#a1a1a1',
+
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },

@@ -192,13 +192,8 @@ const TrackOrderC = ({ foodDataAll, data, navigation }) => {
 
                 return (
                     <View key={index} style={{
-                        // borderRadius: 10,
-                        // backgroundColor: '#f2f2f2',
-                        // width: '100%',
-                        // alignSelf: 'center',
-                        // marginVertical: 2,
+                       
                         paddingHorizontal: 5
-                        //    elevation: 2 
                     }}>
 
                         <FlatList style={styles.c1}

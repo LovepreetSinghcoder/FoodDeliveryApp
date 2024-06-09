@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator, } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator,useImperativeHandle, forwardRef  } from 'react-native'
 // import CheckBox from '@react-native-community/checkbox';
 import CheckBox from 'expo-checkbox';
 import { Switch } from 'react-native-elements';
@@ -12,7 +12,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Cart from '../Components/Cart';
 import CartsComponent from '../Components/CartsComponent';
 
-const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor= '#edf5ff', cartsVisibilityHandler = () => console.log("Default function called") }) => {
+const UserCartsScreen = ({ navigation, optimize = false, transparency = 100, bgcolor = '#edf5ff', onContentCheck = () => console.log("Default function called"), cartsVisibilityHandler = () => console.log("Default function called") }) => {
 
     const { userloggeduid, checkIsLogged, locationName, calculateDistance } = useContext(AuthContext);
     const [cartdata, setCartdata] = useState(null);
@@ -29,6 +29,10 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
     const [itemCost, setItemCost] = useState('0');
     const [totalCost, setTotalCost] = useState('0');
     const [isUseCoins, setIsUseCoins] = useState(false);
+    const [hasContent, setHasContent] = useState(true);
+
+
+    // const hasContent = true;
 
     const getcartdata = async () => {
         setLoading(true);
@@ -38,13 +42,17 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
             await docRef.get().then((doc) => {
                 if (doc.exists) {
                     setCartdata(doc.data())
+                    
+                // setHasContent(true)
 
                 } else {
                     console.log('No such document!');
+                // setHasContent(false)
+
                 }
             })
         } catch (error) {
-            console.log('Error', error);
+            console.log('Error UserCartScreen', error);
 
         }
         setLoading(false)
@@ -61,15 +69,21 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
             if (keys.length > 0) {
                 const firstKey = keys[1];
                 const firstData = cartdata[firstKey];
+                console.log("The document has data.");
+
+
             } else {
                 console.log("The document has no data.");
             }
         }
         catch (error) {
-            console.error('Error:', error);
+            console.error('Error: UserCartScreen', error);
         }
 
     }, [cartdata])
+
+    // console.log('This is the value of the hascontent', hasContent)
+    // console.log('This is the value of the cartdata', cartdata)
 
 
     useFocusEffect(
@@ -78,6 +92,42 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
             console.log('triggered cart')
         }, [])
     );
+
+    // React.useEffect(() => {
+    //     if (onContentCheck) {
+    //       onContentCheck(hasContent);
+    //     }
+    //   }, [hasContent, onContentCheck]);
+
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         onContentCheck(hasContent);
+    //         console.log('hasContent cart')
+    //     }, [hasContent])
+    // );
+
+
+
+    // const childFunction = () => {
+    //     console.log("Child function triggered");
+    //     // Add any logic you want to handle in the child
+    //   };
+    
+    //   // Expose the childFunction to the parent using useImperativeHandle
+    //   useImperativeHandle(ref, () => ({
+    //     childFunction
+    //   }));
+
+
+    useEffect(() => {
+        // console.log("Cart Data:", cartdata); // Debug log to see the structure of cartdata
+    
+        if (cartdata === null || Object.keys(cartdata).length === 0) {
+          onContentCheck(false);
+        } else {
+          onContentCheck(true);
+        }
+      }, [cartdata, onContentCheck]);
 
 
     const [restaurantsData, setRestaurantsData] = useState([]);
@@ -267,6 +317,14 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
     //     );
     // }
 
+    if (cartdata === null || Object.keys(cartdata).length === 0) {
+        // return null; // or some placeholder
+        if (!optimize) {
+            return <EmptyCartMessage />;
+        } else {
+            return null;
+        }
+    }
 
     if (!cartdata) {
         if (!optimize) {
@@ -282,11 +340,11 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
     // }));
 
     const dataArray = Object.keys(cartdata)
-    .filter(key => cartdata[key].some(transaction => transaction && Object.keys(transaction).length > 0))
-    .map(key => ({
-        shopId: key,
-        transactions: cartdata[key].filter(transaction => transaction && Object.keys(transaction).length > 0)
-    }));
+        .filter(key => cartdata[key].some(transaction => transaction && Object.keys(transaction).length > 0))
+        .map(key => ({
+            shopId: key,
+            transactions: cartdata[key].filter(transaction => transaction && Object.keys(transaction).length > 0)
+        }));
 
     // console.log('This is the data of the array::', dataArray)
 
@@ -294,18 +352,20 @@ const UserCartsScreen = ({ navigation, optimize = false,transparency=100,bgcolor
     if (!dataArray || dataArray.length === 0) {
         if (!optimize) {
             return <EmptyCartMessage />;
+            // return null;
+
         } else {
             return null;
         }
     }
 
-// console.log('This is the usercartScreen',optimize)
+    // console.log('This is the usercartScreen',optimize)
     return (
-        <View style={[styles.containerout,{ 
+        <View style={[styles.containerout, {
             // backgroundColor: `rgba(237, 245, 255, ${transparency})`,
             backgroundColor: bgcolor
-            
-            }]  }>
+
+        }]}>
 
             {!optimize ?
                 <TouchableOpacity style={{

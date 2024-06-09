@@ -1,36 +1,31 @@
 import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Animated, FlatList, ScrollView, TextInput, ActivityIndicator, Linking, Image, PermissionsAndroid } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import HeaderBar from '../Components/HeaderBar'
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons';
 import { firebase } from '../Firebase/FirebaseConfig'
-import { colors, veg, nonveg } from '../Global/styles'
+import { colors } from '../Global/styles'
 import OfferSlider from '../Components/OfferSlider';
 import Cardslider from '../Components/Cardslider';
 import Categories from '../Components/Categories';
 import { AuthContext } from '../Context/AuthContext';
 import * as Location from 'expo-location';
 import messaging from '@react-native-firebase/messaging';
-import { Ionicons } from '@expo/vector-icons';
-
-
-import axios from 'axios';
-import { Button } from 'react-native-elements';
 import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
 import UserCartsScreen from './UserCartsScreen';
-const Version = '2.6.10';
+
+const Version = '3.6.10';
 
 const HomeScreen = ({ navigation }) => {
-  const { userloggeduid, checkIsLogged, SetLocationName, locationName, userDataHandler, userdata } = useContext(AuthContext);
+  const { userloggeduid, checkIsLogged, SetLocationName, locationName, userDataHandler, userdata, setUserLongitude, setUserLatitude, hasItems, getcartdata } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-
+  const childRef = useRef();
 
   const getuserdata = async () => {
     const docRef = firebase.firestore().collection('UserData').where('uid', '==', userloggeduid)
     const doc = await docRef.get();
     if (!doc.empty) {
       doc.forEach((doc) => {
-        // setUserdata(doc.data());
         userDataHandler(doc.data());
       })
     }
@@ -40,141 +35,9 @@ const HomeScreen = ({ navigation }) => {
   }
 
   useEffect(() => {
-
     getuserdata();
   }, [userloggeduid]);
 
-
-
-  // Hide for Expo Start 
-
-  // const requestUserPermission = async () => {
-  //   try {
-
-  //     const authStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-  //     // const authStatus = await messaging().requestPermission();
-
-  //     const enabled =
-  //       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-  //       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  //     setNotificationEnabled(enabled);
-  //   } catch (error) {
-  //     console.error('Error requesting permission:', error);
-  //     setNotificationEnabled(false);
-  //   }
-  // };
-
-  // const openNotificationSettings = () => {
-  //   Linking.openSettings();
-  // };
-
-
-
-
-  // const requestNotificationPermission = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const permissionResult = await PermissionsAndroid.request(
-  //       PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-  //     );
-
-  //     // if (permissionResult === PermissionsAndroid.RESULTS.GRANTED) {
-  //     //   const authStatus = await messaging().requestPermission();
-  //     //   const enabled =
-  //     //     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-  //     //     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  //     //   setNotificationEnabled(enabled);
-  //     // } else {
-  //     //   // Handle the case where the user denied permission
-  //     //   setNotificationEnabled(false);
-  //     // }
-  //   } catch (error) {
-  //     console.error('Error requesting permission:', error);
-  //     setNotificationEnabled(false);
-  //   }
-  //   finally {
-  //     setLoading(false);
-  //   }
-  // };
-  const [notificationEnabled, setNotificationEnabled] = useState(false);
-
-  // const requestNotificationPermission = async () => {
-  //   // setLoading(true);
-  //   console.log('render 1')
-
-  //   try {
-  //     const { status } = await PermissionsAndroid.request(
-  //       PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-  //     );
-  //     console.log('render 2')
-
-  //     if (status === PermissionsAndroid.RESULTS.GRANTED) {
-  //       // Permission granted, you can proceed with your logic here
-  //       console.log('render 3')
-
-  //       setNotificationEnabled(true);
-  //     } else {
-  //       // Handle the case where the user denied permission
-  //       console.log('render 4')
-
-  //       setNotificationEnabled(false);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error requesting permission:', error);
-  //     console.log('render 5')
-
-  //     setNotificationEnabled(false);
-  //   }
-  //   // finally {
-  //   //   setLoading(false);
-  //   // }
-  // };
-
-
-  const requestNotificationPermission = async () => {
-    // setLoading(true);
-    console.log('render 1');
-
-    try {
-      const { status } = await new Promise(async (resolve) => {
-        const result = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-        );
-        resolve(result);
-      });
-
-      console.log('render 2');
-
-      if (status === PermissionsAndroid.RESULTS.GRANTED) {
-        // Permission granted, you can proceed with your logic here
-        console.log('render 3');
-        setNotificationEnabled(true);
-      } else {
-        // Handle the case where the user denied permission
-        console.log('render 4');
-        setNotificationEnabled(false);
-      }
-    } catch (error) {
-      console.error('Error requesting permission:', error);
-      console.log('render 5');
-      setNotificationEnabled(false);
-    }
-    // finally {
-    //   setLoading(false);
-    // }
-  };
-
-
-
-
-  // Call requestNotificationPermission() where needed
-
-
-  const openNotificationSettings = () => {
-    Linking.openSettings();
-  };
 
 
 
@@ -183,9 +46,6 @@ const HomeScreen = ({ navigation }) => {
     try {
       const refreshedToken = await messaging().getToken();
       if (refreshedToken) {
-        // Update the token in your app's state or context
-        // Send the updated token to your backend for storage
-        // (e.g., using an API call to your server)
         try {
           await firebase.firestore().collection('UserData').doc(userloggeduid).update({
             fcmToken: refreshedToken,
@@ -316,7 +176,7 @@ const HomeScreen = ({ navigation }) => {
       return;
     }
     // Permission granted, continue with obtaining the location
-    getLocation();
+    await getLocation();
     setLoading(false);
 
   };
@@ -327,10 +187,13 @@ const HomeScreen = ({ navigation }) => {
       const { latitude, longitude } = location.coords;
       // console.log('Latitude:', latitude);
       // console.log('Longitude:', longitude);
+      setUserLatitude(latitude)
+      setUserLongitude(longitude)
+      // console.log('this is latitude', latitude)
       getLocationName(latitude, longitude);
       // Do something with the latitude and longitude values
     } catch (error) {
-      console.log('Error getting location:', error);
+      console.log('Error getting location12:', error);
     }
   };
 
@@ -368,11 +231,6 @@ const HomeScreen = ({ navigation }) => {
 
 
 
-
-  // useEffect(() => {
-  //   requestNotificationPermission();
-  // }, []);
-
   const handleInstagramLink = () => {
     Linking.openURL('https://www.instagram.com/shoviiofficial/');
   };
@@ -387,35 +245,15 @@ const HomeScreen = ({ navigation }) => {
     }
     // console.log('triggere')
     SetLocationName(newlocation)
-    // navigation.navigate('HomeScreen')
   }
 
   const [location, setLocation] = useState(true)
 
 
+  const [hasContent, setHasContent] = useState(true); // Initially assuming it has content
 
 
-
-
-  const [floatingCartsComponent, setFloatingCartsComponent] = useState(true)
-
-  const floatingCartsComponentHandler = (value) => {
-
-    setFloatingCartsComponent(value)
-  }
-
-
-
-  // console.log('This is the value for the state of the floating component', floatingCartsComponent)
-
-
-
-
-
-
-
-
-
+  const locationArrays = ['desu jodha', 'mangiana', 'phullo', 'sekhu', 'joge wala', 'jogewala', 'mangeana', 'habuana', 'haibuana', 'panniwala moreka', 'delhi', 'sirsa', 'dabwali']
 
   if (loading) {
     return (
@@ -599,7 +437,6 @@ const HomeScreen = ({ navigation }) => {
               style={styles.locationinput}
               placeholder="Set your location"
               value={location}
-              // onChangeText={setLocation}
               onChangeText={(text) => setNewLocation(text)}
               keyboardType="text"
               autoCapitalize="none"
@@ -616,17 +453,14 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const locationArrays = ['desu jodha', 'mangiana', 'phullo', 'sekhu', 'joge wala', 'jogewala', 'mangeana', 'habuana', 'haibuana', 'panniwala moreka', 'delhi', 'sirsa']
+  if (!locationName) {
 
-
-  if (!locationArrays.includes(locationName)) {
     return (
 
       <View style={{
         flex: 1,
         backgroundColor: 'white',
       }}>
-        {/* <StatusBar backgroundColor={colors.col2} /> */}
         <StatusBar
           backgroundColor={colors.col2}
           barStyle="dark-content"
@@ -670,23 +504,14 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
+
   return (
     <View style={styles.Maincontainer}>
-      {/* <StatusBar
-        backgroundColor={colors.col2}
-      /> */}
       <StatusBar
         backgroundColor={colors.col2}
         barStyle="dark-content"
       />
       <HeaderBar title="Home" onButtonPress={handleButtonPress} navigation={navigation} />
-
-
-
-
-
-
-
       <ScrollView>
 
         <TouchableOpacity style={styles.searchbox} onPress={() => { navigation.navigate('Searchpage') }}>
@@ -697,7 +522,6 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.input}>Search</Text>
 
         </TouchableOpacity>
-
         {appdata && appdata.CurrentVersion !== Version ?
           <View style={{ backgroundColor: 'white', marginHorizontal: 15, marginBottom: 10, alignSelf: 'center', width: '95%', borderRadius: 20, elevation: 4 }}>
             <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
@@ -756,51 +580,31 @@ const HomeScreen = ({ navigation }) => {
           null
 
         }
+    
         <LineWithText navigation={navigation} heading={'CATEGORIES'} />
         <Categories navigation={navigation} />
         <LineWithText navigation={navigation} heading={'OFFERS & DEALS'} />
-
         <OfferSlider navigation={navigation} />
-        {/* <Text>HomeScreen</Text> */}
-        <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'} />
+        <Restaurants navigation={navigation} title={'RESTAURANTS & CLOUD KITCHENS'} data={VegData} />
 
-        {TodaySpecialFoodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={TodaySpecialFoodData} navigation={navigation} />}
+        {/* {TodaySpecialFoodData.length === 0 ? null : <Cardslider title={"TODAY'S FOOD"} data={TodaySpecialFoodData} navigation={navigation} />} */}
 
+        {/* {VegData.length === 0 ? null : <Cardslider title={"VEG"} data={VegData} navigation={navigation} />} */}
 
-
-
-        {VegData.length === 0 ? null : <Cardslider title={"VEG"} data={VegData} navigation={navigation} />}
-
-        {NonVegData.length === 0 ? null : <Cardslider title={"NON-VEG"} data={NonVegData} navigation={navigation} />}
+        {/* {NonVegData.length === 0 ? null : <Cardslider title={"NON-VEG"} data={NonVegData} navigation={navigation} />} */}
 
       </ScrollView>
-
-      {/* component for cart and want to be floating on all items  */}
-      {/* {floatingCartsComponent ?
-        <View style={{
-          // backgroundColor: colors.col2,
-          height: 100,
-          zIndex: 100
-        }}>
-          <UserCartsScreen optimize={true} navigation={navigation} cartsVisibilityHandler={floatingCartsComponentHandler} />
-        </View>
-        :
-        null} */}
-      <View style={{
-        // backgroundColor: '#d6d6d6',
-        height: 85,
-        // borderRadius: 25,
-        // borderColor: '#ccc',
-        // borderTopWidth: 1,
-        // marginHorizontal: 5,
-        // borderTopLeftRadius: 15,
-        // borderTopRightRadius: 15,
-        // paddingTop: 6,
-        zIndex: 100,
-        // marginTop: -50
-      }}>
-        <UserCartsScreen optimize={true} navigation={navigation}   bgcolor={'#d6d6d6'}/>
-      </View>
+     
+      {
+         hasItems && (
+          <View style={{
+            height: 85,
+            zIndex: 100,
+          }}>
+            <UserCartsScreen optimize={true} navigation={navigation} bgcolor={'#d6d6d6'} />
+          </View>
+        )
+      }
 
     </View>
   )
@@ -811,16 +615,11 @@ export default HomeScreen
 const styles = StyleSheet.create({
 
   Maincontainer: {
-    // backgroundColor: 'green',
     backgroundColor: colors.col1,
-
     flex: 1,
     height: '100%'
-
   },
   location_container: {
-
-
     flexDirection: 'row',
     marginBottom: 12,
     paddingHorizontal: 10,
@@ -835,17 +634,9 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     width: '90%',
     fontSize: 15
-
   },
   locationbutton: {
-    // backgroundColor: colors.text1,
-    // borderRadius: 15,
-    // padding: 10,
-    // alignItems: 'center',
-
-    backgroundColor: colors.text1
-    ,
-    // backgroundColor: 'red',
+    backgroundColor: colors.text1,
     borderRadius: 15,
     paddingVertical: 12,
     alignItems: 'center',
@@ -858,21 +649,14 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   container: {
-
     padding: 16,
-    // backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 170,
-    // marginTop: 15,
-    // height: 5000,
-    // backgroundColor: 'red',
-
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    // marginBottom: 10,
     marginVertical: 20,
     paddingTop: 30
   },
@@ -895,8 +679,6 @@ const styles = StyleSheet.create({
     width: 350,
     height: 100
   },
-
-
   loadingCont: {
     flexDirection: 'row',
     width: '92%',
@@ -910,26 +692,21 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    // marginTop: 50,
     flex: 1,
     backgroundColor: colors.col1,
-    // alignItems: 'center',
     width: '100%',
     height: '100%',
   },
   searchbox: {
     flexDirection: 'row',
     width: '92%',
-    // backgroundColor: colors.col1,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 15,
     alignItems: 'center',
     padding: 10,
     marginVertical: 10,
     alignSelf: 'center',
     elevation: 2,
-
-
   },
   input: {
     marginLeft: 10,
@@ -952,7 +729,6 @@ const styles = StyleSheet.create({
   searchresult: {
     width: '100%',
     flexDirection: 'row',
-    // alignItems: 'center',
     padding: 5,
   },
   searchresulttext: {

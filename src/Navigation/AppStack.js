@@ -29,6 +29,8 @@ import AboutScreen from '../SecondaryScreens/AboutScreen';
 import AppSettings from '../SecondaryScreens/AppSettings';
 import SliderScreen from '../Components/SliderScreen';
 import UserCartsScreen from '../MainScreens/UserCartsScreen';
+import OpenMap from '../MainScreens/OpenMap';
+// import OpenMap from '../../OpenMapSS';
 // import MapLib from '../Components/mapLib';
 
 // import MapLib from '../Components/MapLib';
@@ -73,11 +75,13 @@ const HomeStack = () => (
         <Stack.Screen name='AppSettings' component={AppSettings} options={{ headerShown: false }} />
         <Stack.Screen name='Slider' component={SliderScreen} options={{ headerShown: false }} />
         <Stack.Screen name='UserCartsScreen' component={UserCartsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='OpenMap' component={OpenMap} options={{ headerShown: false }} />
 
 
 
-       
-        
+
+
+
 
 
 
@@ -113,7 +117,7 @@ const AppStack = () => {
                             iconName = 'person';
                         } else if (route.name === 'Notification') {
                             iconName = 'notifications';
-                        } 
+                        }
                         // else if (route.name === 'Cart') {
                         //     iconName = 'md-cart';
                         // } 

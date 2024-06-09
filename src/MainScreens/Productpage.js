@@ -8,7 +8,7 @@ import { AuthContext } from '../Context/AuthContext';
 
 // const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 const Productpage = ({ navigation, route }) => {
-    const { userloggeduid, checkIsLogged } = useContext(AuthContext);
+    const { userloggeduid, checkIsLogged,trigger } = useContext(AuthContext);
 
     const data = route.params;
     const [ischecked, setischecked] = useState(false);
@@ -307,7 +307,7 @@ const Productpage = ({ navigation, route }) => {
     // };
 
     // NEW APPROACH (Add Food Data Accoring to Restaurant Id)
-
+    // console.log('This is the data', data)
     const addTocart = async () => {
         setLoading(true);
         const date = new Date().getTime().toString()
@@ -390,7 +390,7 @@ const Productpage = ({ navigation, route }) => {
 
                     alert('Added to cart');
                 } catch (error) {
-                    console.error('Error:', error);
+                    console.error('Error: fron Product Page', error);
                 }
             } else {
                 alert('Item is Out of Stock!');
@@ -398,7 +398,10 @@ const Productpage = ({ navigation, route }) => {
         } else {
             alert('Item is Out of Stock!');
         }
+        // getcartdata()
+        // trigger()
         setLoading(false);
+        
 
     };
 

@@ -9,6 +9,10 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userdata, setUserdata] = useState(null);
   const [locationName, setLocationName] = useState(null);
+  const [userLatitude, setUserLatitude] = useState('')
+  const [userLongitude, setUserLongitude] = useState('')
+  // const [userLocationName, setUserLocationName] = useState('')
+  const [userCart, setUserCart] = useState({});
 
 
   // Function to Save  user Data to the userData State 
@@ -104,7 +108,102 @@ const AuthProvider = ({ children }) => {
     return distance;
   }
 
+  // const getcartdata = async () => {
+  //   setLoading(true);
+  //   const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
 
+  //   try {
+  //     await docRef.get().then((doc) => {
+  //       if (doc.exists) {
+  //         // setCartdata(doc.data())
+  //         // hasContent(true)
+  //         setUserCart(doc.data())
+  //         console.log('trigeiriri')
+  //         // setHasContent(true)
+
+  //       } else {
+  //         console.log('No such document!');
+  //         setUserCart({})
+  //         // setHasContent(false)
+
+
+  //       }
+  //     })
+  //   } catch (error) {
+  //     setUserCart({})
+  //     console.log('Error 23', error);
+  //     // setHasContent(false)
+
+  //   }
+  //   setLoading(false)
+  // }
+
+  // useEffect(() => {
+  //   getcartdata()
+  // },[])
+
+
+
+
+  const getcartdata = () => {
+    if (!userloggeduid) {
+      console.error('User ID is not available');
+      setLoading(false);
+      return () => { }; // No-op cleanup function
+    }
+
+
+    setLoading(true);
+    const docRef = firebase.firestore().collection('UserCart').doc(userloggeduid);
+
+    const unsubscribe = docRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        setUserCart(doc.data());
+        console.log('Document data:', doc.data());
+      } else {
+        console.log('No such document!');
+        setUserCart({});
+      }
+      setLoading(false);
+    }, (error) => {
+      console.log('Error fetching document:', error);
+      setUserCart({});
+      setLoading(false);
+    });
+
+    // Cleanup listener on component unmount
+    return unsubscribe;
+  }
+
+  useEffect(() => {
+    const unsubscribe = getcartdata();
+    return () => unsubscribe();
+  }, []);
+
+  const [hasItems, setHasItems] = useState(false)
+
+  // useEffect(() => {
+  //   if (userCart && userCart.length > 0) {
+
+  //     const hasItems = Object.values(userCart).some(cart => cart.length > 0);
+  //     setHasItems(hasItems)
+  //   }
+  //   else{
+
+  //     setHasItems(false)
+  //   }
+  // }, [userCart])
+
+  useEffect(() => {
+    if (userCart && Object.keys(userCart).length > 0) {
+      const hasItems = Object.values(userCart).some(cart => cart.length > 0);
+      setHasItems(hasItems);
+    } else {
+      setHasItems(false);
+    }
+  }, [userCart]);
+
+console.log('Thiiis is the hasItresmms', hasItems)
   return <AuthContext.Provider value={{
     UserLoggedHandler,
     userloggeduid,
@@ -115,7 +214,15 @@ const AuthProvider = ({ children }) => {
     locationName,
     calculateDistance,
     userDataHandler,
-    userdata
+    userdata,
+    setUserLatitude,
+    setUserLongitude,
+    userLatitude,
+    userLongitude,
+    userCart,
+    getcartdata,
+    hasItems
+
   }}>
     {children}
   </AuthContext.Provider>;

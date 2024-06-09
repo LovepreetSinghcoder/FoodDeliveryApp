@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Alert, } from 'react-native';
 import { AuthContext } from '../Context/AuthContext';
 import { colors } from '../Global/styles';
 import { FontAwesome6, FontAwesome5 } from '@expo/vector-icons';
@@ -18,9 +18,16 @@ const AccountSettingsScreen = ({ navigation }) => {
 
   const handleLogout = () => {
     // Logic for handling logout
-    logout();
+    Alert.alert('Confirmation', 'Are you want logout!', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      { text: 'OK', onPress: async () => await logout() },
+    ]);
+    
   };
-
 
 
 
@@ -103,7 +110,7 @@ const AccountSettingsScreen = ({ navigation }) => {
           </View>
 
 
-          <TouchableOpacity style={styles.buttonSectionBtn} onPress={() => { navigation.navigate('Track Orders') }} >
+          <TouchableOpacity style={styles.buttonSectionBtn} onPress={() => { navigation.navigate('Orders') }} >
             <View style={{
               backgroundColor: '#f5f6fb',
               padding: 0,

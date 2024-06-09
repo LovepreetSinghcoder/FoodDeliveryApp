@@ -4,22 +4,20 @@ import { colors, veg, nonveg } from '../Global/styles'
 import LineWithText from './LineWithText'
 
 
-const Cardslider = ({ title, data, navigation, restaurantId = '' }) => {
+const RestaurantCardSlider = ({ title, data, navigation, restaurant_id }) => {
     const openProductPage = (item) => {
-        // console.log('clicked ', item)
         navigation.navigate('productpage', item)
     }
+    const filteredData = data.filter(item => item.shopId === restaurant_id);
+    
     return (
         <View style={styles.container}>
-            {/* <Text style={styles.cardouthead}>
-                {title}
-            </Text> */}
-            <LineWithText navigation={navigation} heading={title}/>
             <FlatList style={styles.cardsout}
                 showsHorizontalScrollIndicator={false}
                 horizontal
-                data={data}
-                renderItem={({ item }) => (
+                data={filteredData}
+                renderItem={({ item }) =>
+                (
                     <TouchableOpacity key={item.index}
                         onPress={() => { openProductPage(item) }}>
                         <View style={styles.card}>
@@ -38,19 +36,31 @@ const Cardslider = ({ title, data, navigation, restaurantId = '' }) => {
 
                             </View>
                             <View style={styles.s2}>
-                                <Text style={styles.txt1}>{item.foodName}</Text>
+                                {item.foodType == 'Veg' ?
+                                    <Image
+                                        source={require('../Images/VegPng.png')}
+                                        style={{ width: 18, height: 18, marginLeft: 7, marginVertical: 5 }}
+                                    />
+                                    :
+                                    <Image
+                                        source={require('../Images/NonVeg.png')}
+                                        style={{ width: 15, height: 15, marginLeft: 7, marginVertical: 5 }}
+                                    />
+                                }
 
                                 <View style={styles.s2in}>
+                                    <Text style={styles.txt1}>{item.foodName}</Text>
                                     {/* <Text style={styles.txt2}>FAST FOOD • <Text style={{textDecorationLine:'line-through'}}>{item.actualFoodPrice}</Text> • ₹{item.foodPrice}/-</Text> */}
                                     <Text style={styles.txt2}>
                                         Fast Food •{' '}
                                         <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'red' }}>₹{item.actualFoodPrice}/-</Text> • ₹{item.foodPrice}/-
                                     </Text>
-                                    {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>}
+                                    {/* {item.foodType == 'Veg' ? <Text style={veg}>VEG</Text> : <Text style={nonveg}>NON-VEG</Text>} */}
+
                                 </View>
 
                             </View>
-                            
+
                             {/* {item.stock === 'out' ?
                                 <View style={styles.s3}>
                                     <Text style={[styles.buybtn, { backgroundColor: 'red' }]}>
@@ -72,11 +82,12 @@ const Cardslider = ({ title, data, navigation, restaurantId = '' }) => {
     )
 }
 
-export default Cardslider
+export default RestaurantCardSlider
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 10,
+        // marginVertical: 10,
+        marginBottom: 10
     },
     //card
     cardouthead: {
@@ -94,15 +105,17 @@ const styles = StyleSheet.create({
     },
     card: {
         // backgroundColor: "aqua",
-        width: 300,
+        width: 330,
+        // width: '100%',
+
         // height: 260,
         height: 225,
 
         marginLeft: 10,
         marginTop: 10,
-        borderRadius: 15,
-        borderWidth: 1,
-        borderColor: '#d6d6d6',
+        // borderRadius: 15,
+        // borderWidth: 1,
+        // borderColor: '#d6d6d6',
         // backgroundColor: colors.col1,
         backgroundColor: 'white'
         // elevation: 5,
@@ -132,23 +145,34 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 170,
         // borderRadiusTop: 20,
-        borderTopLeftRadius: 14,
-        borderTopRightRadius: 14
+        // borderTopLeftRadius: 14,
+        // borderTopRightRadius: 14,
+        borderRadius: 13,
     },
     s2: {
-        // flexDirection: 'row',
+        flexDirection: 'row',
         // justifyContent: 'space-between',
         // alignItems: 'center',
-        marginHorizontal: 3,
-        marginTop: 3
+        // marginHorizontal: 3,
+        // marginTop: -50
+        marginTop: 3,
+        borderRadius: 12,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        paddingVertical: 3
+
         // backgroundColor: 'aqua',
     },
     txt1: {
         fontSize: 16,
         color: colors.text3,
-        marginHorizontal: 5,
+        // marginHorizontal: 5,
         fontWeight: '600',
         width: 150,
+        // backgroundColor: 'white',
+        // paddingHorizontal: 10,
+        // paddingVertical: 5,
+        // borderRadius: 5
     },
     txt2: {
         fontSize: 12,
@@ -158,9 +182,11 @@ const styles = StyleSheet.create({
         // textDecorationLine: 'line-through'
     },
     s2in: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: 'column',
+        // justifyContent: 'space-between',
+        // alignItems: 'center',
         marginHorizontal: 6,
+        marginBottom: 6
 
     },
     s3: {

@@ -15,29 +15,7 @@ const RestaurantCouponsSlider = ({ navigation }) => {
 
     const GetOfferSlider = async () => {
         const docRef = firebase.firestore().collection('offerSlider');
-        // const docs = await docRef.get();
 
-        //OLD ONE
-        // if (!docs.empty) {
-        //   const imageData = docs.map((doc) => doc.data());
-        //   setData(imageData);
-        // } else {
-        //   console.log('No data');
-        // }
-
-        //NEXT OLD ONE
-        // docRef.onSnapshot((snapshot) => {
-        //     if (!snapshot.empty) {
-        //         const imageData = snapshot.docs.map((doc) => doc.data());
-        //         // const imageData = snapshot.docs.data();
-
-        //         // setData(imageData.flat());
-        //         setData(imageData.flatMap(Object.values));
-
-        //     } else {
-        //         console.log('No data');
-        //     }
-        // });
 
         //NEWER
         docRef.onSnapshot(snapshot => {
@@ -46,26 +24,17 @@ const RestaurantCouponsSlider = ({ navigation }) => {
         )
     };
 
-    // const foodRef = firebase.firestore().collection('UserData');
-
-    //   useEffect(() => {
-    //     foodRef.onSnapshot(snapshot => {
-    //       setUserData(snapshot.docs.map(doc => doc.data()))
-    //     }
-    //     )
-    //   }, [])
-    // console.log('dekh veer', data[0].img1)
 
     useEffect(() => {
-
         GetOfferSlider();
     }, []);
 
 
     const handleSlidePress = () => {
-        navigation.navigate('Promotion');
+        // navigation.navigate('Promotion');
     };
-    // console.log('dekh veeerr', data)
+
+
     return (
 
         <View style={styles.offerSlider}>
@@ -79,14 +48,9 @@ const RestaurantCouponsSlider = ({ navigation }) => {
                 nextButton={<Text ></Text>}
                 prevButton={<Text></Text>}
             >
-                {/* {data && data.map((image, index) => ( */}
                 <TouchableOpacity
                     style={styles.slide}
-                    // onPress={() => {
-                    //     navigation.navigate('Promotion');
-                    // }}
                     onPress={handleSlidePress}
-                // key={index}
                 >
                     <Image
                         // source={{ uri: data && data[0] && data[0].img1 }}
@@ -96,11 +60,7 @@ const RestaurantCouponsSlider = ({ navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.slide}
-                    // onPress={() => {
-                    //     navigation.navigate('Promotion');
-                    // }}
                     onPress={handleSlidePress}
-                // key={index}
                 >
                     <Image
                         // source={{ uri: data && data[0] && data[0].img2 }}
@@ -111,11 +71,7 @@ const RestaurantCouponsSlider = ({ navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.slide}
-                    // onPress={() => {
-                    //     navigation.navigate('Promotion');
-                    // }}
                     onPress={handleSlidePress}
-                // key={index}
                 >
                     <Image
 
@@ -124,7 +80,6 @@ const RestaurantCouponsSlider = ({ navigation }) => {
                         style={styles.image}
                     />
                 </TouchableOpacity>
-                {/* ))} */}
             </Swiper>
         </View>
 

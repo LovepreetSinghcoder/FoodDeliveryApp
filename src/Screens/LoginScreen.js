@@ -84,7 +84,10 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor={colors.text1} />
+         <StatusBar
+        backgroundColor={colors.col2}
+        barStyle="dark-content"
+      />
             <View style={styles.container_Head} >
                 <Text style={styles.container_Head_txt}>shovii</Text>
             </View>
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         borderColor: '#ccc',
         borderWidth: 1,
-        borderRadius: 25,
+        borderRadius: 15,
     },
     container_main_in1_1: {
         paddingLeft: 5,
@@ -223,7 +226,7 @@ const styles = StyleSheet.create({
         // backgroundColor: '#4E4E4E',
         backgroundColor: colors.text1,
         marginHorizontal: 10,
-        borderRadius: 25,
+        borderRadius: 15,
         padding: 10,
         alignItems: 'center',
     },

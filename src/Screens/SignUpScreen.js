@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, StatusBar, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, TextInput, Button, StyleSheet, StatusBar, TouchableOpacity, Text, ActivityIndicator, Alert } from 'react-native';
 import { colors } from '../Global/styles';
 import { AuthContext } from '../Context/AuthContext';
 import { firebase } from '../Firebase/FirebaseConfig'
 import messaging from '@react-native-firebase/messaging';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import axios from 'axios';
 
 
 const SignUpScreen = ({ navigation }) => {
@@ -25,12 +26,85 @@ const SignUpScreen = ({ navigation }) => {
     const [showNameContainer, setShowNameContainer] = useState(false);
     const [showAddressContainer, setShowAddressContainer] = useState(false);
     const [showPhoneContainer, setShowPhoneContainer] = useState(false);
+    const [otpEmail, setOTPEmail] = useState('')
+    const [emailOTPInput, setEmailOTPInput] = useState('')
 
 
 
+    const checkEmailAddress = async () => {
+        setIsLoading(true);
+        if (password !== cpassword) {
+            alert("Password and Confirm Password don't match!");
+            setIsLoading(false);
+            return;
+        }
+        try {
+            const docref = firebase.firestore().collection('UserData').where('email', '==', email);
+            const querySnapshot = await docref.get();
+            if (!querySnapshot.empty) {
+                // setEmailFound(true);
+                Alert.alert('Email Found', 'This email already registered!');
+            } else {
+                // setEmailFound(false);
+                sendEmailOtp()
+                // Alert.alert('Email Not Found', 'The email does not exist in the database.');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'There was an error.');
+        }
+        setIsLoading(false);
+    };
+
+    const sendEmailOtp = async () => {
+        
+        console.log('Otp sent')
+        setIsLoading(true)
+        // const response =
+        await axios.post('https://shoviiserver.onrender.com/send-otp', { email })
+            .then(response => {
+                alert('Otp sent on your email!');
+                // setOTPSlider(true)
+                setShowOTPContainer(true)
+                setShowMainContainer(false)
+                setOTPEmail(response.data.otp)
+                console.log('this is the data from server', response.data)
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Try again!')
+            });
+        setIsLoading(false)
+        // console.log('this is the data', response)
 
 
+    }
 
+    const handleEmailVerify = async () => {
+        setIsLoading(true)
+        // navigation.navigate('Editprofile')
+        console.log('Otp verification sent')
+        if (otpEmail === emailOTPInput) {
+            try {
+                await firebase.firestore().collection('UserData').doc(userloggeduid).update({
+                    isVerifiedEmail: true,
+                });
+                console.log('Email verified successfully');
+                alert('Email verified successfully.');
+                setOTPSlider(false)
+                navigation.navigate('Profile')
+            } catch (error) {
+                console.log('Error updating address:', error);
+                alert('Error, Try again.');
+
+
+            }
+        }
+        else {
+            alert('Wrong OTP!')
+        }
+        setIsLoading(false)
+    };
 
 
     useEffect(() => {
@@ -59,9 +133,13 @@ const SignUpScreen = ({ navigation }) => {
         return emailRegex.test(email);
     }
     const handleSignup = async () => {
-
-
+        
         setIsLoading(true);
+        if (otpEmail !== emailOTPInput) {
+            alert('Wrong OTP!')
+            return;
+
+        }
 
         if (!email || !password || !cpassword) {
             alert('Please fill in all fields');
@@ -103,13 +181,15 @@ const SignUpScreen = ({ navigation }) => {
                                 password: password,
                                 uid: uid,
                                 fcmToken: fcmToken,
+                                isVerifiedEmail: true
                             }
                         ).then(() => {
                             console.log('data added to firestore')
                             // setUserloggeduid(userCredentials?.user?.uid);
                             // UserLoggedHandler(userCredentials?.user?.uid);
                             setUserloggeduid(userCredentials?.user?.uid)
-                            setShowMainContainer(false)
+                            // setShowMainContainer(false)
+                            setShowOTPContainer(false)
                             setShowNameContainer(true)
 
                             // setSuccessmsg('User created successfully')
@@ -219,7 +299,8 @@ const SignUpScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar
-                backgroundColor={colors.text1}
+                backgroundColor={colors.col2}
+                barStyle="dark-content"
             />
             <View style={styles.container_Head} >
                 <Text style={styles.container_Head_txt}>shovii</Text>
@@ -285,7 +366,7 @@ const SignUpScreen = ({ navigation }) => {
                             <ActivityIndicator size="small" color="#fff" />
                         </TouchableOpacity>
                         :
-                        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+                        <TouchableOpacity style={styles.button} onPress={checkEmailAddress}>
                             <Text style={styles.buttonText}>SIGN UP</Text>
                         </TouchableOpacity>
 
@@ -323,8 +404,8 @@ const SignUpScreen = ({ navigation }) => {
                         <TextInput
                             style={styles.input}
                             placeholder="OTP"
-                            value={name}
-                            onChangeText={setName}
+                            value={emailOTPInput}
+                            onChangeText={setEmailOTPInput}
                         />
                     </View>
 
@@ -534,7 +615,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         borderColor: '#ccc',
         borderWidth: 1,
-        borderRadius: 25,
+        borderRadius: 15,
     },
     container_main_in1_1: {
         paddingLeft: 5,
@@ -570,7 +651,7 @@ const styles = StyleSheet.create({
         // backgroundColor: '#4E4E4E',
         backgroundColor: colors.text1,
         marginHorizontal: 10,
-        borderRadius: 25,
+        borderRadius: 15,
         padding: 10,
         alignItems: 'center',
     },
