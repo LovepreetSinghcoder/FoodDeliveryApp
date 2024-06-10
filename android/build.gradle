@@ -1,37 +1,47 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext {
-        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
+    // ext {
+    //     buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
+    //     minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
+    //     compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
+    //     targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+    //     if (findProperty('android.kotlinVersion')) {
+    //         kotlinVersion = findProperty('android.kotlinVersion')
+    //     }
+    //     frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
+
+    //     ndkVersion = "26.1.10909125"
+    // }
+ ext {
+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-        if (findProperty('android.kotlinVersion')) {
-            kotlinVersion = findProperty('android.kotlinVersion')
-        }
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.21'
         frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
-
-        // frescoVersion = findProperty('expo.frescoVersion') ?: '1.9.23'
-
-        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
-        // ndkVersion = "23.1.7779620"
-        // ndkVersion = "23.2.8568313"
-
         ndkVersion = "26.1.10909125"
-
-        // RNMapboxMapsVersion = '11.3.0'
     }
+
+
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         // classpath('com.android.tools.build:gradle:7.4.2')
+
         classpath ('com.android.tools.build:gradle:8.2.0')
         classpath('com.facebook.react:react-native-gradle-plugin')
         classpath('com.google.gms:google-services:4.3.15')
         
-       
+    //    classpath("com.google.gms:google-services:4.3.10")
+
+    //  classpath("com.android.tools.build:gradle:8.2.1")
+        // classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        // classpath("com.facebook.react:react-native-gradle-plugin")
+        // classpath("org.unimodules:unimodules-react-native-adapter")
+        // classpath("com.google.gms:google-services:4.3.10")
  
 
     }
@@ -51,19 +61,5 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
-        // maven { url 'https://mapbox.bintray.com/mapbox' }
-        // maven {
-        //     url 'https://api.mapbox.com/downloads/v2/releases/maven'
-        //     authentication {
-        //         basic(BasicAuthentication)
-        //     }
-        //     credentials {
-        //         // Do not change the username below.
-        //         // This should always be `mapbox` (not your username).
-        //         username = 'mapbox'
-        //         // Use the secret token you stored in gradle.properties as the password
-        //         password = project.properties['sk.eyJ1IjoibG92ZTc5MjU3cCIsImEiOiJjbHg1NjVheGQwZ3U3Mm1zYTg2cHFvcHk3In0.GRapMqMOdR5i4aTQDPtDAA'] ?: ""
-        //     }
-        //  }
     }
 }

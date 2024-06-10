@@ -14,7 +14,8 @@ import LineWithText from '../Components/LineWithText';
 import Restaurants from '../Components/Restaurants';
 import UserCartsScreen from './UserCartsScreen';
 
-const Version = '3.6.10';
+//Also update the version of the About Screen(Build gradle, Home, About)
+const Version = '3.7.10';
 
 const HomeScreen = ({ navigation }) => {
   const { userloggeduid, checkIsLogged, SetLocationName, locationName, userDataHandler, userdata, setUserLongitude, setUserLatitude, hasItems, getcartdata } = useContext(AuthContext);

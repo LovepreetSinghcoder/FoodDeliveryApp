@@ -31,7 +31,7 @@ const AboutScreen = ({ navigation }) => {
             }}>
                
                 <View style={{ flexDirection: 'row', paddingVertical: 15, alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1.5, borderColor: '#ebebeb' }} >
-                    <Text style={{ paddingHorizontal: 10, fontSize: 16, fontWeight: '500' }}>App Version v2.6.10</Text>
+                    <Text style={{ paddingHorizontal: 10, fontSize: 16, fontWeight: '500' }}>App Version v3.7.10</Text>
 
                 </View>
             </TouchableOpacity>

@@ -1,23 +1,13 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator, } from 'react-native'
-// import CheckBox from '@react-native-community/checkbox';
-import CheckBox from 'expo-checkbox';
-import { Switch } from 'react-native-elements';
 import React, { useContext, useEffect, useState } from 'react'
 import { btn2, colors, hr80, navbtn, navbtnin } from '../Global/styles'
 import { AntDesign, Ionicons, FontAwesome6, Fontisto, Octicons, MaterialIcons } from '@expo/vector-icons';
-
 import { firebase } from '../Firebase/FirebaseConfig'
 import { AuthContext } from '../Context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import EditProductSlider from '../Components/EditProductSlider';
 import * as Location from 'expo-location';
-
-// import Cart from '../Components/Cart';
-
-// import BottomNav from '../components/BottomNav';
-
-// const userloggeduid = 'U08laKOtyLZWlAXzRFLVYi8ReeK2'
 
 const UserCart = ({ navigation, route }) => {
 
@@ -30,8 +20,6 @@ const UserCart = ({ navigation, route }) => {
     const [cartAllData, setCartAllData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [process, setProcess] = useState(false);
-    const [restaurantLatitude, setRestaurantLatitude] = useState(null)
-    const [restaurantLongitude, setRestaurantLongitude] = useState(null)
     const [userLatitude, setUserLatitude] = useState(null)
     const [userLongitude, setUserLongitude] = useState(null)
     const [userDistance, setUserDistance] = useState(null)
@@ -136,30 +124,12 @@ const UserCart = ({ navigation, route }) => {
 
         // Check if the item was found
         if (index !== -1) {
-            // Update the foodquantity with the new value
-            // cartAllData[index].foodquantity = cartAllData[index].foodquantity + 1;
-
-            // setCartAllData(prevData => prevData.map(item => 
-            //     item.item_id === item_id ? { ...item, foodquantity: item.foodquantity + 1 } : item
-            //   ));
-
             const updatedData = cartAllData.map(item =>
                 item.item_id === item_id ? { ...item, foodquantity: item.foodquantity + 1 } : item
             );
 
             // Update the state with the new array
             setCartAllData(updatedData);
-            // Optionally, update the totalFoodPrice if needed
-            // Assuming you have a way to determine the price per item, let's say it's 100 for this example
-            // const pricePerItem = 100; // replace with the actual price logic if needed
-            // cartAllData[index].totalFoodPrice = quantity * pricePerItem;
-            // GetTotalPrice()
-
-            // const totalfoodprice = (parseInt(cartAllData[index].totalFoodPrice)) * (cartAllData[index].foodquantity + 1)
-
-            // console.log('This is total total cost of the 77887', totalfoodprice)
-            // setTotalCost(totalfoodprice.toString());
-            // console.log('Item quantity updated successfully:', cartAllData[index]);
         } else {
             console.log('Item not found with item_id:', item_id);
         }
@@ -255,12 +225,6 @@ const UserCart = ({ navigation, route }) => {
     useEffect(() => {
         const fetchData = async () => {
             const docRef = firebase.firestore().collection('shopInfo');
-
-
-            // foodRef.onSnapshot(snapshot => {
-            //     setFoodDataAll(snapshot.docs.map(doc => doc.data()))
-            // }
-
             const doc = await docRef.get();
             doc.forEach((doc) => {
                 setShopInfo(doc.data());
@@ -277,12 +241,6 @@ const UserCart = ({ navigation, route }) => {
     useEffect(() => {
         const fetchData = async () => {
             const docRef = firebase.firestore().collection('PlatformDeliveryPartnerManagement');
-
-
-            // foodRef.onSnapshot(snapshot => {
-            //     setFoodDataAll(snapshot.docs.map(doc => doc.data()))
-            // }
-
             const doc = await docRef.get();
             doc.forEach((doc) => {
                 setPlatformDeliveryCharges(doc.data());
@@ -291,12 +249,8 @@ const UserCart = ({ navigation, route }) => {
 
         fetchData();
     }, []);
-    // console.log('This is the data of the Shop Data', shopInfo)
-
 
     const [restaurantsData, setRestaurantsData] = useState([]);
-
-
     // useEffect to get all data of Restaurant Data 
     useEffect(() => {
         const fetchData = async () => {
@@ -304,7 +258,7 @@ const UserCart = ({ navigation, route }) => {
 
 
 
-            
+
             const doc = await docRef.get();
             if (!doc.empty) {
                 doc.forEach((doc) => {
@@ -319,32 +273,19 @@ const UserCart = ({ navigation, route }) => {
         fetchData();
     }, []);
 
-    // console.log('No Restaurant Data Found!',restaurantsData);
 
-
-
-
-    // console.log('This is the data of the Restaurants Data', restaurantsData)
     const GetRestaurantDataHandler = (id) => {
 
         if (!restaurantsData) {
             console.log('Restaurant data is not loaded')
             return;
         }
-        // const data = restaurantsData.filter((item) => item.shopId == 'U08laKOtyLZWlAXzRFLVYi8ReeK2')
         const data = restaurantsData.filter((item) => item.shopId == id)
 
-
-        // console.log('This the data we want::', data[0])
-        // return data[0];
         return data;
 
     }
 
-    // useEffect(() => {
-
-    //     GetRestaurantDataHandler()
-    // },[restaurantsData])
 
     //New Approach
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
@@ -467,9 +408,6 @@ const UserCart = ({ navigation, route }) => {
 
 
 
-    // const [userLatitude, setUserLatitude] = useState('')
-    // const [userLongitude, setUserLongitude] = useState('')
-
 
     const getLocationName = async (latitude, longitude) => {
         try {
@@ -500,8 +438,7 @@ const UserCart = ({ navigation, route }) => {
     };
 
 
-    // console.log('This is the value of the coords', userLatitude, userLongitude)
-    // console.log('This is the value of the city', userLocationName)
+
     const haversineDistance = (coords1, coords2) => {
         const toRadians = (degrees) => degrees * (Math.PI / 180);
 
@@ -594,10 +531,10 @@ const UserCart = ({ navigation, route }) => {
         if (distancebtwCustomerRestaurant >= 0) {
             const deliveryCharges = platformDeliveryCharges.deliveryCharges * distancebtwCustomerRestaurant;
             setDeliveryCharges(deliveryCharges)
-            
+
             return deliveryCharges
         }
-    
+
 
 
     }
@@ -648,7 +585,7 @@ const UserCart = ({ navigation, route }) => {
 
     useEffect(() => {
         GetTotalPrice();
-    }, [cartAllData,distancebtwCustomerRestaurant, platformDeliveryCharges]);
+    }, [cartAllData, distancebtwCustomerRestaurant, platformDeliveryCharges]);
 
 
 
@@ -678,7 +615,6 @@ const UserCart = ({ navigation, route }) => {
         checkShopOpen();
         setProcess(false)
         setLoading(false)
-        // setIsLoading(false);
     }
 
 
@@ -701,14 +637,7 @@ const UserCart = ({ navigation, route }) => {
                 alert("This item is not available in your location.");
 
             }
-            // else if (restaurantName.length != 1) {
-            //     alert("Only one restaurant order is accepted at a time.");
 
-            // }
-          
-            // else if (isRestaurantOpen === false) {
-            //     alert(`The following restaurant is closed : ${closedRestaurants}`)
-            // }
             else if (inStock === false) {
                 alert(`The following item is Out of Stock : ${outStock}`)
 
@@ -721,19 +650,15 @@ const UserCart = ({ navigation, route }) => {
 
             else {
                 navigation.navigate('PaymentNdetail', {
-                    // cartdata , totalCost
                     restaurantData: restaurantsData,
                     restaurantName: restaurantsData.restaurant_name,
                     shopId: data_shopId,
                     deliveryAdress: userdata.address,
-                    // cartdata: cartdata[{...cartAllData}],
-                    cartAllData: cartAllData, // Replace with your cart data
-                    totalCost: totalCost ,// Replace with your total cost value
-                    itemCost: itemCost, // Replace with your total cost value
-                    deliveryCharges: deliveryCharges, // Replace with your total cost value
+                    cartAllData: cartAllData,
+                    totalCost: totalCost,
+                    itemCost: itemCost,
+                    deliveryCharges: deliveryCharges,
                     GSTnCharger: GSTnRestaurantCharges
-
-
                 })
             }
 
@@ -744,10 +669,6 @@ const UserCart = ({ navigation, route }) => {
 
     }
 
-    // const openEditProductHandler = ( item_id, qty) => {
-    //     return <EditProductSlider restaurants_Data={restaurantsData} item_id={item_id} qty={qty}/>
-
-    // }
 
     const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -839,16 +760,16 @@ const UserCart = ({ navigation, route }) => {
             </TouchableOpacity>
 
 
-            <ScrollView style={[styles.container, selectedProduct? {
+            <ScrollView style={[styles.container, selectedProduct ? {
                 // backgroundColor: '#c4c4c4',
                 // backgroundColor: '#fff',
 
-                 }: null]}>
-            <View style={[styles.cartout, selectedProduct? {
-                // backgroundColor: '#e0e0e0',
-                 }: { 
-                    backgroundColor: '#ffffff', 
-                     }]}>
+            } : null]}>
+                <View style={[styles.cartout, selectedProduct ? {
+                    // backgroundColor: '#e0e0e0',
+                } : {
+                    backgroundColor: '#ffffff',
+                }]}>
 
                     {/* {cartdata == null || JSON.parse(cartdata).cart.length == 0 ? */}
                     {cartAllData == null ?
@@ -858,7 +779,8 @@ const UserCart = ({ navigation, route }) => {
                         // <FlatList style={styles.cardlist} data={JSON.parse(cartdata).cart} renderItem={
                         <FlatList style={[styles.cardlist, selectedProduct ? {
                             // backgroundColor: '#e0e0e0',
-                            borderRadius: 15}:null]} data={cartAllData} renderItem={
+                            borderRadius: 15
+                        } : null]} data={cartAllData} renderItem={
 
                             ({ item }) => {
 
@@ -937,9 +859,9 @@ const UserCart = ({ navigation, route }) => {
                             scrollEnabled={false} />}
                 </View>
 
-                <View style={[styles.cartout, selectedProduct? {
+                <View style={[styles.cartout, selectedProduct ? {
                     // backgroundColor: '#e0e0e0',
-                     }: { backgroundColor: '#ffffff'}]}>
+                } : { backgroundColor: '#ffffff' }]}>
                     <View style={styles.box}>
 
                         <View style={styles.boxIn}>
@@ -1115,7 +1037,7 @@ const UserCart = ({ navigation, route }) => {
 
             {selectedProduct && (
                 <View style={{
-                     backgroundColor: colors.text1,
+                    backgroundColor: colors.text1,
                     // backgroundColor: 'rgba(237, 245, 255, 0.4)',
                     height: 440, zIndex: 100,
                     borderTopLeftRadius: 20,
@@ -1123,8 +1045,8 @@ const UserCart = ({ navigation, route }) => {
                     // paddingVertical: 10
                     // marginTop: -20
                 }}>
-                    
-                    <TouchableOpacity style={{ backgroundColor: '#a1a1a1', borderRadius: 50, width: 50, height: 50, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',  margin: 'auto' ,marginBottom: 15, marginTop: -65}} onPress={() => closeEditProductHandler()}><Text style={{fontSize: 18, fontWeight: '600'}}>X</Text></TouchableOpacity>
+
+                    <TouchableOpacity style={{ backgroundColor: '#a1a1a1', borderRadius: 50, width: 50, height: 50, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: 'auto', marginBottom: 15, marginTop: -65 }} onPress={() => closeEditProductHandler()}><Text style={{ fontSize: 18, fontWeight: '600' }}>X</Text></TouchableOpacity>
                     <EditProductSlider
                         restaurantsData={restaurantsData}
                         item_id={selectedProduct.item_id}

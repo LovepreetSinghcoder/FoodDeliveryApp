@@ -297,24 +297,6 @@ const PaymentAndDetails = ({ navigation, route }) => {
         requestLocationPermission()
     }, [])
 
-    // const getLocation = async () => {
-    //     try {
-    //         const location = await Location.getCurrentPositionAsync({});
-    //         const { latitude, longitude } = location.coords;
-    //         // console.log('Latitude:', latitude);
-    //         // console.log('Longitude:', longitude);
-    //         setUserLatitude(latitude)
-    //         setUserLongitude(longitude)
-    //         // setUserCoords(latitude, longitude)
-    //         await getLocationName(latitude, longitude);
-    //         console.log("this is the the calue of the location Name", latitude, longitude)
-    //         return true
-    //         // Do something with the latitude and longitude values
-    //     } catch (error) {
-    //         console.log('Error getting location:', error);
-    //         return false
-    //     }
-    // };
 
     const getLocation = async () => {
         try {
@@ -432,6 +414,9 @@ const PaymentAndDetails = ({ navigation, route }) => {
     // console.log('this is the console value of the ,', distancebtwCustomerRestaurant)
     const OrderPlaceHandler = async () => {
 
+        // Verify if the restaurant is open
+
+        
         // if (!userdata.emailVerified) {
         //     alert('Please verify your email')
         //     return;
@@ -439,11 +424,7 @@ const PaymentAndDetails = ({ navigation, route }) => {
 
         // Verify if the location permission is allowed
         // if the location permision is not allowerd then show the popup to allow notification, 
-        // if (!requestLocationPermission) {
-        //     alert('Location permission is compulsary to place order!')
-        //     // if the user not allowed the location then send the user back to the screen
-        //     return;
-        // }
+     
 
         const permissionGranted = await requestLocationPermission(); // Call and await the function
         // if (!permissionGranted) {
